@@ -1,0 +1,127 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
+  <diagram name="Page-1" id="l_BKeWBhJy8j4QTLP12t">
+    <mxGraphModel dx="1737" dy="1203" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-11" value="Flow" style="swimlane;html=1;startSize=20;horizontal=0;childLayout=flowLayout;flowOrientation=west;resizable=0;interRankCellSpacing=50;containerType=tree;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="1180" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-12" value="&lt;b&gt;Frontend&lt;/b&gt;&lt;div&gt;- Login&lt;/div&gt;&lt;div&gt;&lt;div&gt;- Upload video file&amp;nbsp;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="40" y="155" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-15" value="&lt;b&gt;Preprocessor&lt;/b&gt;&lt;div&gt;- Extract audio&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="230" y="165" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-16" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;metaEdit=0;" edge="1" parent="-YzGtxm6Pq96U0qIARg6-11" source="-YzGtxm6Pq96U0qIARg6-12" target="-YzGtxm6Pq96U0qIARg6-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="192" y="185" />
+              <mxPoint x="218" y="185" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-23" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;" edge="1" target="-YzGtxm6Pq96U0qIARg6-24" source="-YzGtxm6Pq96U0qIARg6-15" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1660" y="1012.2499999999998" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="342" y="185" />
+              <mxPoint x="368" y="185" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-24" value="&lt;b&gt;VAD Model&lt;/b&gt;&lt;div&gt;- Extract spoken audio segments&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="380" y="155" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-27" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;" edge="1" target="-YzGtxm6Pq96U0qIARg6-28" source="-YzGtxm6Pq96U0qIARg6-24" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1690" y="952.2499999999998" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="492" y="185" />
+              <mxPoint x="518" y="185" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-28" value="&lt;b&gt;LID Model&lt;/b&gt;&lt;div&gt;- Classify each spoken audio segment&#39;s language&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="530" y="140" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-37" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;" edge="1" target="-YzGtxm6Pq96U0qIARg6-38" source="-YzGtxm6Pq96U0qIARg6-28" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1320" y="745" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="662" y="158.33333333333334" />
+              <mxPoint x="688" y="65" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-38" value="&lt;div&gt;&lt;b&gt;ASR Model 1&lt;/b&gt;&lt;/div&gt;&lt;div&gt;- Generate text of classified language for each segment&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="700" y="20" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-39" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;" edge="1" target="-YzGtxm6Pq96U0qIARg6-40" source="-YzGtxm6Pq96U0qIARg6-38" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1410" y="705" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="832" y="65" />
+              <mxPoint x="858" y="158.33333333333334" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-40" value="&lt;div&gt;&lt;b&gt;Caption Encoder&lt;/b&gt;&lt;/div&gt;&lt;div&gt;- Encode video with captions at specified timestamps&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="870" y="140" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-41" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;" edge="1" target="-YzGtxm6Pq96U0qIARg6-42" source="-YzGtxm6Pq96U0qIARg6-28" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1160" y="665" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="664" y="185" />
+              <mxPoint x="688" y="185" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;noEdgeStyle=1;orthogonal=1;" edge="1" parent="-YzGtxm6Pq96U0qIARg6-11" source="-YzGtxm6Pq96U0qIARg6-42" target="-YzGtxm6Pq96U0qIARg6-40">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="832" y="185" />
+              <mxPoint x="856" y="185" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-42" value="&lt;div&gt;&lt;b&gt;ASR Model 2&lt;/b&gt;&lt;/div&gt;&lt;div&gt;- Generate text of classified language for each segment&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="700" y="140" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-43" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;" edge="1" target="-YzGtxm6Pq96U0qIARg6-44" source="-YzGtxm6Pq96U0qIARg6-28" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1120" y="705" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="662" y="211.66666666666666" />
+              <mxPoint x="688" y="305" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;noEdgeStyle=1;orthogonal=1;" edge="1" parent="-YzGtxm6Pq96U0qIARg6-11" source="-YzGtxm6Pq96U0qIARg6-44" target="-YzGtxm6Pq96U0qIARg6-40">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="832" y="305" />
+              <mxPoint x="858" y="211.66666666666666" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-44" value="&lt;div&gt;&lt;b&gt;ASR Model 3&lt;/b&gt;&lt;/div&gt;&lt;div&gt;- Generate text of classified language for each segment&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="700" y="260" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-49" value="" style="html=1;rounded=1;curved=0;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;startSize=6;endSize=6;noEdgeStyle=1;orthogonal=1;" edge="1" target="-YzGtxm6Pq96U0qIARg6-50" source="-YzGtxm6Pq96U0qIARg6-40" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1020" y="425" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="1002" y="185" />
+              <mxPoint x="1028" y="185" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-YzGtxm6Pq96U0qIARg6-50" value="&lt;b&gt;Output video&lt;/b&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="-YzGtxm6Pq96U0qIARg6-11">
+          <mxGeometry x="1040" y="140" width="120" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

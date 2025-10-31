@@ -1,0 +1,108 @@
+@startuml
+allowmixing
+
+package Frontend {
+    +class UI {
+
+        +uploadVideo(): void
+    }
+}
+Frontend.UI --> Backend.API
+
+package Backend {
+    +class API {
+        +captionPipeline: CaptionPipeline
+
+        +/upload(Video) 
+        +/languages()
+    }
+    API --> CaptionPipeline
+
+    Note right of API
+        /upload Stores video locally, then calls CaptionPipeline.createCaptions()
+
+        /languages returns what languages are available
+    end Note
+
+    +class CaptionPipeline {
+        +preprocessor: VideoPreprocessor
+        +VAD: VADModule
+        +LID: LIDModule
+        +ASR: ASRModule
+        +encoder: CaptionEncoder
+
+        +maxSegmentLength: int
+        +minSegmentLength: int
+
+        +languages: List[Models.Language]
+
+        +createCaptions(videoPath: str): str //Main function of app, returns path to video path with video encoded
+    }
+
+    CaptionPipeline --> VideoPreprocessor
+    CaptionPipeline --> VADModule
+    CaptionPipeline --> LIDModule
+    CaptionPipeline --> ASRModule
+    CaptionPipeline --> CaptionEncoder
+
+    +class VideoPreprocessor {
+        +preprocessVideo(videoPath: str): str //returns path to audio file, preprocessed from video
+    }
+
+    +class VADModule {
+        +findVoicedSegments(audioPath: str): List[VideoSegment]
+    }
+    ASRModule ..> VideoSegment
+
+    +class LIDModule {
+        +classifyLanguage(List[VideoSegment]): List[CaptionedVideoSegment]
+    }
+    LIDModule ..> CaptionedVideoSegment
+
+    +class ASRModule {
+        +fillSegmentText(List[CaptionedVideoSegment]): List[CaptionedVideoSegment]
+    }
+    ASRModule ..> CaptionedVideoSegment
+
+    +class CaptionEncoder {
+        +encodeVideoCaptions(videoPath: str, captions: List[CaptionedVideoSegment]): str //new video path
+    }
+    CaptionEncoder ..> CaptionedVideoSegment
+
+    +interface VideoSegment {
+        +start: float 
+        +end: float
+    }
+
+    +interface CaptionedVideoSegment {
+        +text: str
+        +language: Models.Language
+    }
+    CaptionedVideoSegment --|> VideoSegment
+
+}
+
+Backend.VADModule --> Models.VAD
+Backend.ASRModule --> Models.ASR
+Backend.LIDModule --> Models.LID
+Backend.CaptionPipeline --> Models.Language
+
+package Models {
+    +class VAD {
+        
+    }
+    +class LID {
+
+    }
+    +class ASR {
+
+    }
+    +class Language {
+        +name: str 
+        +value: int
+    }
+}
+
+
+
+@enduml

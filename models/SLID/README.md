@@ -4,5 +4,4 @@ SLID model built on CNN + CapsNet with MidCaps architecture.
 
 ## Instructions
 1. Complete the instructions under `/models`
-2. cd into `/SLID`
-3. Run `python data/downloader.py`
+2. Run `python SLID/data/downloader.py`

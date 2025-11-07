@@ -1,2 +1,12 @@
 jupyter
 pydantic
+scipy
+numpy
+torch
+torchvision
+torchaudio
+torchcodec
+pandas
+matplotlib
+soundfile
+pytest

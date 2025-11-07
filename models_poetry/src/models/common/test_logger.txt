@@ -1,0 +1,3 @@
+[2025-11-07 15:05:46] test_logger | 0.00s: This is a test log entry.
+[2025-11-07 15:06:24] test_logger | 0.00s: This is a test log entry.
+[2025-11-07 15:06:28] test_logger | 0.00s: This is a test log entry.

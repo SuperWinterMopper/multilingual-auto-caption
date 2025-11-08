@@ -18,11 +18,12 @@ dependencies = [
     "torchaudio (>=2.9.0,<3.0.0)",
     "pandas (>=2.3.3,<3.0.0)",
     "matplotlib (>=3.10.7,<4.0.0)",
-    "soundfile (>=0.13.1,<0.14.0)"
+    "soundfile (>=0.13.1,<0.14.0)",
+    "pqdm (>=0.2.0,<0.3.0)"
 ]
 
 [tool.poetry]
-packages = [{include = "models", from = "src"}]
+packages = [{include = "*", from = "src"}]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

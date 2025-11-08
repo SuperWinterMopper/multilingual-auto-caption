@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
 
-from src.models.common.logger import Logger
+from ..src.common.logger import Logger
 
 def test_logger_creation():
     logger_name = "test_logger"

@@ -10,6 +10,8 @@ __pycache__/
 *.tar
 *.tgz
 *.tar.tgz
+*.ogg
+LibriParty
 
 # Distribution / packaging
 .Python

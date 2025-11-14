@@ -1,7 +1,6 @@
 from ...common.PipelineStructure import PipelineLogger
 from ...common.logger import Logger
-import pydantic
-from .VADPipeline import VADPipeline
+from .VADPipelineAbstractClass import VADPipelineAbstractClass
 
 class VADPipelineLogger(PipelineLogger):
     """
@@ -10,13 +9,10 @@ class VADPipelineLogger(PipelineLogger):
 
     logger: Logger
 
-    pipe = pydantic.PrivateAttr
-
-    def link_pipeline(self, pipeline: VADPipeline):
-        self.pipe = pipeline
-
     def blog_collect_data(self) -> None:
-        ...
+        self.log("Data collection tests passed: data path exists.")
+        self.log("Dev, eval, and train directories are present.")
+        self.log("Sample session_0 mixture.wav files confirmed in each split.")
 
     def blog_preprocess_data(self) -> None:
         ...
@@ -34,7 +30,7 @@ class VADPipelineLogger(PipelineLogger):
         ...
 
     def alog_collect_data(self) -> None:
-        ...
+        self.log("After data collection, verified that data path exists and some some content remains.")
 
     def alog_preprocess_data(self) -> None:
         ...

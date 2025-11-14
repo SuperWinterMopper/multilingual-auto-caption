@@ -13,11 +13,11 @@ class PipelineLogger(pydantic.BaseModel, abc.ABC):
     # the ModelPipeline which actually uses this logger.
     # Allows us to do self.pipe.variable to avoid passing in parameters
     logger: Logger
-    pipe = pydantic.PrivateAttr
+    pipeline = pydantic.PrivateAttr
 
     @abc.abstractmethod
-    def link_pipeline(self, pipeline):
-        self.pipeline = pipeline
+    # def link_pipeline(self, pipeline):
+    #     self.pipeline = pipeline
 
     @abc.abstractmethod
     def blog_collect_data(self) -> None:
@@ -82,14 +82,14 @@ class PipelineTester(pydantic.BaseModel, abc.ABC):
 
     # the ModelPipeline which actually uses this logger.
     # Allows us to do self.pipe.variable to avoid passing in parameters
-    pipe = pydantic.PrivateAttr
+    pipeline = pydantic.PrivateAttr
 
     @abc.abstractmethod
-    def link_pipeline(self, pipeline):
-        self.pipeline = pipeline
+    # def link_pipeline(self, pipeline):
+    #     self.pipeline = pipeline
 
     @abc.abstractmethod
-    def btest_collect_data(self) -> None:
+    def btest_collect_data(self, pipeline) -> None:
         ...
 
     @abc.abstractmethod
@@ -113,7 +113,7 @@ class PipelineTester(pydantic.BaseModel, abc.ABC):
         ...
 
     @abc.abstractmethod
-    def atest_collect_data(self) -> None:
+    def atest_collect_data(self, pipeline) -> None:
         ...
 
     @abc.abstractmethod

@@ -1,10 +1,13 @@
 from ...common.PipelineStructure import ModelPipeline, PipelineLogger, PipelineTester
 from ...common.logger import Logger
+from pathlib import Path
+from .VADPipelineAbstractClass import VADPipelineAbstractClass
 
 from .VADPipelineTester import VADPipelineTester
 from .VADPipelineLogger import VADPipelineLogger
+import time
 
-class VADPipeline(ModelPipeline):
+class VADPipeline(VADPipelineAbstractClass):
     """
     VAD model training pipeline.
     """
@@ -12,8 +15,11 @@ class VADPipeline(ModelPipeline):
     tester: PipelineTester = VADPipelineTester()
     logger: PipelineLogger = VADPipelineLogger(logger=Logger(name="VAD"))
 
+    data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"
+
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
         """Run the model with the specified steps involved"""
+
         if collect_data:
             self._collect_data()
         if preprocess_data:
@@ -29,12 +35,12 @@ class VADPipeline(ModelPipeline):
 
     def _collect_data(self) -> None:
         """Collects data and puts it into /data for appropriate model"""
-        self.tester.btest_collect_data()
+        self.tester.btest_collect_data(self)
         self.logger.blog_collect_data()
 
         pass
 
-        self.tester.atest_collect_data()
+        self.tester.atest_collect_data(self)
         self.logger.alog_collect_data()
 
     def _preprocess_data(self) -> None:

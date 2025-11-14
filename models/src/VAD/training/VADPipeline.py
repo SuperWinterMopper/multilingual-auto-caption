@@ -1,11 +1,11 @@
-from ...common.PipelineStructure import ModelPipeline, PipelineLogger, PipelineTester
+from ...common.PipelineStructure import PipelineLogger, PipelineTester
 from ...common.logger import Logger
 from pathlib import Path
 from .VADPipelineAbstractClass import VADPipelineAbstractClass
 
 from .VADPipelineTester import VADPipelineTester
 from .VADPipelineLogger import VADPipelineLogger
-import time
+from .MelSpecPipeline import MelSpecPipeline
 
 class VADPipeline(VADPipelineAbstractClass):
     """
@@ -15,7 +15,15 @@ class VADPipeline(VADPipelineAbstractClass):
     tester: PipelineTester = VADPipelineTester()
     logger: PipelineLogger = VADPipelineLogger(logger=Logger(name="VAD"))
 
-    data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"
+    data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"    
+
+    windowed_signal_length = 512
+    sample_rate = 16000
+    num_mel_bands = 40
+    overlap = 2
+    hop_length = windowed_signal_length // overlap
+
+    mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=windowed_signal_length, sample_rate=sample_rate, n_mel=num_mel_bands, hop_length=hop_length)
 
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
         """Run the model with the specified steps involved"""
@@ -38,6 +46,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.tester.btest_collect_data(self)
         self.logger.blog_collect_data()
 
+        # data is locally stored currently
         pass
 
         self.tester.atest_collect_data(self)
@@ -47,8 +56,8 @@ class VADPipeline(VADPipelineAbstractClass):
         """Preprocesses the data stored under /data"""
         self.tester.btest_preprocess_data()
         self.logger.blog_preprocess_data()
-
-        pass
+    
+        
 
         self.tester.atest_preprocess_data()
         self.logger.alog_preprocess_data()

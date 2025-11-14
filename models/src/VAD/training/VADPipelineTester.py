@@ -1,12 +1,15 @@
 from ...common.PipelineStructure import PipelineTester
+from pathlib import Path
 
 class VADPipelineTester(PipelineTester):
+
+    self.data_path = Path(__file__).resolve().parent
 
     def link_pipeline(self, pipeline):
         self.pipeline = pipeline
 
     def btest_collect_data(self) -> None:
-        ...
+        
 
     def btest_preprocess_data(self) -> None:
         ...

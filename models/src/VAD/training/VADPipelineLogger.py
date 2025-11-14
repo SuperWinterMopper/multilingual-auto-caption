@@ -1,5 +1,7 @@
 from ...common.PipelineStructure import PipelineLogger
 from ...common.logger import Logger
+import pydantic
+from .VADPipeline import VADPipeline
 
 class VADPipelineLogger(PipelineLogger):
     """
@@ -8,8 +10,10 @@ class VADPipelineLogger(PipelineLogger):
 
     logger: Logger
 
-    def link_pipeline(self, pipeline):
-        self.pipeline = pipeline
+    pipe = pydantic.PrivateAttr
+
+    def link_pipeline(self, pipeline: VADPipeline):
+        self.pipe = pipeline
 
     def blog_collect_data(self) -> None:
         ...

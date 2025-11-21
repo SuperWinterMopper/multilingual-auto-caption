@@ -7,7 +7,7 @@ class MelSpecPipeline(torch.nn.Module):
         self.mel_spec = MelSpectrogram(sample_rate=sample_rate, n_fft=n_fft, n_mels=n_mel, power=2, center=False, hop_length=hop_length)
 
     def forward(self, wave):
-        assert wave.shape[0] == 1
+        assert wave.data.shape[0] == 1
 
-        mel_spec = self.mel_spec(wave)
+        mel_spec = self.mel_spec(wave.data)
         return mel_spec

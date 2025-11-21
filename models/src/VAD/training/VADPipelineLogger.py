@@ -15,7 +15,7 @@ class VADPipelineLogger(PipelineLogger):
         self.log("Sample session_0 mixture.wav files confirmed in each split.")
 
     def blog_preprocess_data(self) -> None:
-        ...
+        self.log("Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets")
 
     def blog_split_data(self) -> None:
         ...

@@ -6,3 +6,11 @@ def test_basic():
     pipe.run_pipeline(collect_data=True)
 
     assert 4 == 4, "something wrong"
+
+def test_preprocess():
+    pipe = VADPipeline()
+
+    pipe.run_pipeline(collect_data=True, preprocess_data=True)
+
+    breakpoint()
+    print(pipe.X_train.shape)

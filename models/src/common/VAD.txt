@@ -15,3 +15,100 @@
 [2025-11-14 15:36:17] VAD | 0.00s: Dev, eval, and train directories are present.
 [2025-11-14 15:36:17] VAD | 0.00s: Sample session_0 mixture.wav files confirmed in each split.
 [2025-11-14 15:36:17] VAD | 1.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 11:20:43] VAD | 0.84s: Data collection tests passed: data path exists.
+[2025-11-21 11:20:43] VAD | 0.84s: Dev, eval, and train directories are present.
+[2025-11-21 11:20:43] VAD | 0.84s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 11:20:43] VAD | 0.84s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 11:56:29] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 11:56:29] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 11:56:29] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 11:56:29] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 11:56:36] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 11:56:36] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 11:56:36] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 11:56:36] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 11:57:46] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 11:57:46] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 11:57:46] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 11:57:46] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:01:55] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:01:55] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:01:55] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:01:55] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:16:47] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:16:47] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:16:47] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:16:47] VAD | 0.02s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:20:22] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:20:22] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:20:22] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:20:22] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:20:50] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:20:50] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:20:50] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:20:50] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:22:27] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:22:27] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:22:27] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:22:27] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:22:53] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:22:53] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:22:53] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:22:53] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:23:05] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:23:05] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:23:05] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:23:05] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:23:15] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:23:15] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:23:15] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:23:15] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:23:56] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:23:56] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:23:56] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:23:56] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:23:56] VAD | 0.01s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 12:24:30] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:24:30] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:24:30] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:24:30] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:24:30] VAD | 0.01s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 12:44:18] VAD | 0.09s: Data collection tests passed: data path exists.
+[2025-11-21 12:44:18] VAD | 0.10s: Dev, eval, and train directories are present.
+[2025-11-21 12:44:18] VAD | 0.10s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:44:18] VAD | 0.10s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:44:18] VAD | 0.10s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 12:44:32] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:44:32] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:44:32] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:44:32] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:44:32] VAD | 0.01s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 12:45:29] VAD | 0.06s: Data collection tests passed: data path exists.
+[2025-11-21 12:45:29] VAD | 0.06s: Dev, eval, and train directories are present.
+[2025-11-21 12:45:29] VAD | 0.06s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:45:29] VAD | 0.06s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:45:29] VAD | 0.06s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 12:46:11] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:46:11] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:46:11] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:46:11] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:46:11] VAD | 0.01s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 12:46:59] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:46:59] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:46:59] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:46:59] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:46:59] VAD | 0.01s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 12:49:29] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-11-21 12:49:29] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-11-21 12:49:29] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 12:49:29] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 12:49:29] VAD | 0.01s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 15:43:26] VAD | 0.06s: Data collection tests passed: data path exists.
+[2025-11-21 15:43:26] VAD | 0.06s: Dev, eval, and train directories are present.
+[2025-11-21 15:43:26] VAD | 0.06s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 15:43:26] VAD | 0.06s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 15:43:26] VAD | 0.06s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 15:49:50] VAD | 0.02s: Data collection tests passed: data path exists.
+[2025-11-21 15:49:50] VAD | 0.02s: Dev, eval, and train directories are present.
+[2025-11-21 15:49:50] VAD | 0.02s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 15:49:50] VAD | 0.02s: After data collection, verified that data path exists and some some content remains.

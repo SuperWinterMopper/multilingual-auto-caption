@@ -7,10 +7,10 @@ def test_basic():
 
     assert 4 == 4, "something wrong"
 
-def test_preprocess():
+def test_integration():
     pipe = VADPipeline()
 
-    pipe.run_pipeline(collect_data=True, preprocess_data=True)
+    pipe.run_pipeline(collect_data=True, preprocess_data=True, split_data=True)
 
     print(pipe.X_train.shape)
 

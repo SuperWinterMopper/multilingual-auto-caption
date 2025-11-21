@@ -41,8 +41,6 @@ class VADPipeline(VADPipelineAbstractClass):
     X_test: torch.Tensor = None
     y_test: torch.Tensor = None
 
-
-
     mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=windowed_signal_length, sample_rate=sample_rate, n_mel=num_mel_bands, hop_length=hop_length)
 
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
@@ -158,6 +156,32 @@ class VADPipeline(VADPipelineAbstractClass):
 
     def _preprocess_data(self) -> None:
         """Preprocesses the data stored under /data"""
+        preprocessed_dir = self.data_path / "preprocessed"
+        
+        # Check if preprocessed data already exists
+        preprocessed_files = [
+            preprocessed_dir / "VAD_X_train.pt",
+            preprocessed_dir / "VAD_y_train.pt",
+            preprocessed_dir / "VAD_X_valid.pt",
+            preprocessed_dir / "VAD_y_valid.pt",
+            preprocessed_dir / "VAD_X_test.pt",
+            preprocessed_dir / "VAD_y_test.pt",
+        ]
+        
+        if all(f.exists() for f in preprocessed_files):
+            self.logger.log("Preprocessed data already exists. Loading from disk...")
+            self.X_train = torch.load(preprocessed_files[0])
+            self.y_train = torch.load(preprocessed_files[1])
+            self.X_valid = torch.load(preprocessed_files[2])
+            self.y_valid = torch.load(preprocessed_files[3])
+            self.X_test = torch.load(preprocessed_files[4])
+            self.y_test = torch.load(preprocessed_files[5])
+            self.logger.log("Successfully loaded preprocessed data from disk.")
+            
+            self.tester.atest_preprocess_data(self)
+            self.logger.alog_preprocess_data(self)
+            return
+        
         train_root = self.data_path / "train"
         valid_root = self.data_path / "dev"
         test_root = self.data_path / "eval"
@@ -187,7 +211,7 @@ class VADPipeline(VADPipelineAbstractClass):
                     non_speech_count = (y_split == 0).sum().item()
                     total = len(y_split)
                     speech_ratio = speech_count / total if total > 0 else 0
-                    self.logger.log(f"  Speech samples: {speech_count}/{total} ({speech_ratio:.2%})")
+                    self.logger.log(f"Speech samples: {speech_count}/{total} ({speech_ratio:.2%})")
                     
                     assert X_split.shape[0] == y_split.shape[0], f"Mismatch: X has {X_split.shape[0]} samples, y has {y_split.shape[0]}"
                     assert X_split.shape[1:] == (self.num_mel_bands, self.num_mel_bands), f"Expected shape (*, {self.num_mel_bands}, {self.num_mel_bands}), got {X_split.shape}"
@@ -204,17 +228,29 @@ class VADPipeline(VADPipelineAbstractClass):
         self.X_valid, self.y_valid = _process_split(valid_root, self.n_valid)
         self.X_test,  self.y_test  = _process_split(test_root,  self.n_test)
 
+        # Save preprocessed data to disk
+        preprocessed_dir.mkdir(parents=True, exist_ok=True)
+        self.logger.log("Saving preprocessed data to disk...")
+        torch.save(self.X_train, preprocessed_files[0])
+        torch.save(self.y_train, preprocessed_files[1])
+        torch.save(self.X_valid, preprocessed_files[2])
+        torch.save(self.y_valid, preprocessed_files[3])
+        torch.save(self.X_test, preprocessed_files[4])
+        torch.save(self.y_test, preprocessed_files[5])
+        self.logger.log(f"Preprocessed data saved to {preprocessed_dir}")
+
         self.tester.atest_preprocess_data(self)
-        self.logger.alog_preprocess_data()
+        self.logger.alog_preprocess_data(self)
 
     def _split_data(self) -> None:
         """Splits data into train, validation, test sets"""
-        self.tester.btest_split_data()
+        self.tester.btest_split_data(self)
         self.logger.blog_split_data()
 
+        # the data is already split during preprocessing
         pass
 
-        self.tester.atest_split_data()
+        self.tester.atest_split_data(self)
         self.logger.alog_split_data()
 
     def _train(self) -> None:

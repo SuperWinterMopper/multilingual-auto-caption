@@ -1,6 +1,10 @@
 from ...common.PipelineStructure import PipelineLogger
 from ...common.logger import Logger
 from .VADPipelineAbstractClass import VADPipelineAbstractClass
+import librosa
+import datetime as datetime
+import Path
+import numpy as np
 
 class VADPipelineLogger(PipelineLogger):
     """
@@ -21,7 +25,7 @@ class VADPipelineLogger(PipelineLogger):
         self.log("Pipeline's tensors are set for training, validation, and testing datasets.")
 
     def blog_train(self) -> None:
-        ...
+        self.log("Beginning training process.")
 
     def blog_evaluate(self) -> None:
         ...
@@ -38,8 +42,14 @@ class VADPipelineLogger(PipelineLogger):
         self.log(f"Validation set size: {pipe.X_valid.shape[0]} samples")
         self.log(f"Test set size: {pipe.X_test.shape[0]} samples")
 
-    def alog_split_data(self) -> None:
+    def alog_split_data(self, pipe: VADPipelineAbstractClass) -> None:
         self.log("Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline")
+
+        train_samples = np.rint(np.random.rand(3, 3) * pipe.n_train).astype(int)
+        valid_samples = np.rint(np.random.rand(3, 3) * pipe.n_valid).astype(int)
+        test_samples  = np.rint(np.random.rand(3, 3) * pipe.n_test).astype(int)
+
+        
 
     def alog_train(self) -> None:
         ...

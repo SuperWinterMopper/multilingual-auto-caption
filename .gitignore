@@ -12,6 +12,7 @@ __pycache__/
 *.tar.tgz
 *.ogg
 LibriParty
+*.pt
 
 # Distribution / packaging
 .Python

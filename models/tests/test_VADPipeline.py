@@ -12,5 +12,5 @@ def test_preprocess():
 
     pipe.run_pipeline(collect_data=True, preprocess_data=True)
 
-    breakpoint()
     print(pipe.X_train.shape)
+

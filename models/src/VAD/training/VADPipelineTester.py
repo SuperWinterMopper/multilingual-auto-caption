@@ -36,8 +36,10 @@ class VADPipelineTester(PipelineTester):
         assert pipeline._gen_data_path(valid_root, pipeline.n_valid - 1).exists()
         assert pipeline._gen_data_path(test_root, pipeline.n_test - 1).exists()
 
-    def btest_split_data(self) -> None:
-        ...
+    def btest_split_data(self, pipe: VADPipelineAbstractClass) -> None:
+        assert pipe.X_train is not None and pipe.y_train is not None, "Training data not set"
+        assert pipe.X_valid is not None and pipe.y_valid is not None, "Validation data not set"
+        assert pipe.X_test is not None and pipe.y_test is not None, "Test data not set"
 
     def btest_train(self) -> None:
         ...
@@ -67,13 +69,26 @@ class VADPipelineTester(PipelineTester):
         assert eval_session_0.exists(), "Eval session 0 mixture does not exist: " + str(eval_session_0)
         assert train_session_0.exists(), "Train session 0 mixture does not exist: " + str(train_session_0)
 
-    def atest_preprocess_data(self, pipeline: VADPipelineAbstractClass) -> None:
-        assert pipeline.X_train is not None and pipeline.y_train is not None, "Training data not set"
-        assert pipeline.X_valid is not None and pipeline.y_valid is not None, "Validation data not set"
-        assert pipeline.X_test is not None and pipeline.y_test is not None, "Test data not set"
+    def atest_preprocess_data(self, pipe: VADPipelineAbstractClass) -> None:
+        assert pipe.X_train is not None and pipe.y_train is not None, "Training data not set"
+        assert pipe.X_valid is not None and pipe.y_valid is not None, "Validation data not set"
+        assert pipe.X_test is not None and pipe.y_test is not None, "Test data not set"
 
-    def atest_split_data(self) -> None:
-        ...
+        assert pipe.X_test.shape[0] == pipe.y_test.shape[0], "Test data size mismatch"
+        assert pipe.X_train.shape[0] == pipe.y_train.shape[0], "Train data size mismatch"
+        assert pipe.X_valid.shape[0] == pipe.y_valid.shape[0], "Validation data size mismatch"
+
+        for t in [pipe.X_test, pipe.X_train, pipe.X_valid]:
+            assert t.shape[1] == pipe.num_mel_bands and t.shape[2] == pipe.num_mel_bands, "Spectrogram tensors are not the right size of num_mel_bands x num_mel_bands"
+
+
+    def atest_split_data(self, pipe: VADPipelineAbstractClass) -> None:
+        margin_of_error = .05 # 5 percent error ok
+
+        assert abs(abs(pipe.X_train.shape[0] / pipe.X_valid.shape[0] - (pipe.n_train / pipe.n_valid)) < margin_of_error), "the difference in expected proportion of data between X_train and X_valid is too large."
+        assert abs(abs(pipe.X_train.shape[0] / pipe.X_test.shape[0] - (pipe.n_train / pipe.n_test)) < margin_of_error), "the difference in expected proportion of data between X_train and X_test is too large."
+        assert abs(abs(pipe.X_test.shape[0] / pipe.X_valid.shape[0] - (pipe.n_test / pipe.n_valid)) < margin_of_error), "the difference in expected proportion of data between X_test and X_valid is too large."
+        
 
     def atest_train(self) -> None:
         ...

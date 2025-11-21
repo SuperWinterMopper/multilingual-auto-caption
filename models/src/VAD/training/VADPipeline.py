@@ -41,6 +41,8 @@ class VADPipeline(VADPipelineAbstractClass):
     X_test: torch.Tensor = None
     y_test: torch.Tensor = None
 
+
+
     mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=windowed_signal_length, sample_rate=sample_rate, n_mel=num_mel_bands, hop_length=hop_length)
 
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
@@ -169,11 +171,28 @@ class VADPipeline(VADPipelineAbstractClass):
             sessions = sorted([p for p in root.iterdir() if p.is_dir() and p.name.startswith("session_")])
             if limit:
                 sessions = sessions[:limit]
-            for session_dir in sessions:
+            for i, session_dir in enumerate(sessions):
                 raw_id = int(session_dir.name.split("_")[1])
                 X_split, y_split = self._create_mel_spectrogram_data(root, raw_id)
                 X_parts.append(X_split)
                 Y_parts.append(y_split)
+                
+                if (i + 1) % 200 == 0 or (i + 1) == len(sessions):
+                    self.logger.log(f"Processed {i + 1}/{len(sessions)} sessions")
+                    
+                    self.logger.log(f"Latest X_split shape: {X_split.shape}, dtype: {X_split.dtype}")
+                    self.logger.log(f"Latest y_split shape: {y_split.shape}, dtype: {y_split.dtype}")
+                    
+                    speech_count = (y_split == 1).sum().item()
+                    non_speech_count = (y_split == 0).sum().item()
+                    total = len(y_split)
+                    speech_ratio = speech_count / total if total > 0 else 0
+                    self.logger.log(f"  Speech samples: {speech_count}/{total} ({speech_ratio:.2%})")
+                    
+                    assert X_split.shape[0] == y_split.shape[0], f"Mismatch: X has {X_split.shape[0]} samples, y has {y_split.shape[0]}"
+                    assert X_split.shape[1:] == (self.num_mel_bands, self.num_mel_bands), f"Expected shape (*, {self.num_mel_bands}, {self.num_mel_bands}), got {X_split.shape}"
+                    self.logger.log(f"Validation passed for session batch ending at {i + 1}")
+                    
             if not X_parts:
                 return None, None
             X_full = torch.cat(X_parts, dim=0)
@@ -185,7 +204,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.X_valid, self.y_valid = _process_split(valid_root, self.n_valid)
         self.X_test,  self.y_test  = _process_split(test_root,  self.n_test)
 
-        self.tester.atest_preprocess_data()
+        self.tester.atest_preprocess_data(self)
         self.logger.alog_preprocess_data()
 
     def _split_data(self) -> None:

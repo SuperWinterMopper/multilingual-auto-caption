@@ -1,68 +1,81 @@
-[2025-11-21 16:29:47] VAD | 0.03s: Data collection tests passed: data path exists.
-[2025-11-21 16:29:47] VAD | 0.03s: Dev, eval, and train directories are present.
-[2025-11-21 16:29:47] VAD | 0.03s: Sample session_0 mixture.wav files confirmed in each split.
-[2025-11-21 16:29:47] VAD | 0.03s: After data collection, verified that data path exists and some some content remains.
-[2025-11-21 16:29:47] VAD | 0.03s: Data collection tests passed: data path exists.
-[2025-11-21 16:29:47] VAD | 0.03s: Dev, eval, and train directories are present.
-[2025-11-21 16:29:47] VAD | 0.03s: Sample session_0 mixture.wav files confirmed in each split.
-[2025-11-21 16:29:47] VAD | 0.03s: After data collection, verified that data path exists and some some content remains.
-[2025-11-21 16:29:47] VAD | 0.03s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
-[2025-11-21 16:29:47] VAD | 23.58s: Processed 200/250 sessions
-[2025-11-21 16:29:47] VAD | 23.58s: Latest X_split shape: torch.Size([922, 40, 40]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 23.58s: Latest y_split shape: torch.Size([922, 1]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 23.58s: Speech samples: 711/922 (77.11%)
-[2025-11-21 16:29:47] VAD | 23.58s: Validation passed for session batch ending at 200
-[2025-11-21 16:29:47] VAD | 30.46s: Processed 250/250 sessions
-[2025-11-21 16:29:47] VAD | 30.46s: Latest X_split shape: torch.Size([883, 40, 40]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 30.46s: Latest y_split shape: torch.Size([883, 1]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 30.46s: Speech samples: 620/883 (70.22%)
-[2025-11-21 16:29:47] VAD | 30.46s: Validation passed for session batch ending at 250
-[2025-11-21 16:29:47] VAD | 35.81s: Processed 50/50 sessions
-[2025-11-21 16:29:47] VAD | 35.81s: Latest X_split shape: torch.Size([922, 40, 40]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 35.81s: Latest y_split shape: torch.Size([922, 1]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 35.81s: Speech samples: 476/922 (51.63%)
-[2025-11-21 16:29:47] VAD | 35.81s: Validation passed for session batch ending at 50
-[2025-11-21 16:29:47] VAD | 40.22s: Processed 50/50 sessions
-[2025-11-21 16:29:47] VAD | 40.22s: Latest X_split shape: torch.Size([934, 40, 40]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 40.22s: Latest y_split shape: torch.Size([934, 1]), dtype: torch.float32
-[2025-11-21 16:29:47] VAD | 40.22s: Speech samples: 569/934 (60.92%)
-[2025-11-21 16:29:47] VAD | 40.22s: Validation passed for session batch ending at 50
-[2025-11-21 16:29:47] VAD | 40.38s: Finished preprocessing data into MFSC spectrograms of size 40x40
-[2025-11-21 16:29:47] VAD | 40.38s: Training set size: 226699 samples
-[2025-11-21 16:29:47] VAD | 40.38s: Validation set size: 45461 samples
-[2025-11-21 16:29:47] VAD | 40.38s: Test set size: 45068 samples
-[2025-11-21 16:35:05] VAD | 0.03s: Data collection tests passed: data path exists.
-[2025-11-21 16:35:05] VAD | 0.03s: Dev, eval, and train directories are present.
-[2025-11-21 16:35:05] VAD | 0.03s: Sample session_0 mixture.wav files confirmed in each split.
-[2025-11-21 16:35:05] VAD | 0.03s: After data collection, verified that data path exists and some some content remains.
-[2025-11-21 16:35:05] VAD | 0.03s: Data collection tests passed: data path exists.
-[2025-11-21 16:35:05] VAD | 0.04s: Dev, eval, and train directories are present.
-[2025-11-21 16:35:05] VAD | 0.04s: Sample session_0 mixture.wav files confirmed in each split.
-[2025-11-21 16:35:05] VAD | 0.04s: After data collection, verified that data path exists and some some content remains.
-[2025-11-21 16:35:05] VAD | 0.04s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
-[2025-11-21 16:35:05] VAD | 23.95s: Processed 200/250 sessions
-[2025-11-21 16:35:05] VAD | 23.95s: Latest X_split shape: torch.Size([922, 40, 40]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 23.95s: Latest y_split shape: torch.Size([922, 1]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 23.95s: Speech samples: 711/922 (77.11%)
-[2025-11-21 16:35:05] VAD | 23.95s: Validation passed for session batch ending at 200
-[2025-11-21 16:35:05] VAD | 29.92s: Processed 250/250 sessions
-[2025-11-21 16:35:05] VAD | 29.92s: Latest X_split shape: torch.Size([883, 40, 40]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 29.92s: Latest y_split shape: torch.Size([883, 1]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 29.92s: Speech samples: 620/883 (70.22%)
-[2025-11-21 16:35:05] VAD | 29.92s: Validation passed for session batch ending at 250
-[2025-11-21 16:35:05] VAD | 120.23s: Processed 50/50 sessions
-[2025-11-21 16:35:05] VAD | 120.23s: Latest X_split shape: torch.Size([922, 40, 40]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 120.23s: Latest y_split shape: torch.Size([922, 1]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 120.23s: Speech samples: 476/922 (51.63%)
-[2025-11-21 16:35:05] VAD | 120.23s: Validation passed for session batch ending at 50
-[2025-11-21 16:35:05] VAD | 131.29s: Processed 50/50 sessions
-[2025-11-21 16:35:05] VAD | 131.29s: Latest X_split shape: torch.Size([934, 40, 40]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 131.29s: Latest y_split shape: torch.Size([934, 1]), dtype: torch.float32
-[2025-11-21 16:35:05] VAD | 131.29s: Speech samples: 569/934 (60.92%)
-[2025-11-21 16:35:05] VAD | 131.29s: Validation passed for session batch ending at 50
-[2025-11-21 16:35:05] VAD | 131.43s: Finished preprocessing data into MFSC spectrograms of size 40x40
-[2025-11-21 16:35:05] VAD | 131.43s: Training set size: 226699 samples
-[2025-11-21 16:35:05] VAD | 131.43s: Validation set size: 45461 samples
-[2025-11-21 16:35:05] VAD | 131.43s: Test set size: 45068 samples
-[2025-11-21 16:35:05] VAD | 131.43s: Pipeline's tensors are set for training, validation, and testing datasets.
-[2025-11-21 16:35:05] VAD | 131.43s: Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline
+[2025-11-21 17:15:42] VAD | 0.11s: Data collection tests passed: data path exists.
+[2025-11-21 17:15:42] VAD | 0.11s: Dev, eval, and train directories are present.
+[2025-11-21 17:15:42] VAD | 0.11s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-11-21 17:15:42] VAD | 0.11s: After data collection, verified that data path exists and some some content remains.
+[2025-11-21 17:15:42] VAD | 0.11s: Checked that valid, test, and training data paths exists, including the first and last data for each of valid, test, and training datasets
+[2025-11-21 17:15:42] VAD | 27.12s: Processed 200/250 sessions
+[2025-11-21 17:15:42] VAD | 27.12s: Latest X_split shape: torch.Size([922, 40, 40]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 27.12s: Latest y_split shape: torch.Size([922, 1]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 27.12s: Speech samples: 711/922 (77.11%)
+[2025-11-21 17:15:42] VAD | 27.12s: Validation passed for session batch ending at 200
+[2025-11-21 17:15:42] VAD | 33.98s: Processed 250/250 sessions
+[2025-11-21 17:15:42] VAD | 33.98s: Latest X_split shape: torch.Size([883, 40, 40]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 33.98s: Latest y_split shape: torch.Size([883, 1]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 33.98s: Speech samples: 620/883 (70.22%)
+[2025-11-21 17:15:42] VAD | 33.98s: Validation passed for session batch ending at 250
+[2025-11-21 17:15:42] VAD | 40.05s: Processed 50/50 sessions
+[2025-11-21 17:15:42] VAD | 40.05s: Latest X_split shape: torch.Size([922, 40, 40]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 40.05s: Latest y_split shape: torch.Size([922, 1]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 40.05s: Speech samples: 476/922 (51.63%)
+[2025-11-21 17:15:42] VAD | 40.05s: Validation passed for session batch ending at 50
+[2025-11-21 17:15:42] VAD | 71.46s: Processed 50/50 sessions
+[2025-11-21 17:15:42] VAD | 71.46s: Latest X_split shape: torch.Size([934, 40, 40]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 71.46s: Latest y_split shape: torch.Size([934, 1]), dtype: torch.float32
+[2025-11-21 17:15:42] VAD | 71.46s: Speech samples: 569/934 (60.92%)
+[2025-11-21 17:15:42] VAD | 71.46s: Validation passed for session batch ending at 50
+[2025-11-21 17:15:42] VAD | 118.53s: Saving preprocessed data to disk...
+[2025-11-21 17:15:42] VAD | 264.20s: Preprocessed data saved to /home/afkhe/multilingual-auto-caption/models/src/VAD/data/LibriParty/dataset/preprocessed
+[2025-11-21 17:15:42] VAD | 264.21s: Finished preprocessing data into MFSC spectrograms of size 40x40
+[2025-11-21 17:15:42] VAD | 264.21s: Training set size: 226699 samples
+[2025-11-21 17:15:42] VAD | 264.21s: Validation set size: 45461 samples
+[2025-11-21 17:15:42] VAD | 264.21s: Test set size: 45068 samples
+[2025-11-21 17:15:42] VAD | 264.21s: Pipeline's tensors are set for training, validation, and testing datasets.
+[2025-12-03 19:22:19] VAD | 0.05s: Data collection tests passed: data path exists.
+[2025-12-03 19:22:19] VAD | 0.05s: Dev, eval, and train directories are present.
+[2025-12-03 19:22:19] VAD | 0.05s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-03 19:22:19] VAD | 0.05s: After data collection, verified that data path exists and some some content remains.
+[2025-12-03 19:22:19] VAD | 0.05s: Preprocessed data already exists. Loading from disk...
+[2025-12-03 19:22:19] VAD | 2.21s: Successfully loaded preprocessed data from disk.
+[2025-12-03 19:22:19] VAD | 2.21s: Finished preprocessing data into MFSC spectrograms of size 40x40
+[2025-12-03 19:22:19] VAD | 2.21s: Training set size: 226699 samples
+[2025-12-03 19:22:19] VAD | 2.21s: Validation set size: 45461 samples
+[2025-12-03 19:22:19] VAD | 2.21s: Test set size: 45068 samples
+[2025-12-03 19:22:19] VAD | 2.21s: Pipeline's tensors are set for training, validation, and testing datasets.
+[2025-12-03 19:58:03] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-12-03 19:58:03] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-12-03 19:58:03] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-03 19:58:03] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-12-03 19:58:22] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-12-03 19:58:22] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-12-03 19:58:22] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-03 19:58:22] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-12-03 19:58:22] VAD | 0.01s: Preprocessed data already exists. Loading from disk...
+[2025-12-03 19:58:22] VAD | 4.42s: Successfully loaded preprocessed data from disk.
+[2025-12-03 19:58:22] VAD | 4.42s: Finished preprocessing data into MFSC spectrograms of size 40x40
+[2025-12-03 19:58:22] VAD | 4.42s: Training set size: 226699 samples
+[2025-12-03 19:58:22] VAD | 4.42s: Validation set size: 45461 samples
+[2025-12-03 19:58:22] VAD | 4.42s: Test set size: 45068 samples
+[2025-12-03 19:58:22] VAD | 4.42s: Pipeline's tensors are set for training, validation, and testing datasets.
+[2025-12-03 19:59:15] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-12-03 19:59:15] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-12-03 19:59:15] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-03 19:59:15] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-12-03 19:59:45] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-12-03 19:59:45] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-12-03 19:59:45] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-03 19:59:45] VAD | 0.01s: After data collection, verified that data path exists and some some content remains.
+[2025-12-03 19:59:45] VAD | 0.01s: Data collection tests passed: data path exists.
+[2025-12-03 19:59:45] VAD | 0.01s: Dev, eval, and train directories are present.
+[2025-12-03 19:59:45] VAD | 0.01s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-03 19:59:45] VAD | 0.02s: After data collection, verified that data path exists and some some content remains.
+[2025-12-03 19:59:45] VAD | 0.02s: Preprocessed data already exists. Loading from disk...
+[2025-12-03 19:59:45] VAD | 1.26s: Successfully loaded preprocessed data from disk.
+[2025-12-03 19:59:45] VAD | 1.26s: Finished preprocessing data into MFSC spectrograms of size 40x40
+[2025-12-03 19:59:45] VAD | 1.26s: Training set size: 226699 samples
+[2025-12-03 19:59:45] VAD | 1.26s: Validation set size: 45461 samples
+[2025-12-03 19:59:45] VAD | 1.26s: Test set size: 45068 samples
+[2025-12-03 19:59:45] VAD | 1.26s: Pipeline's tensors are set for training, validation, and testing datasets.
+[2025-12-03 19:59:45] VAD | 1.26s: Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline
+[2025-12-03 19:59:45] VAD | 1.92s: Saved spectrogram visualization to /home/afkhe/multilingual-auto-caption/models/src/common/train_spectrograms_labels_1_1_1_1.png
+[2025-12-03 19:59:45] VAD | 2.44s: Saved spectrogram visualization to /home/afkhe/multilingual-auto-caption/models/src/common/valid_spectrograms_labels_1_1_1_0.png
+[2025-12-03 19:59:45] VAD | 2.98s: Saved spectrogram visualization to /home/afkhe/multilingual-auto-caption/models/src/common/test_spectrograms_labels_0_0_0_0.png

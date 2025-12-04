@@ -79,17 +79,15 @@ class VADPipelineTester(PipelineTester):
         assert pipe.X_valid.shape[0] == pipe.y_valid.shape[0], "Validation data size mismatch"
 
         for t in [pipe.X_test, pipe.X_train, pipe.X_valid]:
-            assert t.shape[1] == pipe.num_mel_bands and t.shape[2] == pipe.num_mel_bands, "Spectrogram tensors are not the right size of num_mel_bands x num_mel_bands"
-
+            assert t.shape[1] == t.shape[2] == pipe.num_mel_bands, "Spectrogram tensors are not the right size of num_mel_bands x num_mel_bands"
 
     def atest_split_data(self, pipe: VADPipelineAbstractClass) -> None:
         margin_of_error = .05 # 5 percent error ok
 
         assert abs(abs(pipe.X_train.shape[0] / pipe.X_valid.shape[0] - (pipe.n_train / pipe.n_valid)) < margin_of_error), "the difference in expected proportion of data between X_train and X_valid is too large."
         assert abs(abs(pipe.X_train.shape[0] / pipe.X_test.shape[0] - (pipe.n_train / pipe.n_test)) < margin_of_error), "the difference in expected proportion of data between X_train and X_test is too large."
-        assert abs(abs(pipe.X_test.shape[0] / pipe.X_valid.shape[0] - (pipe.n_test / pipe.n_valid)) < margin_of_error), "the difference in expected proportion of data between X_test and X_valid is too large."
+        assert abs(abs(pipe.X_test.shape[0] / pipe.X_train.shape[0] - (pipe.n_test / pipe.n_train)) < margin_of_error), "the difference in expected proportion of data between X_test and X_train is too large."
         
-
     def atest_train(self) -> None:
         ...
 

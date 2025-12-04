@@ -1,9 +1,7 @@
 from ...common.PipelineStructure import PipelineLogger
 from ...common.logger import Logger
 from .VADPipelineAbstractClass import VADPipelineAbstractClass
-import librosa
 import datetime as datetime
-import Path
 import numpy as np
 
 class VADPipelineLogger(PipelineLogger):
@@ -45,12 +43,32 @@ class VADPipelineLogger(PipelineLogger):
     def alog_split_data(self, pipe: VADPipelineAbstractClass) -> None:
         self.log("Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline")
 
-        train_samples = np.rint(np.random.rand(3, 3) * pipe.n_train).astype(int)
-        valid_samples = np.rint(np.random.rand(3, 3) * pipe.n_valid).astype(int)
-        test_samples  = np.rint(np.random.rand(3, 3) * pipe.n_test).astype(int)
-
+        train_samples = np.rint(np.random.rand(2, 2) * pipe.n_train).astype(int)
+        valid_samples = np.rint(np.random.rand(2, 2) * pipe.n_valid).astype(int)
+        test_samples  = np.rint(np.random.rand(2, 2) * pipe.n_test).astype(int)
         
-
+        # Flatten the sample indices and use them to extract spectrograms
+        train_indices = train_samples.flatten()
+        valid_indices = valid_samples.flatten()
+        test_indices = test_samples.flatten()
+        
+        # Extract the sampled spectrograms and their labels
+        train_specs = pipe.X_train[train_indices]
+        train_labels = pipe.y_train[train_indices]
+        valid_specs = pipe.X_valid[valid_indices]
+        valid_labels = pipe.y_valid[valid_indices]
+        test_specs = pipe.X_test[test_indices]
+        test_labels = pipe.y_test[test_indices]
+        
+        # Log spectrograms with labels in the filename
+        train_label_str = '_'.join([str(int(label.item())) for label in train_labels])
+        valid_label_str = '_'.join([str(int(label.item())) for label in valid_labels])
+        test_label_str = '_'.join([str(int(label.item())) for label in test_labels])
+        
+        self.logger.log_spectrogram(train_specs, f"train_spectrograms_labels_{train_label_str}", pipe.num_mel_bands)
+        self.logger.log_spectrogram(valid_specs, f"valid_spectrograms_labels_{valid_label_str}", pipe.num_mel_bands)
+        self.logger.log_spectrogram(test_specs, f"test_spectrograms_labels_{test_label_str}", pipe.num_mel_bands)
+    
     def alog_train(self) -> None:
         ...
 

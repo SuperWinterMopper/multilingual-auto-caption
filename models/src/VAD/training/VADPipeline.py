@@ -2,6 +2,7 @@ from ...common.PipelineStructure import PipelineLogger, PipelineTester
 from ...common.logger import Logger
 from pathlib import Path
 from .VADPipelineAbstractClass import VADPipelineAbstractClass
+from typing import ClassVar
 
 from .VADPipelineTester import VADPipelineTester
 from .VADPipelineLogger import VADPipelineLogger
@@ -26,7 +27,7 @@ class VADPipeline(VADPipelineAbstractClass):
 
     windowed_signal_length: int = 512
     sample_rate: int = 16000
-    num_mel_bands: int = 40
+    num_mel_bands: ClassVar[int] = 40
     overlap: int = 2
     hop_length: int = windowed_signal_length // overlap
 
@@ -251,7 +252,7 @@ class VADPipeline(VADPipelineAbstractClass):
         pass
 
         self.tester.atest_split_data(self)
-        self.logger.alog_split_data()
+        self.logger.alog_split_data(self)
 
     def _train(self) -> None:
         """Training method"""

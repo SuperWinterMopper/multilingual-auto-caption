@@ -4,3 +4,4 @@ def test_basic():
     pipe = SLIDPipeline()
 
     assert 4 == 4, "something wrong"
+    

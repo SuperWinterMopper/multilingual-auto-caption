@@ -1,5 +1,4 @@
 # Models
-
 This directory contains each model (VAD, SLID, ASR) and its training infrastructure and weights. 
 
 Note: All run commands inside subdirectories assume you're running from `/models` directory
@@ -10,7 +9,8 @@ Note: All run commands inside subdirectories assume you're running from `/models
 1. cd into the models directory: `cd models`
 2. Have poetry installed, or install with `pip install poetry`
 3. Run poetry to install dependencies: `poetry install`
-4. Activate the virtual environment: `source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
+4. Activate your environment: `poetry env activate`
+5. Verify your environment is activated: `poetry env info` 
 
 ### Data Downloading
 1. cd into the Meta research VoxPopuli data downloader: `cd src/SLID/data/external/voxpopuli`

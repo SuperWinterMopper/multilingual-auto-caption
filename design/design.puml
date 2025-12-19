@@ -88,21 +88,71 @@ Backend.LIDModule --> Models.LID
 Backend.CaptionPipeline --> Models.Language
 
 package Models {
-    +class VAD {
+    +class VADPipeline {
         
     }
-    +class LID {
+    +class LIDPipeline {
 
     }
-    +class ASR {
+    +class ASRPipeline {
 
     }
     +class Language {
         +name: str 
         +value: int
     }
+
+    +abstract class ModelPipeline {
+        +ModelPipelineTester: PipelineTester
+        +ModelPipelineLogger: PipelineLogger
+
+        +run_pipeline(collect_data: bool, preprocess_data: bool, split_data: bool, train: bool, evaluate: bool, save_model: bool): void
+        -collect_data(): void
+        -preprocess_data(): void
+        -split_data(): void
+        -train(): void
+        -evaluate(): void
+        -save_model(): void
+
+        -fail(text: str): void
+    }
+
+    +abstract class PipelineLogger {
+        +blog_collect_data(): void
+        +blog_preprocess_data(): void
+        +blog_split_data(): void
+        +blog_train(): void
+        +blog_evaluate(): void
+        +blog_save_model(): void
+
+        +alog_collect_data(): void
+        +alog_preprocess_data(): void
+        +alog_split_data(): void
+        +alog_train(): void
+        +alog_evaluate(): void
+        +alog_save_model(): void
+    }
+
+    +abstract class PipelineTester {
+        +btest_collect_data(): void 
+        +btest_preprocess_data(): void
+        +btest_split_data(): void
+        +btest_train(): void
+        +btest_evaluate(): void
+        +btest_save_model(): void
+
+        +atest_collect_data(): void
+        +atest_preprocess_data(): void
+        +atest_split_data(): void
+        +atest_train(): void
+        +atest_evaluate(): void
+        +atest_save_model(): void
+    }
 }
+Models.ModelPipeline --> Models.PipelineTester
+Models.ModelPipeline --> Models.PipelineLogger
 
-
+Models.PipelineTester ..> Models.ModelPipeline
+Models.PipelineLogger ..> Models.ModelPipeline
 
 @enduml

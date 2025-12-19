@@ -46,7 +46,6 @@ class VADPipeline(VADPipelineAbstractClass):
 
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
         """Run the model with the specified steps involved"""
-
         if collect_data:
             self._collect_data()
         if preprocess_data:
@@ -67,6 +66,7 @@ class VADPipeline(VADPipelineAbstractClass):
 
         # data is locally stored currently
         pass
+        
 
         self.tester.atest_collect_data(self)
         self.logger.alog_collect_data()

@@ -64,9 +64,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.tester.btest_collect_data(self)
         self.logger.blog_collect_data()
 
-        # data is locally stored currently
         pass
-        
 
         self.tester.atest_collect_data(self)
         self.logger.alog_collect_data()

@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 from pathlib import Path
 
 class VADModelTrainer:
-    def __init__(self, model, train_ds_path, valid_ds_path, loss_fn, optimizer, logger, batch_size):
+    def __init__(self, model, train_ds_path, valid_ds_path, test_ds_path, loss_fn, optimizer, logger, batch_size):
         self.model = model
         self.loss_fn = loss_fn
         self.optimizer = optimizer
@@ -12,14 +12,18 @@ class VADModelTrainer:
         
         self.train_ds_path = train_ds_path
         self.valid_ds_path = valid_ds_path
+        self.test_ds_path = test_ds_path
         
         try:
             assert Path(self.train_ds_path).is_file(), f"Training dataset file not found at {self.train_ds_path}"
             assert Path(self.valid_ds_path).is_file(), f"Validation dataset file not found at {self.valid_ds_path}"
+            assert Path(self.test_ds_path).is_file(), f"Test dataset file not found at {self.test_ds_path}"
             train_ds = torch.load(self.train_ds_path)
             valid_ds = torch.load(self.valid_ds_path)
+            test_ds = torch.load(self.test_ds_path)
             self.train_dl = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
             self.valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, shuffle=False)
+            self.test_dl = DataLoader(test_ds, batch_size=self.batch_size, shuffle=False)
         except Exception as e:
             self.logger.log(f"Error loading .pt files at {self.train_ds_path} or {self.valid_ds_path}: {e}")
             raise
@@ -59,4 +63,25 @@ class VADModelTrainer:
         except Exception as e:
             self.logger.log(f"Error during training: {e}")
             self.logger.log_training_graph(train_acc_hist, valid_acc_hist)
+            raise
+    
+    def evaluate(self):
+        self.model.eval()
+        test_acc = 0.0
+        tot_samples = 0
+        with torch.no_grad():
+            for x_batch, y_batch in self.test_dl:
+                pred = self.model(x_batch)[:, 0]
+                is_correct = ((pred>=0.5).float() == y_batch).float()
+                test_acc += is_correct.sum()
+                tot_samples += y_batch.size(0)
+        test_acc /= tot_samples
+        self.logger.log(f"Test Accuracy: {test_acc:.4f}")
+        
+    def save_model(self, save_path: Path) -> None:
+        try:
+            torch.save(self.model.state_dict(), save_path)
+            self.logger.log(f"Model weights saved to {save_path}")
+        except Exception as e:
+            self.logger.log(f"Error saving model weights to {save_path}: {e}")
             raise

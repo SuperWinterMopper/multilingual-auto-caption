@@ -61,8 +61,8 @@ class VADPipelineTester(PipelineTester):
         missing = [str(p) for p in pipeline.preprocessed_files if not p.exists()]
         assert not missing, f"Missing preprocessed .pt files: {missing}"
         
-    def btest_evaluate(self, pipeline=None) -> None:
-        ...
+    def btest_evaluate(self, pipeline) -> None:
+        assert pipeline.preprocessed_files[2].exists(), f"VAD_test_ds.pt file not found at {pipeline.preprocessed_files[2]}"
 
     def btest_save_model(self, pipeline=None) -> None:
         ...
@@ -110,10 +110,10 @@ class VADPipelineTester(PipelineTester):
         
     def atest_train(self, pipeline) -> None:
         assert pipeline.trainer is not None, "Trainer is not initialized."
-        
+        assert pipeline.logger.vad_accuracy_history_plot_path.exists(), "Accuracy history plot was not saved: " + str(pipeline.logger.vad_accuracy_history_plot_path)
 
     def atest_evaluate(self, pipeline=None) -> None:
-        ...
+        pass
 
     def atest_save_model(self, pipeline=None) -> None:
         ...

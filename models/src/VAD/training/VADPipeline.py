@@ -33,6 +33,7 @@ class VADPipeline(VADPipelineAbstractClass):
     ]
     
     model: VADModel = VADModel(logger=logger)
+    model_weight_save_path = data_path / "vad_model.pth"
     
     windowed_signal_length: int = 512
     sample_rate: int = 16000
@@ -264,6 +265,7 @@ class VADPipeline(VADPipelineAbstractClass):
             optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001),
             train_ds_path = str(self.preprocessed_files[0]),
             valid_ds_path = str(self.preprocessed_files[1]),
+            test_ds_path = str(self.preprocessed_files[2]),
             batch_size = 32
         )
         
@@ -277,21 +279,17 @@ class VADPipeline(VADPipelineAbstractClass):
         self.tester.btest_evaluate(self)
         self.logger.blog_evaluate()
         
-        
+        self.trainer.evaluate()
         
         self.tester.atest_evaluate(self)
         self.logger.alog_evaluate()
 
     def _save_model(self) -> None:
         """Saves model weights"""
-        self.tester.btest_save_model()
+        self.tester.btest_save_model(self)
         self.logger.blog_save_model()
 
-        pass
+        self.trainer.save_model(self.model_weight_save_path)
 
         self.tester.atest_save_model(self)
         self.logger.alog_save_model()
-
-    def _fail(self, text: str) -> None:
-        """Failure method"""
-        ...

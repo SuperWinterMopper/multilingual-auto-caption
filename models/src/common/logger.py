@@ -9,9 +9,12 @@ class Logger(BaseModel):
     name: str
     t_start: float = Field(default_factory=time.perf_counter)
     start_time: str = Field(default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    
+    output_path_root: Path = Path(__file__).resolve().parent
+    vad_accuracy_history_plot_path: Path = output_path_root / "vad_accuracy_history.png"
 
     def log(self, text):
-        path = Path(__file__).resolve().parent / f"{self.name}.txt"
+        path = self.output_path_root / f"{self.name}.txt"
         with open(path, "a", encoding="utf-8") as f:
             f.write(f"[{self.start_time}] {self.name} | {(time.perf_counter() - self.t_start):.2f}s: {text}\n")
     
@@ -35,7 +38,7 @@ class Logger(BaseModel):
         
         plt.tight_layout()
         
-        output_path = Path(__file__).resolve().parent / f"{name}.png"
+        output_path = self.output_path_root / f"{name}.png"
         plt.savefig(output_path, dpi=150, bbox_inches='tight')
         plt.close(fig)
         
@@ -55,7 +58,7 @@ class Logger(BaseModel):
         ax.legend()
         fig.tight_layout()
 
-        output_path = Path(__file__).resolve().parent / "vad_accuracy_history.png"
+        output_path = self.vad_accuracy_history_plot_path
         fig.savefig(output_path, dpi=150, bbox_inches="tight")
         plt.close(fig)
         

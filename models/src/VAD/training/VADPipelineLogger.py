@@ -27,7 +27,7 @@ class VADPipelineLogger(PipelineLogger):
         self.log("Beginning training process.")
 
     def blog_evaluate(self) -> None:
-        ...
+        self.log("Beginning model evaluation.")
 
     def blog_save_model(self) -> None:
         ...
@@ -74,13 +74,13 @@ class VADPipelineLogger(PipelineLogger):
         self.logger.log_spectrogram(test_specs, f"test_spectrograms_labels_{test_label_str}", pipe.num_mel_bands)
     
     def alog_train(self) -> None:
-        ...
+        self.logger.log("Training process completed successfully, history saved to logger.")
 
     def alog_evaluate(self) -> None:
-        ...
+        self.log("Model evaluation completed.")
 
     def alog_save_model(self) -> None:
-        ...
+        self.log("Saving model weights.")
 
     def log(self, text: str) -> None:
         self.logger.log(text=text)

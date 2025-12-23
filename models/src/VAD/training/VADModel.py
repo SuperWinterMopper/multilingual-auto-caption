@@ -1,7 +1,96 @@
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader
+from pathlib import Path
+import matplotlib.pyplot as plt
 
-def create_vad_model() -> nn.Module:
-    model = nn.Sequential()
+class VADModel(nn.Module):
+    def __init__(self, logger, train_ds_path: str, valid_ds_path: str):
+        super().__init__()
+        self.model = self._create_model()
+        self.loss_fn = nn.BCELoss()
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
+        self.batch_size = 32
+        self.logger = logger
+        self.train_ds_path = train_ds_path
+        self.valid_ds_path = valid_ds_path
+        
+        try:
+            assert Path(self.train_ds_path).is_file(), f"Training dataset file not found at {self.train_ds_path}"
+            assert Path(self.valid_ds_path).is_file(), f"Validation dataset file not found at {self.valid_ds_path}"
+            train_ds = torch.load(self.train_ds_path)
+            valid_ds = torch.load(self.valid_ds_path)
+            self.train_dl = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
+            self.valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, shuffle=False)
+        except Exception as e:
+            self.logger.log(f"Error loading .pt files at {self.train_ds_path} or {self.valid_ds_path}: {e}")
+            raise 
+    
+    def _create_model(self) -> nn.Module:
+        model = nn.Sequential()
+        
+        # convolutional layer 1
+        model.add_module(name='conv1', module=nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, padding=1))
+        model.add_module(name='relu1', module=nn.ReLU())
+        model.add_module(name='pool1', module=nn.MaxPool2d(kernel_size=2))
+        model.add_module('dropout1', module=nn.Dropout(p=.5))
 
-    return model
+        model.add_module(name='conv2', module=nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1))
+        model.add_module(name='relu2', module=nn.ReLU())
+        model.add_module(name='pool2', module=nn.MaxPool2d(kernel_size=2))
+        model.add_module('dropout2', module=nn.Dropout(p=.5))
+
+        model.add_module(name='conv3', module=nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1))
+        model.add_module('relu3', module=nn.ReLU())        
+        model.add_module('pool3', module=nn.MaxPool2d(kernel_size=2))   
+
+        model.add_module(name='conv4', module=nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1))
+        model.add_module(name='relu4', module=nn.ReLU())
+        
+        model.add_module(name='pool4', module=nn.AvgPool2d(kernel_size=5))
+        model.add_module(name='flatten', module=nn.Flatten())
+
+        model.add_module(name='fc', module=nn.Linear(in_features=256, out_features=1))
+        model.add_module(name='sigmoid', module=nn.Sigmoid())
+
+        return model
+    
+    def _forward(self, x):
+        return self.model(x)
+
+    def train(self, num_epochs: int = 20):
+        train_acc_hist = [0.0] * num_epochs
+        valid_acc_hist = [0.0] * num_epochs
+
+        try:
+            for epoch in range(num_epochs):
+                self.model.train()
+                total_samples = 0
+                for x_batch, y_batch in self.train_dl:
+                    pred = self.model(x_batch)[:, 0]
+                    loss = self.loss_fn(pred, y_batch.float())
+                    loss.backward()
+                    self.optimizer.step()
+                    self.optimizer.zero_grad()
+
+                    is_correct = ((pred >= .5).float() == y_batch).float()
+                    train_acc_hist[epoch] += float(is_correct.sum().item())
+                    total_samples += y_batch.size(0)
+                train_acc_hist[epoch] /= total_samples
+                        
+                self.model.eval()
+                with torch.no_grad():
+                    total_samples = 0
+                    for x_batch, y_batch in self.valid_dl:
+                        pred = self.model(x_batch)[:, 0]
+                        is_correct = ((pred>=0.5).float() == y_batch).float()
+                        valid_acc_hist[epoch] += float(is_correct.sum().item())
+                        total_samples += y_batch.size(0)
+                valid_acc_hist[epoch] /= total_samples
+
+                self.logger.log(f"Epoch {epoch + 1}/{num_epochs} - Train Acc: {train_acc_hist[epoch]:.4f}, Valid Acc: {valid_acc_hist[epoch]:.4f}")
+            self.logger.log_training_graph(train_acc_hist, valid_acc_hist)
+        except Exception as e:
+            self.logger.log(f"Error during training: {e}")
+            self.logger.log_training_graph(train_acc_hist, valid_acc_hist)
+            raise

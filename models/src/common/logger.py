@@ -40,3 +40,23 @@ class Logger(BaseModel):
         plt.close(fig)
         
         self.log(f"Saved spectrogram visualization to {output_path}")
+    
+    def log_training_graph(self, train_acc_hist, valid_acc_hist):
+        epochs = list(range(1, len(train_acc_hist) + 1))
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.plot(epochs, train_acc_hist, label="Train")
+        ax.plot(epochs, valid_acc_hist, label="Validation")
+        ax.set_xlabel("Epoch")
+        ax.set_ylabel("Accuracy")
+        ax.set_title("Training / Validation Accuracy")
+        ax.set_ylim(0.0, 1.0)
+        ax.grid(True, alpha=0.3)
+        ax.legend()
+        fig.tight_layout()
+
+        output_path = Path(__file__).resolve().parent / "vad_accuracy_history.png"
+        fig.savefig(output_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        
+        self.log(f"Saved training accuracy history plot to {output_path}")

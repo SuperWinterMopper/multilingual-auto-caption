@@ -214,7 +214,7 @@ class VADPipeline(VADPipelineAbstractClass):
                     
                     assert X_split.shape[0] == y_split.shape[0], f"Mismatch: X has {X_split.shape[0]} samples, y has {y_split.shape[0]}"
                     assert X_split.shape[1:] == (self.num_mel_bands, self.num_mel_bands), f"Expected shape (*, {self.num_mel_bands}, {self.num_mel_bands}), got {X_split.shape}"
-                    self.logger.log(f"Validation passed for session batch ending at {i + 1}")
+                    self.logger.log(f"Validation passed for session `batch` ending at {i + 1}")
                     
             if not X_parts:
                 return None, None

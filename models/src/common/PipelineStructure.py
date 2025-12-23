@@ -117,7 +117,7 @@ class PipelineTester(pydantic.BaseModel, abc.ABC):
         ...
 
     @abc.abstractmethod
-    def atest_preprocess_data(self) -> None:
+    def  atest_preprocess_data(self) -> None:
         ...
 
     @abc.abstractmethod

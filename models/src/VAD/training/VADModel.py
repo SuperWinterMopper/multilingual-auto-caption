@@ -2,29 +2,15 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 class VADModel(nn.Module):
-    def __init__(self, logger, train_ds_path: str, valid_ds_path: str):
+    def __init__(self, logger):
         super().__init__()
         self.model = self._create_model()
         self.loss_fn = nn.BCELoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
         self.batch_size = 32
         self.logger = logger
-        self.train_ds_path = train_ds_path
-        self.valid_ds_path = valid_ds_path
-        
-        try:
-            assert Path(self.train_ds_path).is_file(), f"Training dataset file not found at {self.train_ds_path}"
-            assert Path(self.valid_ds_path).is_file(), f"Validation dataset file not found at {self.valid_ds_path}"
-            train_ds = torch.load(self.train_ds_path)
-            valid_ds = torch.load(self.valid_ds_path)
-            self.train_dl = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
-            self.valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, shuffle=False)
-        except Exception as e:
-            self.logger.log(f"Error loading .pt files at {self.train_ds_path} or {self.valid_ds_path}: {e}")
-            raise
     
     def _create_model(self) -> nn.Module:
         model = nn.Sequential()

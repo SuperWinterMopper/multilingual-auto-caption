@@ -7,9 +7,10 @@ from typing import ClassVar
 from .VADPipelineTester import VADPipelineTester
 from .VADPipelineLogger import VADPipelineLogger
 from .MelSpecPipeline import MelSpecPipeline
+from .VADModel import VADModel
+from .VADModelTrainer import VADModelTrainer
 
 import torch
-from torch.utils.data import TensorDataset, DataLoader
 from torchcodec.decoders import AudioDecoder
 import json 
 from json import JSONDecodeError
@@ -19,30 +20,33 @@ class VADPipeline(VADPipelineAbstractClass):
     """
     VAD model training pipeline.
     """
+    
+    def __init__(self, model: VADModel, trainer: VADModelTrainer) -> None:
+        self.tester: PipelineTester = VADPipelineTester()
+        self.logger: PipelineLogger = VADPipelineLogger(logger=Logger(name="VAD"))
 
-    tester: PipelineTester = VADPipelineTester()
-    logger: PipelineLogger = VADPipelineLogger(logger=Logger(name="VAD"))
+        data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"
+        
+        self.model: VADModel = model
+        self.trainer: VADModelTrainer = trainer
 
-    data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"    
+        self.windowed_signal_length: int = 512
+        self.sample_rate: int = 16000
+        self.num_mel_bands: ClassVar[int] = 40
+        self.overlap: int = 2
+        self.hop_length: int = self.windowed_signal_length // self.overlap
+        self.n_valid: int = 50
+        self.n_test: int = 50
+        self.n_train: int = 250
 
-    windowed_signal_length: int = 512
-    sample_rate: int = 16000
-    num_mel_bands: ClassVar[int] = 40
-    overlap: int = 2
-    hop_length: int = windowed_signal_length // overlap
-
-    n_valid: int = 50
-    n_test: int = 50
-    n_train: int = 250
-
-    X_train: torch.Tensor = None
-    y_train: torch.Tensor = None
-    X_valid: torch.Tensor = None
-    y_valid: torch.Tensor = None
-    X_test: torch.Tensor = None
-    y_test: torch.Tensor = None
-
-    mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=windowed_signal_length, sample_rate=sample_rate, n_mel=num_mel_bands, hop_length=hop_length)
+        self.X_train: torch.Tensor = None
+        self.y_train: torch.Tensor = None
+        self.X_valid: torch.Tensor = None
+        self.y_valid: torch.Tensor = None
+        self.X_test: torch.Tensor = None
+        self.y_test: torch.Tensor = None
+        
+        self.mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=self.windowed_signal_length, sample_rate=self.sample_rate, n_mel=self.num_mel_bands, hop_length=self.hop_length)
 
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
         """Run the model with the specified steps involved"""
@@ -257,8 +261,8 @@ class VADPipeline(VADPipelineAbstractClass):
         self.tester.btest_train()
         self.logger.blog_train()
 
-        pass
-
+        self.trainer.train(num_epochs=20)
+        
         self.tester.atest_train()
         self.logger.alog_train()
 

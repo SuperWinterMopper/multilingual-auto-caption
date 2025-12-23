@@ -1,13 +1,28 @@
 import torch 
+from torch.utils.data import DataLoader
+from pathlib import Path
 
 class VADModelTrainer:
-    def __init__(self, model, train_dl, valid_dl, loss_fn, optimizer, logger):
+    def __init__(self, model, train_ds_path, valid_ds_path, loss_fn, optimizer, logger, batch_size):
         self.model = model
-        self.train_dl = train_dl
-        self.valid_dl = valid_dl
         self.loss_fn = loss_fn
         self.optimizer = optimizer
         self.logger = logger
+        self.batch_size = batch_size
+        
+        self.train_ds_path = train_ds_path
+        self.valid_ds_path = valid_ds_path
+        
+        try:
+            assert Path(self.train_ds_path).is_file(), f"Training dataset file not found at {self.train_ds_path}"
+            assert Path(self.valid_ds_path).is_file(), f"Validation dataset file not found at {self.valid_ds_path}"
+            train_ds = torch.load(self.train_ds_path)
+            valid_ds = torch.load(self.valid_ds_path)
+            self.train_dl = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
+            self.valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, shuffle=False)
+        except Exception as e:
+            self.logger.log(f"Error loading .pt files at {self.train_ds_path} or {self.valid_ds_path}: {e}")
+            raise
     
     def train(self, num_epochs: int = 20):
         train_acc_hist = [0.0] * num_epochs

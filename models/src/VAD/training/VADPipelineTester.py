@@ -41,9 +41,10 @@ class VADPipelineTester(PipelineTester):
         assert pipe.X_valid is not None and pipe.y_valid is not None, "Validation data not set"
         assert pipe.X_test is not None and pipe.y_test is not None, "Test data not set"
 
-    def btest_train(self) -> None:
-        ...
-
+    def btest_train(self, pipe: VADPipelineAbstractClass) -> None:
+        assert pipe.model is not None, "Model is not initialized."
+        assert pipe.trainer is not None, "Trainer is not initialized."
+        
     def btest_evaluate(self) -> None:
         ...
 

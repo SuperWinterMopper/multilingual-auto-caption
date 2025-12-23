@@ -1,12 +1,17 @@
 from ...common.PipelineStructure import ModelPipeline, PipelineLogger, PipelineTester
 from pathlib import Path
 import torch
+from .VADModel import VADModel
+from .VADModelTrainer import VADModelTrainer
 
 class VADPipelineAbstractClass(ModelPipeline):
     tester: PipelineTester
     logger: PipelineLogger
 
     data_path: Path
+    
+    model: VADModel
+    trainer: VADModelTrainer
 
     windowed_signal_length: int
     sample_rate: int

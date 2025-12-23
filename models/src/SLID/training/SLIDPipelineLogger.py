@@ -32,10 +32,10 @@ class SLIDPipelineLogger(PipelineLogger):
     def alog_collect_data(self) -> None:
         ...
 
-    def alog_preprocess_data(self) -> None:
+    def alog_preprocess_data(self, pipeline=None) -> None:
         ...
 
-    def alog_split_data(self) -> None:
+    def alog_split_data(self, pipeline=None) -> None:
         ...
 
     def alog_train(self) -> None:

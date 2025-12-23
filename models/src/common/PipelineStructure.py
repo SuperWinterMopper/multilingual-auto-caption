@@ -13,11 +13,7 @@ class PipelineLogger(pydantic.BaseModel, abc.ABC):
     # the ModelPipeline which actually uses this logger.
     # Allows us to do self.pipe.variable to avoid passing in parameters
     logger: Logger
-    pipeline = pydantic.PrivateAttr
-
-    @abc.abstractmethod
-    # def link_pipeline(self, pipeline):
-    #     self.pipeline = pipeline
+    _pipeline: object = pydantic.PrivateAttr(default=None)
 
     @abc.abstractmethod
     def blog_collect_data(self) -> None:
@@ -48,11 +44,11 @@ class PipelineLogger(pydantic.BaseModel, abc.ABC):
         ...
 
     @abc.abstractmethod
-    def alog_preprocess_data(self) -> None:
+    def alog_preprocess_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def alog_split_data(self) -> None:
+    def alog_split_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
@@ -82,58 +78,54 @@ class PipelineTester(pydantic.BaseModel, abc.ABC):
 
     # the ModelPipeline which actually uses this logger.
     # Allows us to do self.pipe.variable to avoid passing in parameters
-    pipeline = pydantic.PrivateAttr
+    _pipeline: object = pydantic.PrivateAttr(default=None)
 
     @abc.abstractmethod
-    # def link_pipeline(self, pipeline):
-    #     self.pipeline = pipeline
-
-    @abc.abstractmethod
-    def btest_collect_data(self, pipeline) -> None:
+    def btest_collect_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_preprocess_data(self) -> None:
+    def btest_preprocess_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_split_data(self) -> None:
+    def btest_split_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_train(self) -> None:
+    def btest_train(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_evaluate(self) -> None:
+    def btest_evaluate(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_save_model(self) -> None:
+    def btest_save_model(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_collect_data(self, pipeline) -> None:
+    def atest_collect_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def  atest_preprocess_data(self) -> None:
+    def atest_preprocess_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_split_data(self) -> None:
+    def atest_split_data(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_train(self) -> None:
+    def atest_train(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_evaluate(self) -> None:
+    def atest_evaluate(self, _pipeline=None) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_save_model(self) -> None:
+    def atest_save_model(self, _pipeline=None) -> None:
         ...
 
 

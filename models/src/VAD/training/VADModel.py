@@ -11,6 +11,9 @@ class VADModel(nn.Module):
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
         self.batch_size = 32
         self.logger = logger
+
+    def forward(self, x):
+        return self.model(x)
     
     def _create_model(self) -> nn.Module:
         model = nn.Sequential()

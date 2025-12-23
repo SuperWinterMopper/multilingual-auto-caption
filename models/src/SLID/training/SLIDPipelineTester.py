@@ -8,13 +8,13 @@ class SLIDPipelineTester(PipelineTester):
     def btest_collect_data(self) -> None:
         ...
 
-    def btest_preprocess_data(self) -> None:
+    def btest_preprocess_data(self, pipeline=None) -> None:
         ...
 
-    def btest_split_data(self) -> None:
+    def btest_split_data(self, pipeline=None) -> None:
         ...
 
-    def btest_train(self) -> None:
+    def btest_train(self, pipeline=None) -> None:
         ...
 
     def btest_evaluate(self) -> None:
@@ -26,10 +26,10 @@ class SLIDPipelineTester(PipelineTester):
     def atest_collect_data(self) -> None:
         ...
 
-    def atest_preprocess_data(self) -> None:
+    def atest_preprocess_data(self, pipeline=None) -> None:
         ...
 
-    def atest_split_data(self) -> None:
+    def atest_split_data(self, pipeline=None) -> None:
         ...
 
     def atest_train(self) -> None:

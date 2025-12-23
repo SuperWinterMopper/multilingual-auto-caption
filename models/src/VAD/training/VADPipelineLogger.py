@@ -1,6 +1,7 @@
 from ...common.PipelineStructure import PipelineLogger
 from ...common.logger import Logger
 from .VADPipelineAbstractClass import VADPipelineAbstractClass
+from typing import Optional
 import datetime as datetime
 import numpy as np
 
@@ -34,13 +35,16 @@ class VADPipelineLogger(PipelineLogger):
     def alog_collect_data(self) -> None:
         self.log("After data collection, verified that data path exists and some some content remains.")
 
-    def alog_preprocess_data(self, pipe: VADPipelineAbstractClass) -> None:
-        self.log(f"Finished preprocessing data into MFSC spectrograms of size {pipe.X_train.shape[1]}x{pipe.X_train.shape[2]}")
-        self.log(f"Training set size: {pipe.X_train.shape[0]} samples")
-        self.log(f"Validation set size: {pipe.X_valid.shape[0]} samples")
-        self.log(f"Test set size: {pipe.X_test.shape[0]} samples")
+    def alog_preprocess_data(self, pipeline: Optional[VADPipelineAbstractClass] = None) -> None:
+        assert pipeline is not None
+        self.log(f"Finished preprocessing data into MFSC spectrograms of size {pipeline.X_train.shape[1]}x{pipeline.X_train.shape[2]}")
+        self.log(f"Training set size: {pipeline.X_train.shape[0]} samples")
+        self.log(f"Validation set size: {pipeline.X_valid.shape[0]} samples")
+        self.log(f"Test set size: {pipeline.X_test.shape[0]} samples")
 
-    def alog_split_data(self, pipe: VADPipelineAbstractClass) -> None:
+    def alog_split_data(self, pipeline: Optional[VADPipelineAbstractClass] = None) -> None:
+        assert pipeline is not None
+        pipe = pipeline
         self.log("Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline")
 
         train_samples = np.rint(np.random.rand(2, 2) * pipe.n_train).astype(int)

@@ -2,7 +2,7 @@ from ...common.PipelineStructure import PipelineLogger, PipelineTester
 from ...common.logger import Logger
 from pathlib import Path
 from .VADPipelineAbstractClass import VADPipelineAbstractClass
-from typing import ClassVar
+from typing import Optional
 
 from .VADPipelineTester import VADPipelineTester
 from .VADPipelineLogger import VADPipelineLogger
@@ -11,6 +11,7 @@ from .VADModel import VADModel
 from .VADModelTrainer import VADModelTrainer
 
 import torch
+from torch.utils.data import TensorDataset
 from torchcodec.decoders import AudioDecoder
 import json 
 from json import JSONDecodeError
@@ -20,51 +21,36 @@ class VADPipeline(VADPipelineAbstractClass):
     """
     VAD model training pipeline.
     """
+    tester: PipelineTester = VADPipelineTester()
+    logger: PipelineLogger = VADPipelineLogger(logger=Logger(name="VAD"))
+
+    data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"
+    preprocessed_dir: Path = data_path / "preprocessed"
+    preprocessed_files: list[Path] = [
+        preprocessed_dir / "VAD_train_ds.pt",
+        preprocessed_dir / "VAD_valid_ds.pt",
+        preprocessed_dir / "VAD_test_ds.pt",
+    ]
     
-    def __init__(self) -> None:
-        self.tester: PipelineTester = VADPipelineTester()
-        self.logger: PipelineLogger = VADPipelineLogger(logger=Logger(name="VAD"))
+    model: VADModel = VADModel(logger=logger)
+    
+    windowed_signal_length: int = 512
+    sample_rate: int = 16000
+    num_mel_bands: int = 40
+    overlap: int = 2
+    hop_length: int = windowed_signal_length // overlap
+    n_valid: int = 50
+    n_test: int = 50
+    n_train: int = 250
 
-        self.data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"
-        self.preprocessed_dir = self.data_path / "preprocessed"
-        self.preprocessed_files = [
-            self.preprocessed_dir / "VAD_X_train.pt",
-            self.preprocessed_dir / "VAD_y_train.pt",
-            self.preprocessed_dir / "VAD_X_valid.pt",
-            self.preprocessed_dir / "VAD_y_valid.pt",
-            self.preprocessed_dir / "VAD_X_test.pt",
-            self.preprocessed_dir / "VAD_y_test.pt",
-        ]
-        
-        self.model = VADModel(logger=self.logger)
-        self.trainer = VADModelTrainer(
-            model=self.model, 
-            logger=self.logger,
-            loss_fn = torch.nn.BCELoss(),
-            optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001),
-            train_ds_path = str(self.data_path / "preprocessed" / "VAD_X_train.pt"),
-            valid_ds_path = str(self.data_path / "preprocessed" / "VAD_X_valid.pt"),
-            batch_size = 32
-        )
-        
-        self.windowed_signal_length: int = 512
-        self.sample_rate: int = 16000
-        self.num_mel_bands: ClassVar[int] = 40
-        self.overlap: int = 2
-        self.hop_length: int = self.windowed_signal_length // self.overlap
-        self.n_valid: int = 50
-        self.n_test: int = 50
-        self.n_train: int = 250
-
-        self.X_train: torch.Tensor = None
-        self.y_train: torch.Tensor = None
-        self.X_valid: torch.Tensor = None
-        self.y_valid: torch.Tensor = None
-        self.X_test: torch.Tensor = None
-        self.y_test: torch.Tensor = None
-        
-        
-        self.mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=self.windowed_signal_length, sample_rate=self.sample_rate, n_mel=self.num_mel_bands, hop_length=self.hop_length)
+    X_train: Optional[torch.Tensor] = None
+    y_train: Optional[torch.Tensor] = None
+    X_valid: Optional[torch.Tensor] = None
+    y_valid: Optional[torch.Tensor] = None
+    X_test: Optional[torch.Tensor] = None
+    y_test: Optional[torch.Tensor] = None
+    
+    mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=windowed_signal_length, sample_rate=sample_rate, n_mel=num_mel_bands, hop_length=hop_length)
 
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
         """Run the model with the specified steps involved"""
@@ -181,12 +167,14 @@ class VADPipeline(VADPipelineAbstractClass):
         # Check if preprocessed data already exists        
         if all(f.exists() for f in self.preprocessed_files):
             self.logger.log("Preprocessed data already exists. Loading from disk...")
-            self.X_train = torch.load(self.preprocessed_files[0])
-            self.y_train = torch.load(self.preprocessed_files[1])
-            self.X_valid = torch.load(self.preprocessed_files[2])
-            self.y_valid = torch.load(self.preprocessed_files[3])
-            self.X_test = torch.load(self.preprocessed_files[4])
-            self.y_test = torch.load(self.preprocessed_files[5])
+            train_ds = torch.load(self.preprocessed_files[0])
+            valid_ds = torch.load(self.preprocessed_files[1])
+            test_ds = torch.load(self.preprocessed_files[2])
+
+            # Stored datasets use channel-first inputs: (N, 1, M, M). For pipeline logging, keep 3D (N, M, M).
+            self.X_train, self.y_train = train_ds.tensors[0].squeeze(1), train_ds.tensors[1]
+            self.X_valid, self.y_valid = valid_ds.tensors[0].squeeze(1), valid_ds.tensors[1]
+            self.X_test, self.y_test = test_ds.tensors[0].squeeze(1), test_ds.tensors[1]
             self.logger.log("Successfully loaded preprocessed data from disk.")
             
             self.tester.atest_preprocess_data(self)
@@ -197,7 +185,7 @@ class VADPipeline(VADPipelineAbstractClass):
         valid_root = self.data_path / "dev"
         test_root = self.data_path / "eval"
 
-        self.tester.btest_preprocess_data(self, train_root, valid_root, test_root)
+        self.tester.btest_preprocess_data(self)
         self.logger.blog_preprocess_data()
 
         def _process_split(root: Path, limit: int):
@@ -228,8 +216,6 @@ class VADPipeline(VADPipelineAbstractClass):
                     assert X_split.shape[1:] == (self.num_mel_bands, self.num_mel_bands), f"Expected shape (*, {self.num_mel_bands}, {self.num_mel_bands}), got {X_split.shape}"
                     self.logger.log(f"Validation passed for session `batch` ending at {i + 1}")
                     
-            if not X_parts:
-                return None, None
             X_full = torch.cat(X_parts, dim=0)
             y_full = torch.cat(Y_parts, dim=0)
             return X_full, y_full
@@ -239,16 +225,18 @@ class VADPipeline(VADPipelineAbstractClass):
         self.X_valid, self.y_valid = _process_split(valid_root, self.n_valid)
         self.X_test,  self.y_test  = _process_split(test_root,  self.n_test)
 
-        # Save preprocessed data to disk
+        # Save preprocessed datasets to disk (TensorDataset with channel dim)
         self.preprocessed_dir.mkdir(parents=True, exist_ok=True)
-        self.logger.log("Saving preprocessed data to disk...")
-        torch.save(self.X_train, self.preprocessed_files[0])
-        torch.save(self.y_train, self.preprocessed_files[1])
-        torch.save(self.X_valid, self.preprocessed_files[2])
-        torch.save(self.y_valid, self.preprocessed_files[3])
-        torch.save(self.X_test, self.preprocessed_files[4])
-        torch.save(self.y_test, self.preprocessed_files[5])
-        self.logger.log(f"Preprocessed data saved to {self.preprocessed_dir}")
+        self.logger.log("Saving preprocessed datasets to disk...")
+
+        train_ds = TensorDataset(self.X_train.unsqueeze(1), self.y_train)
+        valid_ds = TensorDataset(self.X_valid.unsqueeze(1), self.y_valid)
+        test_ds = TensorDataset(self.X_test.unsqueeze(1), self.y_test)
+
+        torch.save(train_ds, self.preprocessed_files[0])
+        torch.save(valid_ds, self.preprocessed_files[1])
+        torch.save(test_ds, self.preprocessed_files[2])
+        self.logger.log(f"Preprocessed datasets saved to {self.preprocessed_dir}")
 
         self.tester.atest_preprocess_data(self)
         self.logger.alog_preprocess_data(self)
@@ -266,22 +254,32 @@ class VADPipeline(VADPipelineAbstractClass):
 
     def _train(self) -> None:
         """Training method"""
-        self.tester.btest_train()
+        self.tester.btest_train(self)
         self.logger.blog_train()
-
+        
+        self.trainer = VADModelTrainer(
+            model=self.model, 
+            logger=self.logger,
+            loss_fn = torch.nn.BCELoss(),
+            optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001),
+            train_ds_path = str(self.preprocessed_files[0]),
+            valid_ds_path = str(self.preprocessed_files[1]),
+            batch_size = 32
+        )
+        
         self.trainer.train(num_epochs=20)
         
-        self.tester.atest_train()
+        self.tester.atest_train(self)
         self.logger.alog_train()
 
     def _evaluate(self) -> None:
         """Model evaluation after finishing training"""
-        self.tester.btest_evaluate()
+        self.tester.btest_evaluate(self)
         self.logger.blog_evaluate()
-
-        pass
-
-        self.tester.atest_evaluate()
+        
+        
+        
+        self.tester.atest_evaluate(self)
         self.logger.alog_evaluate()
 
     def _save_model(self) -> None:
@@ -291,7 +289,7 @@ class VADPipeline(VADPipelineAbstractClass):
 
         pass
 
-        self.tester.atest_save_model()
+        self.tester.atest_save_model(self)
         self.logger.alog_save_model()
 
     def _fail(self, text: str) -> None:

@@ -33,7 +33,7 @@ class VADPipeline(VADPipelineAbstractClass):
     ]
     
     model: VADModel = VADModel(logger=logger)
-    model_weight_save_path = data_path / "vad_model.pth"
+    model_weight_save_path: Path = data_path / "vad_model.pth"
     
     windowed_signal_length: int = 512
     sample_rate: int = 16000

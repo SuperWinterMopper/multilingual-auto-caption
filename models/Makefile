@@ -1,3 +1,10 @@
+# this is for sagemaker initial setup
+sagemaker-init:
+	sudo apt install tree
+	pip install poetry 
+	poetry install
+	poetry env info
+
 test-all:
 	poetry run python -m pytest
 
@@ -9,3 +16,6 @@ test-slid:
 
 upload-vad-data:
 	poetry run python src/common/data_controller.py -m VAD -r src/VAD/data --upload
+
+download-vad-data:
+	poetry run python src/common/data_controller.py -m VAD -r src/VAD/data

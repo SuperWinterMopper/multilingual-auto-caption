@@ -108,7 +108,9 @@ class VADPipelineTester(PipelineTester):
         assert abs(abs(pipeline.X_train.shape[0] / pipeline.X_test.shape[0] - (pipeline.n_train / pipeline.n_test)) < margin_of_error), "the difference in expected proportion of data between X_train and X_test is too large."
         assert abs(abs(pipeline.X_test.shape[0] / pipeline.X_train.shape[0] - (pipeline.n_test / pipeline.n_train)) < margin_of_error), "the difference in expected proportion of data between X_test and X_train is too large."
         
-    def atest_train(self, pipeline=None) -> None:
+    def atest_train(self, pipeline) -> None:
+        assert pipeline.trainer is not None, "Trainer is not initialized."
+        
 
     def atest_evaluate(self, pipeline=None) -> None:
         ...

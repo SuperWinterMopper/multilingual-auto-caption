@@ -44,11 +44,11 @@ class PipelineLogger(pydantic.BaseModel, abc.ABC):
         ...
 
     @abc.abstractmethod
-    def alog_preprocess_data(self, _pipeline=None) -> None:
+    def alog_preprocess_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def alog_split_data(self, _pipeline=None) -> None:
+    def alog_split_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
@@ -81,51 +81,51 @@ class PipelineTester(pydantic.BaseModel, abc.ABC):
     _pipeline: object = pydantic.PrivateAttr(default=None)
 
     @abc.abstractmethod
-    def btest_collect_data(self, _pipeline=None) -> None:
+    def btest_collect_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_preprocess_data(self, _pipeline=None) -> None:
+    def btest_preprocess_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_split_data(self, _pipeline=None) -> None:
+    def btest_split_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_train(self, _pipeline=None) -> None:
+    def btest_train(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_evaluate(self, _pipeline=None) -> None:
+    def btest_evaluate(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def btest_save_model(self, _pipeline=None) -> None:
+    def btest_save_model(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_collect_data(self, _pipeline=None) -> None:
+    def atest_collect_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_preprocess_data(self, _pipeline=None) -> None:
+    def atest_preprocess_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_split_data(self, _pipeline=None) -> None:
+    def atest_split_data(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_train(self, _pipeline=None) -> None:
+    def atest_train(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_evaluate(self, _pipeline=None) -> None:
+    def atest_evaluate(self, _pipeline) -> None:
         ...
 
     @abc.abstractmethod
-    def atest_save_model(self, _pipeline=None) -> None:
+    def atest_save_model(self, _pipeline) -> None:
         ...
 
 

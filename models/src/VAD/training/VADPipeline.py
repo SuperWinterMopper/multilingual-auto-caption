@@ -21,15 +21,32 @@ class VADPipeline(VADPipelineAbstractClass):
     VAD model training pipeline.
     """
     
-    def __init__(self, model: VADModel, trainer: VADModelTrainer) -> None:
+    def __init__(self) -> None:
         self.tester: PipelineTester = VADPipelineTester()
         self.logger: PipelineLogger = VADPipelineLogger(logger=Logger(name="VAD"))
 
-        data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"
+        self.data_path: Path = Path(__file__).resolve().parent.parent / "data" / "LibriParty" / "dataset"
+        self.preprocessed_dir = self.data_path / "preprocessed"
+        self.preprocessed_files = [
+            self.preprocessed_dir / "VAD_X_train.pt",
+            self.preprocessed_dir / "VAD_y_train.pt",
+            self.preprocessed_dir / "VAD_X_valid.pt",
+            self.preprocessed_dir / "VAD_y_valid.pt",
+            self.preprocessed_dir / "VAD_X_test.pt",
+            self.preprocessed_dir / "VAD_y_test.pt",
+        ]
         
-        self.model: VADModel = model
-        self.trainer: VADModelTrainer = trainer
-
+        self.model = VADModel(logger=self.logger)
+        self.trainer = VADModelTrainer(
+            model=self.model, 
+            logger=self.logger,
+            loss_fn = torch.nn.BCELoss(),
+            optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001),
+            train_ds_path = str(self.data_path / "preprocessed" / "VAD_X_train.pt"),
+            valid_ds_path = str(self.data_path / "preprocessed" / "VAD_X_valid.pt"),
+            batch_size = 32
+        )
+        
         self.windowed_signal_length: int = 512
         self.sample_rate: int = 16000
         self.num_mel_bands: ClassVar[int] = 40
@@ -45,6 +62,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.y_valid: torch.Tensor = None
         self.X_test: torch.Tensor = None
         self.y_test: torch.Tensor = None
+        
         
         self.mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=self.windowed_signal_length, sample_rate=self.sample_rate, n_mel=self.num_mel_bands, hop_length=self.hop_length)
 
@@ -159,26 +177,16 @@ class VADPipeline(VADPipelineAbstractClass):
 
     def _preprocess_data(self) -> None:
         """Preprocesses the data stored under /data"""
-        preprocessed_dir = self.data_path / "preprocessed"
         
-        # Check if preprocessed data already exists
-        preprocessed_files = [
-            preprocessed_dir / "VAD_X_train.pt",
-            preprocessed_dir / "VAD_y_train.pt",
-            preprocessed_dir / "VAD_X_valid.pt",
-            preprocessed_dir / "VAD_y_valid.pt",
-            preprocessed_dir / "VAD_X_test.pt",
-            preprocessed_dir / "VAD_y_test.pt",
-        ]
-        
-        if all(f.exists() for f in preprocessed_files):
+        # Check if preprocessed data already exists        
+        if all(f.exists() for f in self.preprocessed_files):
             self.logger.log("Preprocessed data already exists. Loading from disk...")
-            self.X_train = torch.load(preprocessed_files[0])
-            self.y_train = torch.load(preprocessed_files[1])
-            self.X_valid = torch.load(preprocessed_files[2])
-            self.y_valid = torch.load(preprocessed_files[3])
-            self.X_test = torch.load(preprocessed_files[4])
-            self.y_test = torch.load(preprocessed_files[5])
+            self.X_train = torch.load(self.preprocessed_files[0])
+            self.y_train = torch.load(self.preprocessed_files[1])
+            self.X_valid = torch.load(self.preprocessed_files[2])
+            self.y_valid = torch.load(self.preprocessed_files[3])
+            self.X_test = torch.load(self.preprocessed_files[4])
+            self.y_test = torch.load(self.preprocessed_files[5])
             self.logger.log("Successfully loaded preprocessed data from disk.")
             
             self.tester.atest_preprocess_data(self)
@@ -232,15 +240,15 @@ class VADPipeline(VADPipelineAbstractClass):
         self.X_test,  self.y_test  = _process_split(test_root,  self.n_test)
 
         # Save preprocessed data to disk
-        preprocessed_dir.mkdir(parents=True, exist_ok=True)
+        self.preprocessed_dir.mkdir(parents=True, exist_ok=True)
         self.logger.log("Saving preprocessed data to disk...")
-        torch.save(self.X_train, preprocessed_files[0])
-        torch.save(self.y_train, preprocessed_files[1])
-        torch.save(self.X_valid, preprocessed_files[2])
-        torch.save(self.y_valid, preprocessed_files[3])
-        torch.save(self.X_test, preprocessed_files[4])
-        torch.save(self.y_test, preprocessed_files[5])
-        self.logger.log(f"Preprocessed data saved to {preprocessed_dir}")
+        torch.save(self.X_train, self.preprocessed_files[0])
+        torch.save(self.y_train, self.preprocessed_files[1])
+        torch.save(self.X_valid, self.preprocessed_files[2])
+        torch.save(self.y_valid, self.preprocessed_files[3])
+        torch.save(self.X_test, self.preprocessed_files[4])
+        torch.save(self.y_test, self.preprocessed_files[5])
+        self.logger.log(f"Preprocessed data saved to {self.preprocessed_dir}")
 
         self.tester.atest_preprocess_data(self)
         self.logger.alog_preprocess_data(self)

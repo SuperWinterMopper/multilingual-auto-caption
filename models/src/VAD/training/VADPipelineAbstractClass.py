@@ -12,6 +12,9 @@ class VADPipelineAbstractClass(ModelPipeline):
     
     model: VADModel
     trainer: VADModelTrainer
+    
+    preprocessed_dir: Path
+    preprocessed_files: list[Path]
 
     windowed_signal_length: int
     sample_rate: int

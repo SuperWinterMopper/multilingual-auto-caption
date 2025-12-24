@@ -22,3 +22,6 @@ download-vad-data:
 
 train-vad:
 	poetry run python src/VAD/training/train_runner.py
+
+disk-usage:
+	du -h --max-depth=5 --exclude ".venv" --exclude ".pytest_cache" --exclude "./__pycache__/"

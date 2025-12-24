@@ -25,4 +25,3 @@ def test_copying():
     if TEMPORARY_RUN:
         pipe = VADPipeline()
         pipe._copy_model_to_backend()
-        

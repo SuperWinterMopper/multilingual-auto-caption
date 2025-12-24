@@ -2,7 +2,7 @@
 sagemaker-init:
 	sudo apt update
 	sudo apt install tree ffmpeg
-	pip install poetry 
+	pip install poetry
 	poetry install
 	poetry env info
 
@@ -22,4 +22,4 @@ download-vad-data:
 	poetry run python src/common/data_controller.py -m VAD -r src/VAD/data
 
 train-vad:
-	poetry run python src/VAD/training/train_runner.py
+	poetry run python -m src.VAD.training.train_runner

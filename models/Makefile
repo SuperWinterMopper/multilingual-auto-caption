@@ -19,3 +19,6 @@ upload-vad-data:
 
 download-vad-data:
 	poetry run python src/common/data_controller.py -m VAD -r src/VAD/data
+
+train-vad:
+	poetry run python src/VAD/training/train_runner.py

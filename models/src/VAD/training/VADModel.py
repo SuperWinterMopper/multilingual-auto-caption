@@ -1,16 +1,13 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-from pathlib import Path
 
 class VADModel(nn.Module):
-    def __init__(self, logger):
+    def __init__(self):
         super().__init__()
         self.model = self._create_model()
         self.loss_fn = nn.BCELoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
         self.batch_size = 32
-        self.logger = logger
 
     def forward(self, x):
         return self.model(x)

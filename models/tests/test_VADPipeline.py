@@ -19,3 +19,9 @@ def test_train():
     pipe.run_pipeline(collect_data=True, preprocess_data=True, split_data=True, train=True)
 
     print(pipe.X_train.shape)
+
+def test_copying():
+    TEMPORARY_RUN = True
+    if TEMPORARY_RUN:
+        pipe = VADPipeline()
+        pipe._copy_model_to_backend()

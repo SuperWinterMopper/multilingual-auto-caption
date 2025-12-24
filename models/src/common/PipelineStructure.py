@@ -174,8 +174,3 @@ class ModelPipeline(pydantic.BaseModel, abc.ABC):
     def _save_model(self) -> None:
         """Saves model weights"""
         ...
-
-    @abc.abstractmethod
-    def _fail(self, text: str) -> None:
-        """Failure method"""
-        ...

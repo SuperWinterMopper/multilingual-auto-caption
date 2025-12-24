@@ -16,6 +16,7 @@ from torchcodec.decoders import AudioDecoder
 import json 
 from json import JSONDecodeError
 import numpy as np
+import shutil
 
 class VADPipeline(VADPipelineAbstractClass):
     """
@@ -32,8 +33,11 @@ class VADPipeline(VADPipelineAbstractClass):
         preprocessed_dir / "VAD_test_ds.pt",
     ]
     
-    model: VADModel = VADModel(logger=logger)
-    model_weight_save_path = data_path / "vad_model.pth"
+    model: VADModel = VADModel()
+    model_definition_path: Path = Path(__file__).resolve().parent / "VADModel.py"
+    model_weight_save_path: Path = Path(__file__).resolve().parent.parent / "data" / "vad_model.pth"
+    
+    backend_model_root: Path = Path(__file__).resolve().parent.parent.parent.parent.parent / "backend" / "model"
     
     windowed_signal_length: int = 512
     sample_rate: int = 16000
@@ -52,6 +56,10 @@ class VADPipeline(VADPipelineAbstractClass):
     y_test: Optional[torch.Tensor] = None
     
     mel_spec_pipeline: MelSpecPipeline = MelSpecPipeline(n_fft=windowed_signal_length, sample_rate=sample_rate, n_mel=num_mel_bands, hop_length=hop_length)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        assert self.model_definition_path.exists(), "Model definition file does not exist: " + str(self.model_definition_path)
 
     def run_pipeline(self, collect_data=False, preprocess_data=False, split_data=False, train=False, evaluate=False, save_model=False) -> None:
         """Run the model with the specified steps involved"""
@@ -293,3 +301,27 @@ class VADPipeline(VADPipelineAbstractClass):
 
         self.tester.atest_save_model(self)
         self.logger.alog_save_model()
+        
+        self._copy_model_to_backend()
+        self.logger.log("Model copied to backend successfully.")
+    
+    def _copy_model_to_backend(self):
+        """Copies model weights + model definition into backend for inference use."""
+        backend_root = self.backend_model_root
+        backend_root.mkdir(parents=True, exist_ok=True)
+
+        # Copy weights (saved by trainer.save_model)
+        src_weights = self.model_weight_save_path
+        dst_weights = backend_root / "vad_model.pth"
+        if not src_weights.exists():
+            raise FileNotFoundError(f"Model weights not found at {src_weights}")
+        shutil.copy2(src_weights, dst_weights)
+        self.logger.log(f"Copied model weights to backend at {dst_weights}")
+
+        # Copy model definition file
+        src_def = self.model_definition_path
+        dst_def = backend_root / src_def.name  # "VADModel.py"
+        if not src_def.exists():
+            raise FileNotFoundError(f"Model definition not found at {src_def}")
+        shutil.copy2(src_def, dst_def)
+        self.logger.log(f"Copied model definition to backend at {dst_def}")

@@ -1,6 +1,7 @@
 # this is for sagemaker initial setup
 sagemaker-init:
-	sudo apt install tree
+	sudo apt update
+	sudo apt install tree ffmpeg
 	pip install poetry 
 	poetry install
 	poetry env info

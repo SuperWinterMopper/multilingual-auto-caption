@@ -4,6 +4,7 @@ from pathlib import Path
 from datetime import datetime
 import torch
 import matplotlib.pyplot as plt
+import threading
 
 class Logger(BaseModel):
     name: str
@@ -12,6 +13,17 @@ class Logger(BaseModel):
     
     output_path_root: Path = Path(__file__).resolve().parent
     vad_accuracy_history_plot_path: Path = output_path_root / "vad_accuracy_history.png"
+    
+    # asynchornously prints heartbeat log, stops execution once program stops executing
+    def heartbeat_log(self, interval: int):
+        while True:
+            self.log("Heartbeat (Program is running)")
+            time.sleep(interval)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        thread = threading.Thread(target=self.heartbeat_log, args=(60,), daemon=True)
+        thread.start()
 
     def log(self, text):
         path = self.output_path_root / f"{self.name}.txt"

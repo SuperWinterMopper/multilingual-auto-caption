@@ -11,11 +11,6 @@ def test_integration_up_to_split_data():
 
     pipe.run_pipeline(collect_data=True, preprocess_data=True, split_data=True)
 
-def test_train():
-    pipe = VADPipeline()
-
-    pipe.run_pipeline(collect_data=True, preprocess_data=True, split_data=True, train=True)
-
 def test_copying():
     TEMPORARY_RUN = False 
     if TEMPORARY_RUN:

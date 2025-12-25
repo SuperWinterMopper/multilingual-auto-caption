@@ -175,10 +175,13 @@ class VADPipeline(VADPipelineAbstractClass):
         # Check if preprocessed data already exists        
         if all(f.exists() for f in self.preprocessed_files):
             self.logger.log("Preprocessed data already exists. Loading from disk...")
-            train_ds = torch.load(self.preprocessed_files[0])
-            valid_ds = torch.load(self.preprocessed_files[1])
-            test_ds = torch.load(self.preprocessed_files[2])
-
+            train_ds_tensors = torch.load(self.preprocessed_files[0], weights_only=True)
+            valid_ds_tensors = torch.load(self.preprocessed_files[1], weights_only=True)
+            test_ds_tensors = torch.load(self.preprocessed_files[2], weights_only=True)
+            train_ds = torch.utils.data.TensorDataset(*train_ds_tensors)
+            valid_ds = torch.utils.data.TensorDataset(*valid_ds_tensors)
+            test_ds = torch.utils.data.TensorDataset(*test_ds_tensors)
+            
             # Stored datasets use channel-first inputs: (N, 1, M, M). For pipeline logging, keep 3D (N, M, M).
             self.X_train, self.y_train = train_ds.tensors[0].squeeze(1), train_ds.tensors[1]
             self.X_valid, self.y_valid = valid_ds.tensors[0].squeeze(1), valid_ds.tensors[1]

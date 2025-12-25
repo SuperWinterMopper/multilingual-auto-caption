@@ -13,11 +13,11 @@ from .VADModelTrainer import VADModelTrainer
 import torch
 from torch.utils.data import TensorDataset
 from torchcodec.decoders import AudioDecoder
-import json 
+import json
 from json import JSONDecodeError
 import numpy as np
 import shutil
-import gc 
+import gc
 
 class VADPipeline(VADPipelineAbstractClass):
     """
@@ -282,7 +282,6 @@ class VADPipeline(VADPipelineAbstractClass):
             model=self.model, 
             logger=self.logger,
             loss_fn = torch.nn.BCELoss(),
-            optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001),
             train_ds_path = str(self.preprocessed_files[0]),
             valid_ds_path = str(self.preprocessed_files[1]),
             test_ds_path = str(self.preprocessed_files[2]),

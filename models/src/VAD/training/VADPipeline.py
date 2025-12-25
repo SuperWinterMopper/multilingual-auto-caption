@@ -238,7 +238,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.X_train, self.y_train = _process_split(train_root, self.n_train)
         train_ds = TensorDataset(self.X_train.unsqueeze(1), self.y_train)
         self.logger.log(f"Saving train dataset to {self.preprocessed_files[0]}")
-        torch.save(train_ds, self.preprocessed_files[0])
+        torch.save(train_ds.tensors, self.preprocessed_files[0])
         del train_ds
         self.X_train, self.y_train = None, None
         gc.collect()
@@ -246,7 +246,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.X_valid, self.y_valid = _process_split(valid_root, self.n_valid)
         valid_ds = TensorDataset(self.X_valid.unsqueeze(1), self.y_valid)
         self.logger.log(f"Saving valid dataset to {self.preprocessed_files[1]}")
-        torch.save(valid_ds, self.preprocessed_files[1])
+        torch.save(valid_ds.tensors, self.preprocessed_files[1])
         del valid_ds
         self.X_valid, self.y_valid = None, None
         gc.collect()
@@ -254,7 +254,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.X_test, self.y_test = _process_split(test_root, self.n_test)
         test_ds = TensorDataset(self.X_test.unsqueeze(1), self.y_test)
         self.logger.log(f"Saving test dataset to {self.preprocessed_files[2]}")
-        torch.save(test_ds, self.preprocessed_files[2])
+        torch.save(test_ds.tensors, self.preprocessed_files[2])
         del test_ds
         self.X_test, self.y_test = None, None
         gc.collect()

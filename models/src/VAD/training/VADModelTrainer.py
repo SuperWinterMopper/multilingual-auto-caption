@@ -27,9 +27,12 @@ class VADModelTrainer:
             assert Path(self.train_ds_path).is_file(), f"Training dataset file not found at {self.train_ds_path}"
             assert Path(self.valid_ds_path).is_file(), f"Validation dataset file not found at {self.valid_ds_path}"
             assert Path(self.test_ds_path).is_file(), f"Test dataset file not found at {self.test_ds_path}"
-            train_ds = torch.load(self.train_ds_path)
-            valid_ds = torch.load(self.valid_ds_path)
-            test_ds = torch.load(self.test_ds_path)
+            train_ds_tensors = torch.load(self.train_ds_path, weights_only=True)
+            valid_ds_tensors = torch.load(self.valid_ds_path, weights_only=True)
+            test_ds_tensors = torch.load(self.test_ds_path, weights_only=True)
+            train_ds = torch.utils.data.TensorDataset(*train_ds_tensors)
+            valid_ds = torch.utils.data.TensorDataset(*valid_ds_tensors)
+            test_ds = torch.utils.data.TensorDataset(*test_ds_tensors)
             self.train_dl = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
             self.valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, shuffle=False)
             self.test_dl = DataLoader(test_ds, batch_size=self.batch_size, shuffle=False)

@@ -17,6 +17,7 @@ import json
 from json import JSONDecodeError
 import numpy as np
 import shutil
+import gc 
 
 class VADPipeline(VADPipelineAbstractClass):
     """
@@ -164,10 +165,8 @@ class VADPipeline(VADPipelineAbstractClass):
             print(f'theoretical ratio of speech lables: {speech_ratio_theory}')
             print(f"This data's ratio of speech labels: {speech_ratio_data}")
             assert False
-
         assert all(isinstance(x, torch.Tensor) for x in X)
         assert all(isinstance(t, torch.Tensor) for t in y)
-
         return X, y
 
     def _preprocess_data(self) -> None:
@@ -225,28 +224,41 @@ class VADPipeline(VADPipelineAbstractClass):
                     assert X_split.shape[1:] == (self.num_mel_bands, self.num_mel_bands), f"Expected shape (*, {self.num_mel_bands}, {self.num_mel_bands}), got {X_split.shape}"
                     self.logger.log(f"Validation passed for session `batch` ending at {i + 1}")
                     
+            if not X_parts:
+                raise RuntimeError(f"No usable data was produced under {root}. See logs for skipped sessions.")
+
             X_full = torch.cat(X_parts, dim=0)
             y_full = torch.cat(Y_parts, dim=0)
             return X_full, y_full
-
-        # process each split
-        self.X_train, self.y_train = _process_split(train_root, self.n_train)
-        self.X_valid, self.y_valid = _process_split(valid_root, self.n_valid)
-        self.X_test,  self.y_test  = _process_split(test_root,  self.n_test)
-
-        # Save preprocessed datasets to disk (TensorDataset with channel dim)
+        
+        # Create directory to store preprocessed datasets to disk
         self.preprocessed_dir.mkdir(parents=True, exist_ok=True)
-        self.logger.log("Saving preprocessed datasets to disk...")
 
+        # process each split, and make sure to empty variables to not crash RAM
+        self.X_train, self.y_train = _process_split(train_root, self.n_train)
         train_ds = TensorDataset(self.X_train.unsqueeze(1), self.y_train)
-        valid_ds = TensorDataset(self.X_valid.unsqueeze(1), self.y_valid)
-        test_ds = TensorDataset(self.X_test.unsqueeze(1), self.y_test)
-
+        self.logger.log(f"Saving train dataset to {self.preprocessed_files[0]}")
         torch.save(train_ds, self.preprocessed_files[0])
+        del train_ds
+        self.X_train, self.y_train = None, None
+        gc.collect()
+        
+        self.X_valid, self.y_valid = _process_split(valid_root, self.n_valid)
+        valid_ds = TensorDataset(self.X_valid.unsqueeze(1), self.y_valid)
+        self.logger.log(f"Saving valid dataset to {self.preprocessed_files[1]}")
         torch.save(valid_ds, self.preprocessed_files[1])
+        del valid_ds
+        self.X_valid, self.y_valid = None, None
+        gc.collect()
+        
+        self.X_test, self.y_test = _process_split(test_root, self.n_test)
+        test_ds = TensorDataset(self.X_test.unsqueeze(1), self.y_test)
+        self.logger.log(f"Saving test dataset to {self.preprocessed_files[2]}")
         torch.save(test_ds, self.preprocessed_files[2])
-        self.logger.log(f"Preprocessed datasets saved to {self.preprocessed_dir}")
-
+        del test_ds
+        self.X_test, self.y_test = None, None
+        gc.collect()
+        
         self.tester.atest_preprocess_data(self)
         self.logger.alog_preprocess_data(self)
 

@@ -37,10 +37,7 @@ class VADPipelineLogger(PipelineLogger):
 
     def alog_preprocess_data(self, pipeline: Optional[VADPipelineAbstractClass] = None) -> None:
         assert pipeline is not None
-        self.log(f"Finished preprocessing data into MFSC spectrograms of size {pipeline.X_train.shape[1]}x{pipeline.X_train.shape[2]}")
-        self.log(f"Training set size: {pipeline.X_train.shape[0]} samples")
-        self.log(f"Validation set size: {pipeline.X_valid.shape[0]} samples")
-        self.log(f"Test set size: {pipeline.X_test.shape[0]} samples")
+        self.log(f"Finished preprocessing data into MFSC spectrograms of shape ({pipeline.num_mel_bands}, time_frames) where time_frames varies per sample based on audio length.")
 
     def alog_split_data(self, pipeline: Optional[VADPipelineAbstractClass] = None) -> None:
         assert pipeline is not None

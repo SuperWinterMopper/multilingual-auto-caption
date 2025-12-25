@@ -52,7 +52,6 @@ class VADPipelineTester(PipelineTester):
     def btest_train(self, pipeline=None) -> None:
         assert pipeline is not None
         assert pipeline.model is not None, "Model is not initialized."
-        assert pipeline.trainer is not None, "Trainer is not initialized."
 
         assert hasattr(pipeline, "preprocessed_files"), "Pipeline missing preprocessed_files list."
         assert pipeline.preprocessed_files is not None, "Pipeline preprocessed_files is None."

@@ -2,7 +2,6 @@ from ...common.PipelineStructure import ModelPipeline, PipelineLogger, PipelineT
 from pathlib import Path
 import torch
 from .VADModel import VADModel
-from .VADModelTrainer import VADModelTrainer
 
 class VADPipelineAbstractClass(ModelPipeline):
     tester: PipelineTester

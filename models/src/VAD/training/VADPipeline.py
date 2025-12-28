@@ -281,7 +281,7 @@ class VADPipeline(VADPipelineAbstractClass):
         self.tester.btest_train(self)
         self.logger.blog_train()
         
-        self.trainer: VADModelTrainer = VADModelTrainer(
+        self.trainer: VADModelTrainer = VADModelTrainer (
             model=self.model, 
             logger=self.logger,
             loss_fn = torch.nn.BCELoss(),

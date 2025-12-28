@@ -1,0 +1,12 @@
+[2025-12-28 01:15:34] VAD | 0.00s: Heartbeat (Program is running)
+[2025-12-28 01:15:34] VAD | 0.02s: Data collection tests passed: data path exists.
+[2025-12-28 01:15:34] VAD | 0.03s: Dev, eval, and train directories are present.
+[2025-12-28 01:15:34] VAD | 0.03s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-28 01:15:34] VAD | 0.04s: After data collection, verified that data path exists and some some content remains.
+[2025-12-28 01:15:34] VAD | 0.05s: Preprocessed data already exists. Loading from disk...
+[2025-12-28 01:15:34] VAD | 1.38s: Successfully loaded preprocessed data from disk.
+[2025-12-28 01:15:34] VAD | 1.38s: Finished preprocessing data into MFSC spectrograms of shape (40, time_frames) where time_frames varies per sample based on audio length.
+[2025-12-28 01:15:34] VAD | 1.39s: Pipeline's tensors are set for training, validation, and testing datasets.
+[2025-12-28 01:15:34] VAD | 1.39s: Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline
+[2025-12-28 01:15:34] VAD | 1.40s: Beginning training process.
+[2025-12-28 01:15:34] VAD | 2.64s: Using CPU Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz for training

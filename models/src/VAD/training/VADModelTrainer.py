@@ -5,6 +5,13 @@ import cpuinfo
 
 class VADModelTrainer:
     def __init__(self, model, train_ds_path, valid_ds_path, test_ds_path, loss_fn, logger, batch_size):
+        self.logger = logger
+        self.batch_size = batch_size
+        self.loss_fn = loss_fn
+        self.train_ds_path = train_ds_path
+        self.valid_ds_path = valid_ds_path
+        self.test_ds_path = test_ds_path
+
         self.model = model
         self.logger = logger
         if torch.cuda.is_available():
@@ -15,13 +22,7 @@ class VADModelTrainer:
             self.logger.log(f"Using CPU {cpuinfo.get_cpu_info()['brand_raw']} for training")
             self.device = torch.device('cpu')
             
-        self.loss_fn = loss_fn
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
-        self.batch_size = batch_size
-        
-        self.train_ds_path = train_ds_path
-        self.valid_ds_path = valid_ds_path
-        self.test_ds_path = test_ds_path
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001) # this must come after model moving to device
         
         try:
             assert Path(self.train_ds_path).is_file(), f"Training dataset file not found at {self.train_ds_path}"

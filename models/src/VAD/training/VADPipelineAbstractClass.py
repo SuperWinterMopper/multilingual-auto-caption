@@ -1,4 +1,5 @@
 from ...common.PipelineStructure import ModelPipeline, PipelineLogger, PipelineTester
+from .VADModelTrainer import VADModelTrainer
 from pathlib import Path
 import torch
 from .VADModel import VADModel

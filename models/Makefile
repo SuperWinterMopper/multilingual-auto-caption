@@ -2,7 +2,7 @@
 sagemaker-init:
 	sudo apt update
 	sudo apt install tree ffmpeg
-	pip install poetry 
+	pip install poetry
 	poetry install
 	poetry env info
 
@@ -10,7 +10,7 @@ test-all:
 	poetry run python -m pytest
 
 test-vad:
-	poetry run python -m pytest -s tests/test_VADPipeline.py tests/test_melspecpipeline.py
+	poetry run python -m pytest -s tests/test_VADPipeline.py
 
 test-slid:
 	poetry run python -m pytest -s tests/test_SLIDPipeline.py 

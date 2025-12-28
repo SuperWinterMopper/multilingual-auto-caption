@@ -1,12 +1,204 @@
-[2025-12-28 01:15:34] VAD | 0.00s: Heartbeat (Program is running)
-[2025-12-28 01:15:34] VAD | 0.02s: Data collection tests passed: data path exists.
-[2025-12-28 01:15:34] VAD | 0.03s: Dev, eval, and train directories are present.
-[2025-12-28 01:15:34] VAD | 0.03s: Sample session_0 mixture.wav files confirmed in each split.
-[2025-12-28 01:15:34] VAD | 0.04s: After data collection, verified that data path exists and some some content remains.
-[2025-12-28 01:15:34] VAD | 0.05s: Preprocessed data already exists. Loading from disk...
-[2025-12-28 01:15:34] VAD | 1.38s: Successfully loaded preprocessed data from disk.
-[2025-12-28 01:15:34] VAD | 1.38s: Finished preprocessing data into MFSC spectrograms of shape (40, time_frames) where time_frames varies per sample based on audio length.
-[2025-12-28 01:15:34] VAD | 1.39s: Pipeline's tensors are set for training, validation, and testing datasets.
-[2025-12-28 01:15:34] VAD | 1.39s: Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline
-[2025-12-28 01:15:34] VAD | 1.40s: Beginning training process.
-[2025-12-28 01:15:34] VAD | 2.64s: Using CPU Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz for training
+[2025-12-28 05:23:54] VAD | 0.00s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 0.03s: Data collection tests passed: data path exists.
+[2025-12-28 05:23:54] VAD | 0.03s: Dev, eval, and train directories are present.
+[2025-12-28 05:23:54] VAD | 0.04s: Sample session_0 mixture.wav files confirmed in each split.
+[2025-12-28 05:23:54] VAD | 0.04s: After data collection, verified that data path exists and some some content remains.
+[2025-12-28 05:23:54] VAD | 0.05s: Preprocessed data already exists. Loading from disk...
+[2025-12-28 05:23:54] VAD | 1.24s: Successfully loaded preprocessed data from disk.
+[2025-12-28 05:23:54] VAD | 1.25s: Finished preprocessing data into MFSC spectrograms of shape (40, time_frames) where time_frames varies per sample based on audio length.
+[2025-12-28 05:23:54] VAD | 1.25s: Pipeline's tensors are set for training, validation, and testing datasets.
+[2025-12-28 05:23:54] VAD | 1.26s: Data successfully split into training, validation, and test sets, roughly at expected proportions. The expected proportions are given by n_valid, n_test, n_train variables in VADPipeline
+[2025-12-28 05:23:54] VAD | 1.26s: Beginning training process.
+[2025-12-28 05:23:54] VAD | 2.43s: Using CPU Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz for training
+[2025-12-28 05:23:54] VAD | 60.01s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 120.02s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 180.03s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 240.04s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 300.04s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 360.05s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 420.06s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 480.07s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 482.36s: Epoch 1/20 - Train Acc: 0.8735, Valid Acc: 0.9025
+[2025-12-28 05:23:54] VAD | 540.08s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 600.09s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 660.09s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 720.10s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 780.11s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 840.12s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 900.13s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 960.14s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 961.79s: Epoch 2/20 - Train Acc: 0.8933, Valid Acc: 0.8925
+[2025-12-28 05:23:54] VAD | 1020.15s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1080.15s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1140.16s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1200.17s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1260.18s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1320.18s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1380.19s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1440.20s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1442.03s: Epoch 3/20 - Train Acc: 0.9006, Valid Acc: 0.9067
+[2025-12-28 05:23:54] VAD | 1500.21s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1560.22s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1620.23s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1680.23s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1740.24s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1800.25s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1860.26s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1920.27s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 1923.23s: Epoch 4/20 - Train Acc: 0.9041, Valid Acc: 0.9047
+[2025-12-28 05:23:54] VAD | 1980.28s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2040.29s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2100.30s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2160.31s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2220.32s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2280.33s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2340.34s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2400.35s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2417.50s: Epoch 5/20 - Train Acc: 0.9071, Valid Acc: 0.9122
+[2025-12-28 05:23:54] VAD | 2460.36s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2520.37s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2580.38s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2640.39s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2700.40s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2760.41s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2820.42s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2880.44s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 2907.04s: Epoch 6/20 - Train Acc: 0.9092, Valid Acc: 0.9112
+[2025-12-28 05:23:54] VAD | 2940.45s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3000.45s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3060.46s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3120.47s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3180.48s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3240.49s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3300.50s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3360.51s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3387.06s: Epoch 7/20 - Train Acc: 0.9112, Valid Acc: 0.9078
+[2025-12-28 05:23:54] VAD | 3420.52s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3480.53s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3540.53s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3600.54s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3660.55s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3720.56s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3780.57s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3840.58s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3863.30s: Epoch 8/20 - Train Acc: 0.9120, Valid Acc: 0.9110
+[2025-12-28 05:23:54] VAD | 3900.59s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 3960.59s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4020.61s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4080.61s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4140.62s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4200.63s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4260.64s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4320.65s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4345.42s: Epoch 9/20 - Train Acc: 0.9132, Valid Acc: 0.9055
+[2025-12-28 05:23:54] VAD | 4380.66s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4440.67s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4500.68s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4560.69s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4620.70s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4680.71s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4740.72s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4800.73s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4832.38s: Epoch 10/20 - Train Acc: 0.9141, Valid Acc: 0.9021
+[2025-12-28 05:23:54] VAD | 4860.73s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4920.75s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 4980.76s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5040.76s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5100.77s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5160.78s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5220.80s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5280.81s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5317.65s: Epoch 11/20 - Train Acc: 0.9154, Valid Acc: 0.9014
+[2025-12-28 05:23:54] VAD | 5340.82s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5400.83s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5460.84s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5520.85s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5580.86s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5640.87s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5700.88s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5760.89s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5802.21s: Epoch 12/20 - Train Acc: 0.9154, Valid Acc: 0.9133
+[2025-12-28 05:23:54] VAD | 5820.90s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5880.91s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 5940.92s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6000.94s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6060.94s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6120.95s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6180.96s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6240.97s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6287.15s: Epoch 13/20 - Train Acc: 0.9167, Valid Acc: 0.9146
+[2025-12-28 05:23:54] VAD | 6300.98s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6360.99s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6421.00s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6481.01s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6541.02s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6601.03s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6661.04s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6721.05s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6771.41s: Epoch 14/20 - Train Acc: 0.9166, Valid Acc: 0.9147
+[2025-12-28 05:23:54] VAD | 6781.06s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6841.07s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6901.08s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 6961.09s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7021.10s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7081.11s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7141.12s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7201.14s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7255.56s: Epoch 15/20 - Train Acc: 0.9176, Valid Acc: 0.9166
+[2025-12-28 05:23:54] VAD | 7261.15s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7321.15s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7381.16s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7441.17s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7501.18s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7561.19s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7621.20s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7681.22s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7737.82s: Epoch 16/20 - Train Acc: 0.9179, Valid Acc: 0.9151
+[2025-12-28 05:23:54] VAD | 7741.23s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7801.23s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7861.24s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7921.25s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 7981.26s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8041.27s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8101.28s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8161.29s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8221.30s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8221.97s: Epoch 17/20 - Train Acc: 0.9188, Valid Acc: 0.9062
+[2025-12-28 05:23:54] VAD | 8281.31s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8341.32s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8401.33s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8461.34s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8521.35s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8581.36s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8641.37s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8701.37s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8712.85s: Epoch 18/20 - Train Acc: 0.9192, Valid Acc: 0.9147
+[2025-12-28 05:23:54] VAD | 8761.38s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8821.39s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8881.41s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 8941.41s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9001.42s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9061.43s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9121.44s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9181.45s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9198.45s: Epoch 19/20 - Train Acc: 0.9193, Valid Acc: 0.9114
+[2025-12-28 05:23:54] VAD | 9241.46s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9301.47s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9361.48s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9421.49s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9481.50s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9541.51s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9601.52s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9661.53s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9695.68s: Epoch 20/20 - Train Acc: 0.9194, Valid Acc: 0.9144
+[2025-12-28 05:23:54] VAD | 9695.97s: Saved training accuracy history plot to /mnt/custom-file-systems/efs/fs-03180853e51d34302_fsap-0677cc579470e71d2/multilingual-auto-caption/models/src/common/vad_accuracy_history.png
+[2025-12-28 05:23:54] VAD | 9695.98s: Training process completed successfully, history saved to logger.
+[2025-12-28 05:23:54] VAD | 9695.99s: Beginning model evaluation.
+[2025-12-28 05:23:54] VAD | 9721.54s: Heartbeat (Program is running)
+[2025-12-28 05:23:54] VAD | 9723.50s: Test Accuracy: 0.9303
+[2025-12-28 05:23:54] VAD | 9723.50s: Model evaluation completed.
+[2025-12-28 05:23:54] VAD | 9723.63s: Model weights saved to /mnt/custom-file-systems/efs/fs-03180853e51d34302_fsap-0677cc579470e71d2/multilingual-auto-caption/models/src/VAD/data/vad_model.pth
+[2025-12-28 05:23:54] VAD | 9723.63s: Saving model weights.
+[2025-12-28 05:23:54] VAD | 9723.73s: Copied model weights to backend at /mnt/custom-file-systems/efs/fs-03180853e51d34302_fsap-0677cc579470e71d2/multilingual-auto-caption/backend/model/vad_model.pth
+[2025-12-28 05:23:54] VAD | 9723.77s: Copied model definition to backend at /mnt/custom-file-systems/efs/fs-03180853e51d34302_fsap-0677cc579470e71d2/multilingual-auto-caption/backend/model/VADModel.py
+[2025-12-28 05:23:54] VAD | 9723.77s: Model copied to backend successfully.

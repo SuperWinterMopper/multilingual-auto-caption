@@ -52,7 +52,7 @@ class VADModelTrainer:
                 for x_batch, y_batch in self.train_dl:
                     # move to batch to device
                     x_batch = x_batch.to(self.device)
-                    y_batch = y_batch.to(self.device)
+                    y_batch = y_batch.squeeze(1).to(self.device)
                     
                     pred = self.model(x_batch)[:, 0]
                     loss = self.loss_fn(pred, y_batch.float())
@@ -71,7 +71,7 @@ class VADModelTrainer:
                     for x_batch, y_batch in self.valid_dl:
                         # move to batch to device
                         x_batch = x_batch.to(self.device)
-                        y_batch = y_batch.to(self.device)
+                        y_batch = y_batch.squeeze(1).to(self.device)
 
                         pred = self.model(x_batch)[:, 0]
                         is_correct = ((pred>=0.5).float() == y_batch).float()
@@ -96,7 +96,7 @@ class VADModelTrainer:
             for x_batch, y_batch in self.test_dl:
                 # move to batch to device
                 x_batch = x_batch.to(self.device)
-                y_batch = y_batch.to(self.device)
+                y_batch = y_batch.squeeze(1).to(self.device)
 
                 pred = self.model(x_batch)[:, 0]
                 is_correct = ((pred>=0.5).float() == y_batch).float()

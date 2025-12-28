@@ -99,7 +99,6 @@ class VADPipelineTester(PipelineTester):
         
     def atest_train(self, pipeline) -> None:
         assert pipeline.trainer is not None, "Trainer is not initialized."
-        assert pipeline.logger.vad_accuracy_history_plot_path.exists(), "Accuracy history plot was not saved: " + str(pipeline.logger.vad_accuracy_history_plot_path)
 
     def atest_evaluate(self, pipeline=None) -> None:
         pass

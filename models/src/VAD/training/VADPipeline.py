@@ -283,7 +283,7 @@ class VADPipeline(VADPipelineAbstractClass):
         
         self.trainer: VADModelTrainer = VADModelTrainer (
             model=self.model, 
-            logger=self.logger,
+            logger=self.logger.logger,
             loss_fn = torch.nn.BCELoss(),
             train_ds_path = str(self.preprocessed_files[0]),
             valid_ds_path = str(self.preprocessed_files[1]),

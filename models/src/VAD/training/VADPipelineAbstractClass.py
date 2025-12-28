@@ -2,6 +2,7 @@ from ...common.PipelineStructure import ModelPipeline, PipelineLogger, PipelineT
 from pathlib import Path
 import torch
 from .VADModel import VADModel
+from .VADModelTrainer import VADModelTrainer
 
 class VADPipelineAbstractClass(ModelPipeline):
     tester: PipelineTester
@@ -10,6 +11,7 @@ class VADPipelineAbstractClass(ModelPipeline):
     data_path: Path
     
     model: VADModel
+    trainer: VADModelTrainer | None = None
     
     preprocessed_dir: Path
     preprocessed_files: list[Path]

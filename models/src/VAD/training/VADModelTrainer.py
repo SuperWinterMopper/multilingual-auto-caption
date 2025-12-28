@@ -6,6 +6,7 @@ import cpuinfo
 class VADModelTrainer:
     def __init__(self, model, train_ds_path, valid_ds_path, test_ds_path, loss_fn, logger, batch_size):
         self.model = model
+        self.logger = logger
         if torch.cuda.is_available():
             self.model.to('cuda')
             self.logger.log(f"Using GPU {torch.cuda.get_device_name(0)} for training")
@@ -16,7 +17,6 @@ class VADModelTrainer:
             
         self.loss_fn = loss_fn
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
-        self.logger = logger
         self.batch_size = batch_size
         
         self.train_ds_path = train_ds_path

@@ -1,0 +1,17 @@
+[project]
+name = "captioner"
+version = "0.1.0"
+description = "Service to embed multilingual captions to videos"
+authors = [
+    {name = "Keigo Healy",email = "afkhealy@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "transformers (>=4.57.3,<5.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

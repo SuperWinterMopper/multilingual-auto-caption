@@ -5,4 +5,4 @@ run-dev: setup
 	poetry run python -m src.app.app
 
 test: setup
-	poetry run pytest src/tests
+	poetry run pytest -s src/tests

@@ -19,11 +19,10 @@ class AppDataLoader():
         self.BUCKET = os.getenv("UPLOAD_BUCKET")
         if not self.BUCKET:
             raise ValueError("UPLOAD_BUCKET environment variable is not set")
-               
-        self.allowed_formats = ('.mp4', '.mp3', '.avi', '.mov', '.mkv', '.flv', '.wmv')
+
+        self.allowed_formats = ('.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv')
         self.content_types = {
             '.mp4': 'video/mp4',
-            '.mp3': 'audio/mpeg',
             '.avi': 'video/x-msvideo',
             '.mov': 'video/quicktime',
             '.mkv': 'video/x-matroska',
@@ -37,7 +36,7 @@ class AppDataLoader():
             raise ValueError(f"Only {', '.join(self.allowed_formats)} files are supported")
         
         try:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
             file_ext = filename[filename.rfind('.'):]
             key = f"{self.upload_dir}/videos/{timestamp}_{uuid.uuid4().hex}{file_ext}"
             expiration = 300  # 5 minutes

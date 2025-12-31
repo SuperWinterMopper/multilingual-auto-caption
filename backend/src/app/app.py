@@ -2,7 +2,9 @@ from flask import Flask, request
 import os
 import argparse
 from ..components.pipeline_runner import PipelineRunner
-from .data_loader import AppDataLoader
+from ..components.data_loader import AppDataLoader
+from ..components.logger import AppLogger
+import logging
 
 # read CLI args
 parser = argparse.ArgumentParser()
@@ -19,14 +21,22 @@ else:
     app.config["MODE"] = "dev"
     print("Running in DEVELOPMENT mode")
     
-@app.route("/uploads/presigned", methods=["GET"])
+@app.route("/presigned", methods=["GET"])
 def presigned_s3():
-    url = AppDataLoader.gen_s3_presigned_url()
-    return url, 200
+    filename = request.args.get("filename")
+    if not filename:
+        return "\"filename\" query parameter is required.", 400
+    try:
+        logger = AppLogger(log_prefix='s3_presign', level=logging.DEBUG, prod=(app.config["MODE"] == "prod"))
+        loader = AppDataLoader(logger=logger, prod=(app.config["MODE"] == "prod"))
+        url = loader.gen_s3_presigned_url(filename)
+        return url, 200
+    except Exception as e:
+        return "Error generating presigned URL", 500
 
 @app.route("/caption", methods=["POST"])
 def upload():
-    if "file" not in request.files:
+    if "file_path" not in request.files:
         return "File field missing from request.", 400
     
     runner = PipelineRunner(prod=(app.config["MODE"] == "prod"))

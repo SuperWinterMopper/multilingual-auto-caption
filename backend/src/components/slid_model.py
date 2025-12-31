@@ -1,6 +1,6 @@
 from .logger import AppLogger
 
-class SlidModel():
+class SLIDModel():
     def __init__(self, logger: AppLogger):
         self.logger = logger
-        self.logger.logger.info('SlidModel initialized')
+        self.logger.logger.info('SLIDModel initialized')

@@ -1,7 +1,6 @@
 import logging
 import datetime
 from pathlib import Path
-import time 
 import threading
 import psutil
 
@@ -20,9 +19,14 @@ class AppLogger():
         self.logger = logging.getLogger(__name__)
         self.logger.info(f'Logger initialized for {self.log_file}')
         
-        # run heartbeat_metrics thread
-        thread = threading.Thread(target=self.heartbeat_metrics, args=(60,), daemon=True)
-        thread.start()
+        # run heartbeat_metrics thread with proper stopping mechanism
+        self._stop_event = threading.Event()
+        self._heartbeat_thread = threading.Thread(
+            target=self.heartbeat_metrics,
+            args=(60,),
+            daemon=True
+        )
+        self._heartbeat_thread.start()
     
     def set_new_log_file(self, log_prefix: str):
         self.log_file = self.create_log_directory(logs_root=self.logs_root, log_prefix=log_prefix)
@@ -41,7 +45,7 @@ class AppLogger():
 
     def heartbeat_metrics(self, interval: int):
         process = psutil.Process()
-        while True:
+        while not self._stop_event.is_set():
             self.logger.info('Heartbeat: program/logger is running')
             # Memory usage
             mem_info = process.memory_info()
@@ -53,11 +57,22 @@ class AppLogger():
             # CPU usage
             cpu_percent = process.cpu_percent(interval=1)
             cpu_count = psutil.cpu_count()
-            self.logger.info(f'CPU: {cpu_percent:.2f}% / {cpu_count * 100}%')
+            if cpu_count:
+                self.logger.info(f'CPU: {cpu_percent:.2f}% / {cpu_count * 100}%')
+            else:
+                self.logger.info(f'CPU: {cpu_percent:.2f}%')
             
             # Disk usage
             disk_usage = psutil.disk_usage('/')
             disk_used_gb = disk_usage.used / (1024 ** 3)
             disk_total_gb = disk_usage.total / (1024 ** 3)
             self.logger.info(f'Disk: {disk_used_gb:.2f} GB / {disk_total_gb:.2f} GB')
-            time.sleep(interval)
+            
+            # sleep in a stoppable way
+            self._stop_event.wait(interval)
+
+    def stop(self):
+        self._stop_event.set()
+        # optional: wait briefly for it to finish
+        if self._heartbeat_thread.is_alive():
+            self._heartbeat_thread.join(timeout=1)

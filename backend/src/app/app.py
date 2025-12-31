@@ -11,7 +11,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--prod', action='store_true', help='Run the app in production mode (makes it not store large files on disk, just text and image log files)')
 args = parser.parse_args()
 
-
 app = Flask(__name__)
 
 if args.prod:
@@ -22,17 +21,20 @@ else:
     print("Running in DEVELOPMENT mode")
     
 @app.route("/presigned", methods=["GET"])
-def presigned_s3():
+def presigned_s3(): 
     filename = request.args.get("filename")
     if not filename:
         return "\"filename\" query parameter is required.", 400
+    
+    logger = AppLogger(log_prefix='s3_presign', level=logging.INFO, prod=(app.config["MODE"] == "prod"))
+    loader = AppDataLoader(logger=logger, prod=(app.config["MODE"] == "prod"))
     try:
-        logger = AppLogger(log_prefix='s3_presign', level=logging.DEBUG, prod=(app.config["MODE"] == "prod"))
-        loader = AppDataLoader(logger=logger, prod=(app.config["MODE"] == "prod"))
         url = loader.gen_s3_presigned_url(filename)
         return url, 200
     except Exception as e:
         return "Error generating presigned URL", 500
+    finally:
+        logger.stop()
 
 @app.route("/caption", methods=["POST"])
 def upload():
@@ -40,6 +42,9 @@ def upload():
         return "File field missing from request.", 400
     
     runner = PipelineRunner(prod=(app.config["MODE"] == "prod"))
+    
+    # requried to stop logging
+    runner.logger.stop()
     
     print("Finished upload job")
     

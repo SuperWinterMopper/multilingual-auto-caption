@@ -6,8 +6,8 @@ setup:
 run-dev: setup
 	poetry run python -m src.app.app
 
-test: setup
-	poetry run pytest -s src/tests
+test-pipe: setup
+	poetry run pytest -s -k test_health test_pipeline
 
 test-vis: setup
 	poetry run pytest -s -k test_log_segments_visualization

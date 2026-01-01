@@ -5,6 +5,8 @@ from ..components.pipeline_runner import PipelineRunner
 from ..components.data_loader import AppDataLoader
 from ..components.logger import AppLogger
 import logging
+from silero_vad import load_silero_vad
+from speechbrain.inference.classifiers import EncoderClassifier
 
 # read CLI args
 parser = argparse.ArgumentParser()
@@ -13,6 +15,10 @@ args = parser.parse_args()
 PROD = args.prod
 
 app = Flask(__name__)
+
+# define these globally to avoid re-loading on each request
+vad_model = load_silero_vad()
+slid_model = EncoderClassifier.from_hparams(source="speechbrain/lang-id-voxlingua107-ecapa", savedir="tmp")
 
 if args.prod:
     app.config["MODE"] = "prod"
@@ -58,7 +64,7 @@ def caption():
         return f"Error reading required uploadUrl parameter: {str(e)}", 400
 
     try:
-        runner = PipelineRunner(file_path=upload_url, prod=PROD)
+        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, prod=PROD)
         
         runner.run()
                 

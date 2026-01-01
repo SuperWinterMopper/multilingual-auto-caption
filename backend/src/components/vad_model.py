@@ -1,14 +1,14 @@
 from .logger import AppLogger
-from silero_vad import load_silero_vad, get_speech_timestamps
+from silero_vad import get_speech_timestamps
 import torch
 
 class VADModel():
-    def __init__(self, logger: AppLogger, prod=False):
+    def __init__(self, model, logger: AppLogger, prod=False):
         self.logger = logger
         self.prod = prod
+        self.model = model 
+        self.allowed_sample_rates = [16000] # silero VAD compatible rates
         self.logger.logger.info('VADModel initialized')
-        self.model = load_silero_vad()
-        self.allowed_sample_rates = [8000] + [i * 16000 for i in range(1, 10)] # silero VAD compatible rates
     
     def detect_speech(self, audio_tensor: torch.Tensor, sample_rate: int) -> list[dict[str, float]]:
         try:

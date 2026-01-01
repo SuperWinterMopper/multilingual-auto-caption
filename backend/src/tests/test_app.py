@@ -15,7 +15,7 @@ def test_health():
     assert response.status_code == 200, f"Health check failed with status text {response.text}"
     print("Health check successful")
 
-def test_presigned():
+def test_pipeline():
     response = requests.get(PRESIGNED_URL, params={"filename": str(TEST_FILE_PATH.name)})
     assert response.status_code == 200, f"Presigned URL request failed with status text {response.text}"
     print(f"Presigned test successful, response: {response.text}")

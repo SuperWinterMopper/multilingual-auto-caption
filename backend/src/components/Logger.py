@@ -26,7 +26,6 @@ class AppLogger():
         self.logger.handlers.clear()
         self.logger.addHandler(file_handler)
         self.logger.propagate = False
-        self.logger.info(f'Logger initialized for {self.log_file}')
         
         # run heartbeat_metrics thread with proper stopping mechanism
         self._stop_event = threading.Event()
@@ -38,6 +37,8 @@ class AppLogger():
         self._heartbeat_thread.start()
         
         self.log_machine_info()
+        
+        self.logger.info(f'Logger initialized for {self.log_file}')
     
     def log_machine_info(self):
         cpu = psutil.cpu_count

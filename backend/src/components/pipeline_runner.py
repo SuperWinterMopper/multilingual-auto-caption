@@ -7,14 +7,14 @@ from .video_processor import VideoProcessor
 import logging
 
 class PipelineRunner():
-    def __init__(self, file_path: str, prod=False):
+    def __init__(self, file_path: str, vad_model, slid_model, prod=False):
         self.prod = prod
         self.file_path = file_path
         
         self.logger = AppLogger(log_suffix='pipe', level=logging.INFO, prod=self.prod)
         self.loader = AppDataLoader(logger=self.logger, prod=self.prod)
-        self.vad_model = VADModel(logger=self.logger, prod=self.prod)
-        self.slid_model = SLIDModel(logger=self.logger, prod=self.prod)
+        self.vad_model = VADModel(model=vad_model, logger=self.logger, prod=self.prod)
+        self.slid_model = SLIDModel(model=slid_model, logger=self.logger, prod=self.prod)
         self.asr_model = ASRModel(logger=self.logger, prod=self.prod)
         self.video_processor = VideoProcessor(logger=self.logger, prod=self.prod)
         

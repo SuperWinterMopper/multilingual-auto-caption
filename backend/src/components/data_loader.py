@@ -2,7 +2,10 @@ import boto3
 from .logger import AppLogger
 import uuid
 import os 
+import tempfile
 from datetime import datetime
+from urllib.parse import urlparse
+from moviepy import VideoFileClip
 
 class AppDataLoader():
     def __init__(self, logger: AppLogger, prod=False):
@@ -30,6 +33,8 @@ class AppDataLoader():
             '.wmv': 'video/x-ms-wmv',
         }
         self.upload_dir = 'uploads'
+        
+        self.temp_files = []    
         
     def gen_s3_presigned_url(self, filename: str) -> dict:
         if not filename.lower().endswith(self.allowed_formats):
@@ -65,3 +70,60 @@ class AppDataLoader():
         except Exception as e:
             self.logger.logger.error(f"Error generating presigned URL: {str(e)}")
             raise
+        
+    def retrieve_video(self, s3_url: str) -> dict:
+        key = ""
+        try:
+            if s3_url.startswith("http"):
+                parsed = urlparse(s3_url)
+                key = parsed.path.lstrip("/")
+            else:
+                key = s3_url
+
+            self.logger.logger.info(f"Retrieving video from S3: {key}")
+            if not key.lower().endswith(self.allowed_formats):
+                raise ValueError(f"For downloading, only {', '.join(self.allowed_formats)} files are supported")
+
+            file_ext = key[key.rfind("."):]
+
+            # Create a temp file path in the logger's logs directory
+            temp_file = tempfile.NamedTemporaryFile(
+                suffix=file_ext, 
+                delete=False,
+                dir=self.logger.logs_root
+            )
+            temp_path = temp_file.name
+            temp_file.close()
+            
+            self.temp_files.append(temp_path)
+
+            # Stream download straight to disk
+            with open(temp_path, "wb") as f:
+                self.s3_client.download_fileobj(self.BUCKET, key, f)
+
+            video_clip = VideoFileClip(temp_path)
+
+            self.logger.logger.info(f"Successfully retrieved video: {key}")
+            return {
+                "clip": video_clip,
+                "temp_path": temp_path,
+                "extension": file_ext,
+                "key": key,
+                "bucket": self.BUCKET,
+            }
+
+        except self.s3_client.exceptions.NoSuchKey:
+            self.logger.logger.error(f"Video not found in S3: {key}")
+            raise FileNotFoundError(f"Video not found: {key}")
+        except Exception as e:
+            self.logger.logger.error(f"Error retrieving video: {str(e)}")
+            raise
+    
+    def cleanup_temp_files(self):
+        for temp_path in self.temp_files:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+                self.logger.logger.info(f"Deleted temporary file: {temp_path}")
+            else:
+                self.logger.logger.warning(f"Temporary file not found for deletion: {temp_path}")
+        self.temp_files = [] # clear temp files after cleanup

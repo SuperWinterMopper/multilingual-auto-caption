@@ -20,6 +20,10 @@ else:
     app.config["MODE"] = "dev"
     print("Running in DEVELOPMENT mode")
     
+@app.route("/health", methods=["GET"])
+def health_check():
+    return "OK", 200
+
 @app.route("/presigned", methods=["GET"])
 def presigned_s3(): 
     filename = request.args.get("filename")
@@ -32,22 +36,24 @@ def presigned_s3():
         url = loader.gen_s3_presigned_url(filename)
         return url, 200
     except Exception as e:
+        print(f"ERROR: {str(e)}")
+        logger.logger.error(f"Error generating presigned URL: {str(e)}")
         return "Error generating presigned URL", 500
     finally:
         logger.stop()
 
 @app.route("/caption", methods=["POST"])
 def upload():
-    if "file_path" not in request.files:
-        return "File field missing from request.", 400
+    if "url" not in request.files:
+        return "url field missing from request.", 400
     
     runner = PipelineRunner(prod=(app.config["MODE"] == "prod"))
     
     # requried to stop logging
     runner.logger.stop()
+    runner.data_loader.cleanup_temp_files()
     
     print("Finished upload job")
-    
     return "File uploaded successfully.", 200
     
 if __name__ == "__main__":

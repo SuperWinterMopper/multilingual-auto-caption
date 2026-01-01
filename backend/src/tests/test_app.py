@@ -35,9 +35,8 @@ def test_presigned():
     
     # Kick off captioning with the uploaded object
     caption_response = requests.post(
-        BASE_URL + "/caption",
-        files={"uploadUrl": (TEST_FILE_PATH.name, upload_url)},
-        timeout=300,
+        url=BASE_URL + "/caption",
+        json={"uploadUrl": upload_url},
     )
 
     assert caption_response.status_code == 200, f"Caption request failed with status {caption_response.status_code}: {caption_response.text}"

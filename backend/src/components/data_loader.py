@@ -90,7 +90,7 @@ class AppDataLoader():
             temp_file = tempfile.NamedTemporaryFile(
                 suffix=file_ext, 
                 delete=False,
-                dir=self.logger.logs_root
+                dir=self.logger.log_root
             )
             temp_path = temp_file.name
             temp_file.close()

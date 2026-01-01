@@ -47,8 +47,11 @@ def presigned_s3():
 @app.route("/caption", methods=["POST"])
 def caption():
     upload_url = ""
+    
     try:
-        upload_url = request.args.get("uploadUrl", "")
+        data = request.get_json()
+        print(f"Received caption request with data: {data}")
+        upload_url = data.get("uploadUrl", "")
         assert upload_url != ""
     except Exception as e:
         return f"Error reading required uploadUrl parameter: {str(e)}", 400

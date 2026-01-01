@@ -9,9 +9,11 @@ from moviepy import VideoFileClip
 
 class AppLogger():
     def __init__(self, log_prefix, level: int = logging.INFO, prod=False):
-        self.logs_root = Path(__file__).parent.parent.parent / 'logs'
+        self.logs_dir = Path(__file__).parent.parent.parent / 'logs'
+        self.log_file = None
+        self.log_root = None
         
-        self.set_new_log_file(log_prefix=log_prefix)
+        self.set_new_log_dir(log_prefix=log_prefix)
         
         logging.basicConfig(
             filename=str(self.log_file),
@@ -39,7 +41,7 @@ class AppLogger():
         disk = psutil.disk_usage("/")
         machine_info = (f"CPU: {platform.processor() or platform.uname().processor} | "
                 f"Cores: {cpu(False)}, Threads: {cpu(True)} | RAM: {ram:.1f} GB | "
-                f"Disk: {disk.total/(1024**3):.1f} GB/{disk.used/(1024**3):.1f} GB used")
+                f"Disk: {disk.used/(1024**3):.1f} GB / {disk.total/(1024**3):.1f} GB used")
         if torch.cuda.is_available():
             g = torch.cuda.get_device_properties(0).total_memory/(1024**3)
             machine_info += f" | GPU: {torch.cuda.get_device_name(0)} ({g:.1f} GB)"
@@ -47,10 +49,10 @@ class AppLogger():
             machine_info += " | GPU: None"
         self.logger.info(machine_info)
         
-    def set_new_log_file(self, log_prefix: str):
-        self.log_file = self.create_log_directory(logs_root=self.logs_root, log_prefix=log_prefix)
+    def set_new_log_dir(self, log_prefix: str):
+        self.log_root, self.log_file = self.create_log_directory(logs_root=self.logs_dir, log_prefix=log_prefix)
 
-    def create_log_directory(self, logs_root: Path, log_prefix: str) -> Path:
+    def create_log_directory(self, logs_root: Path, log_prefix: str) -> tuple[Path, Path]:
         logs_root.mkdir(parents=True, exist_ok=True)
         
         root = logs_root / f"{Path(log_prefix).stem}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}"
@@ -59,8 +61,8 @@ class AppLogger():
         log_path = root / "main.log"
         
         if not log_path.exists():
-            root.touch()
-        return log_path
+            log_path.touch()
+        return root, log_path
 
     def heartbeat_metrics(self, interval: int):
         while not self._stop_event.is_set():

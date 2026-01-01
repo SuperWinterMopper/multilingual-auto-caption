@@ -11,7 +11,7 @@ class PipelineRunner():
         self.prod = prod
         self.file_path = file_path
         
-        self.logger = AppLogger(log_prefix='pipe_run', level=logging.INFO, prod=self.prod)
+        self.logger = AppLogger(log_prefix='pipe', level=logging.INFO, prod=self.prod)
         self.loader = AppDataLoader(logger=self.logger, prod=self.prod)
         self.vad_model = VADModel(logger=self.logger, prod=self.prod)
         self.slid_model = SLIDModel(logger=self.logger, prod=self.prod)
@@ -28,10 +28,10 @@ class PipelineRunner():
         self.logger.log_video_metrics(video)
         self.logger.log_metrics_snapshot()
         
-        sample_rate, audio_tensor = self.video_processor.extract_audio(video)
+        sample_rate, audio_tensor = self.video_processor.extract_audio(
+            video=video, 
+            allowed_sample_rates=self.vad_model.allowed_sample_rates)
+        
         segments = self.vad_model.detect_speech(audio_tensor, sample_rate)
         
         print(f"segments: {segments}")
-        
-        
-        

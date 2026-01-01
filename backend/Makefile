@@ -8,3 +8,6 @@ run-dev: setup
 
 test: setup
 	poetry run pytest -s src/tests
+
+test-vis: setup
+	poetry run pytest -s -k test_log_segments_visualization

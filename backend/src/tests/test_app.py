@@ -1,5 +1,10 @@
 import requests
 from pathlib import Path
+from moviepy import VideoFileClip
+import torch
+
+from ..components.logger import AppLogger
+from ..dataclasses.audio_segment import AudioSegment
 
 BASE_URL = "http://localhost:5000"
 PRESIGNED_URL = BASE_URL + "/presigned"
@@ -41,3 +46,39 @@ def test_presigned():
 
     assert caption_response.status_code == 200, f"Caption request failed with status {caption_response.status_code}: {caption_response.text}"
     print(f"Caption request accepted for {upload_url}")
+
+
+def test_log_segments_visualization():
+    """Test the log_segments_visualization method with sample audio segments."""
+    # Initialize logger
+    logger = AppLogger(log_suffix="test_segments_viz", prod=False)
+    
+    # Load video
+    video = VideoFileClip(str(TEST_FILE_PATH))
+    
+    # Create audio segments with specified time ranges and languages
+    # 2 segments with "English", 1 segment with "Spanish"
+    segment_data = [
+        {'start': 1.4, 'end': 4.7, 'lang': 'Japanese'},
+        {'start': 6.0, 'end': 8.3, 'lang': 'English'},
+        {'start': 10.5, 'end': 12.55, 'lang': 'English'}
+    ]
+    
+    audio_segments = []
+    dummy_audio = torch.zeros(int(video.duration * 16000), dtype=torch.float32)
+    for data in segment_data:
+        # Create a dummy audio tensor (1 second of silence at 16kHz as placeholder)
+        audio_segments.append(AudioSegment(
+            audio=dummy_audio,
+            start_time=data['start'],
+            end_time=data['end'],
+            lang=data['lang'],
+            orig_file=TEST_FILE_PATH.name
+        ))
+    
+    logger.log_segments_visualization(video, audio_segments)
+    
+    video.close()
+    logger.stop()
+    
+    print("log_segments_visualization test completed successfully. Check under /logs for the visualization image.")

@@ -10,7 +10,7 @@ class VADModel():
         self.model = load_silero_vad()
         self.allowed_sample_rates = [8000] + [i * 16000 for i in range(1, 10)] # silero VAD compatible rates
     
-    def detect_speech(self, audio_tensor: torch.Tensor, sample_rate: int) -> list:
+    def detect_speech(self, audio_tensor: torch.Tensor, sample_rate: int) -> list[dict[str, float]]:
         try:
             self.logger.logger.info(f'Starting VAD processing')
             speech_timestamps = get_speech_timestamps(

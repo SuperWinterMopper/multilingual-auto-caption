@@ -11,7 +11,7 @@ class PipelineRunner():
         self.prod = prod
         self.file_path = file_path
         
-        self.logger = AppLogger(log_prefix='pipe', level=logging.INFO, prod=self.prod)
+        self.logger = AppLogger(log_suffix='pipe', level=logging.INFO, prod=self.prod)
         self.loader = AppDataLoader(logger=self.logger, prod=self.prod)
         self.vad_model = VADModel(logger=self.logger, prod=self.prod)
         self.slid_model = SLIDModel(logger=self.logger, prod=self.prod)
@@ -32,6 +32,25 @@ class PipelineRunner():
             video=video, 
             allowed_sample_rates=self.vad_model.allowed_sample_rates)
         
-        segments = self.vad_model.detect_speech(audio_tensor, sample_rate)
+        voiced_segments = self.vad_model.detect_speech(audio_tensor, sample_rate)
         
-        print(f"segments: {segments}")
+        # break up tensor into audio segments
+        audio_segments = self.video_processor.segment_audio(
+            audio_tensor=audio_tensor,
+            segments=voiced_segments,
+            sample_rate=sample_rate,
+            orig_file=self.file_path
+        )
+        self.logger.log_segments_visualization(video, audio_segments)
+        
+        audio_segments = self.slid_model.classify_segments_language(audio_segments)
+        self.logger.log_segments_visualization(video, audio_segments)
+        
+        print(f"Finished language identification for {len(audio_segments)} segments for NOW")
+        
+        # requried to stop logging
+        self.logger.stop()
+        
+        # don't delete files if in dev mode
+        if self.prod:
+            self.loader.cleanup_temp_files()

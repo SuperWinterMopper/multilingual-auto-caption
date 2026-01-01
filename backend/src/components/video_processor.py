@@ -3,6 +3,7 @@ from moviepy import VideoFileClip
 import torch
 from bisect import bisect_right
 import torchaudio.transforms as T
+from ..dataclasses.audio_segment import AudioSegment
 
 class VideoProcessor():
     def __init__(self, logger: AppLogger, prod=False):
@@ -48,3 +49,31 @@ class VideoProcessor():
         except Exception as e:
             self.logger.logger.error(f"Error extracting audio from video: {str(e)}")
             raise
+    
+    def segment_audio(self, audio_tensor: torch.Tensor, segments: list[dict[str, float]], sample_rate: int, orig_file: str) -> list[AudioSegment]:
+        result = []
+        assert audio_tensor.ndim == 1, "Audio tensor must be mono"
+        try:
+            for segment in segments:
+                start_time = segment['start']
+                end_time = segment['end']
+                
+                start_idx = int(start_time * sample_rate)
+                end_idx = int(end_time * sample_rate)
+                
+                audio_segment = audio_tensor[start_idx:end_idx]
+                
+                result.append(AudioSegment(
+                    audio=audio_segment,
+                    start_time=start_time,
+                    end_time=end_time,
+                    orig_file=orig_file
+                ))
+        except Exception as e:
+            self.logger.logger.error(f"Error segmenting audio: {str(e)}")
+            raise
+        
+        assert len(result) == len(segments), "Number of audio segments does not match number of segments"
+        self.logger.logger.info(f"Segmented audio into {len(result)} segments for file {orig_file}")
+        return result
+        

@@ -31,7 +31,7 @@ def presigned_s3():
     if not filename:
         return "\"filename\" query parameter is required.", 400
     
-    logger = AppLogger(log_prefix='s3_presign', level=logging.INFO, prod=PROD)
+    logger = AppLogger(log_suffix='s3_presign', level=logging.INFO, prod=PROD)
     loader = AppDataLoader(logger=logger, prod=PROD)
     try:
         url = loader.gen_s3_presigned_url(filename)
@@ -42,7 +42,8 @@ def presigned_s3():
         return "Error generating presigned URL", 500
     finally:
         logger.stop()
-        loader.cleanup_temp_files()
+        if PROD:
+            loader.cleanup_temp_files()
 
 @app.route("/caption", methods=["POST"])
 def caption():
@@ -60,11 +61,7 @@ def caption():
         runner = PipelineRunner(file_path=upload_url, prod=PROD)
         
         runner.run()
-        
-        # requried to stop logging
-        runner.logger.stop()
-        runner.loader.cleanup_temp_files()
-        
+                
         print("Finished upload job")
         return "File uploaded successfully.", 200
     except Exception as e:

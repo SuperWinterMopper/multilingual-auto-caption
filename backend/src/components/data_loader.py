@@ -71,7 +71,7 @@ class AppDataLoader():
             self.logger.logger.error(f"Error generating presigned URL: {str(e)}")
             raise
         
-    def retrieve_video(self, s3_url: str) -> dict:
+    def retrieve_video(self, s3_url: str) -> VideoFileClip:
         key = ""
         try:
             if s3_url.startswith("http"):
@@ -104,17 +104,11 @@ class AppDataLoader():
             video_clip = VideoFileClip(temp_path)
 
             self.logger.logger.info(f"Successfully retrieved video: {key}")
-            return {
-                "clip": video_clip,
-                "temp_path": temp_path,
-                "extension": file_ext,
-                "key": key,
-                "bucket": self.BUCKET,
-            }
+            return video_clip
 
         except self.s3_client.exceptions.NoSuchKey:
             self.logger.logger.error(f"Video not found in S3: {key}")
-            raise FileNotFoundError(f"Video not found: {key}")
+            raise FileNotFoundError(f"Video not found, need to have been uploaded beforehand: {key}")
         except Exception as e:
             self.logger.logger.error(f"Error retrieving video: {str(e)}")
             raise

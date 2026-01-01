@@ -10,6 +10,7 @@ import logging
 parser = argparse.ArgumentParser()
 parser.add_argument('--prod', action='store_true', help='Run the app in production mode (makes it not store large files on disk, just text and image log files)')
 args = parser.parse_args()
+PROD = args.prod
 
 app = Flask(__name__)
 
@@ -30,8 +31,8 @@ def presigned_s3():
     if not filename:
         return "\"filename\" query parameter is required.", 400
     
-    logger = AppLogger(log_prefix='s3_presign', level=logging.INFO, prod=(app.config["MODE"] == "prod"))
-    loader = AppDataLoader(logger=logger, prod=(app.config["MODE"] == "prod"))
+    logger = AppLogger(log_prefix='s3_presign', level=logging.INFO, prod=PROD)
+    loader = AppDataLoader(logger=logger, prod=PROD)
     try:
         url = loader.gen_s3_presigned_url(filename)
         return url, 200
@@ -41,20 +42,31 @@ def presigned_s3():
         return "Error generating presigned URL", 500
     finally:
         logger.stop()
+        loader.cleanup_temp_files()
 
 @app.route("/caption", methods=["POST"])
-def upload():
-    if "url" not in request.files:
-        return "url field missing from request.", 400
-    
-    runner = PipelineRunner(prod=(app.config["MODE"] == "prod"))
-    
-    # requried to stop logging
-    runner.logger.stop()
-    runner.data_loader.cleanup_temp_files()
-    
-    print("Finished upload job")
-    return "File uploaded successfully.", 200
+def caption():
+    upload_url = ""
+    try:
+        upload_url = request.args.get("uploadUrl", "")
+        assert upload_url != ""
+    except Exception as e:
+        return f"Error reading required uploadUrl parameter: {str(e)}", 400
+
+    try:
+        runner = PipelineRunner(file_path=upload_url, prod=PROD)
+        
+        runner.run()
+        
+        # requried to stop logging
+        runner.logger.stop()
+        runner.loader.cleanup_temp_files()
+        
+        print("Finished upload job")
+        return "File uploaded successfully.", 200
+    except Exception as e:
+        print(f"ERROR: {str(e)}")
+        return f"Error processing upload: {str(e)}", 500
     
 if __name__ == "__main__":
     host = os.environ.get("HOST", "0.0.0.0")

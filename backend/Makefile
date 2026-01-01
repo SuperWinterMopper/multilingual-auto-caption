@@ -1,5 +1,7 @@
+export UPLOAD_BUCKET := multilingual-auto-caption
+
 setup:
-	export UPLOAD_BUCKET=multilingual-auto-caption && echo "UPLOAD_BUCKET set" 
+	echo "UPLOAD_BUCKET: $(UPLOAD_BUCKET)"
 
 run-dev: setup
 	poetry run python -m src.app.app

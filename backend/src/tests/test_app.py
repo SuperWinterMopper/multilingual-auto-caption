@@ -32,3 +32,13 @@ def test_presigned():
     
     assert upload_response.status_code == 200, f"S3 upload failed with status {upload_response.status_code}: {upload_response.text}"
     print(f"File successfully uploaded to s3://{bucket}/{key}")
+    
+    # Kick off captioning with the uploaded object
+    caption_response = requests.post(
+        BASE_URL + "/caption",
+        files={"uploadUrl": (TEST_FILE_PATH.name, upload_url)},
+        timeout=300,
+    )
+
+    assert caption_response.status_code == 200, f"Caption request failed with status {caption_response.status_code}: {caption_response.text}"
+    print(f"Caption request accepted for {upload_url}")

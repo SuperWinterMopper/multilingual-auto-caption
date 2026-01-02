@@ -7,6 +7,7 @@ class SLIDModel():
         self.logger = logger
         self.prod = prod
         self.model = model
+        self.allowed_sample_rates = [16000]  # Silero LID requires 16 kHz audio
         self.index2lang = self.create_silero_index2lang()
         self.logger.logger.info('SLIDModel initialized')
         
@@ -14,6 +15,10 @@ class SLIDModel():
         self.logger.logger.info(f"Beginning language classification for {len(audio_segments)} audio segments")
         for seg in audio_segments:
             try:
+                # Validate sample rate
+                if seg.sample_rate not in self.allowed_sample_rates:
+                    raise ValueError(f"Segment {seg.id} has incorrect sample rate {seg.sample_rate} Hz. Expected one of {self.allowed_sample_rates}")
+                
                 prediction = self.model.classify_batch(seg.audio)
                 lang_code = prediction[3][0]  # Extract ISO code
                 seg.lang = lang_code
@@ -24,7 +29,7 @@ class SLIDModel():
                     
             except Exception as e:
                 self.logger.logger.error(f"Error classifying language for segment {seg.id}: {str(e)}")
-                seg.lang = "ERROR"
+                raise
         self.logger.logger.info(f"Completed language classification for {len(audio_segments)} audio segments")
         self.logger.log_audio_segments_list(audio_segments)
         return audio_segments
@@ -32,7 +37,8 @@ class SLIDModel():
     def parse_prediction(self, prediction) -> dict[str, float]:
         k = 5 # top k predictions to return
         
-        likelihoods = np.exp(prediction[0])
+        likelihoods = np.exp(prediction[0][0])
+        breakpoint()
         
         idx = np.argpartition(likelihoods, -k)[-k:]
         sorted_idx = idx[np.argsort(likelihoods[idx])[::-1]]

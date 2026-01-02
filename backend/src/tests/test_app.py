@@ -7,8 +7,15 @@ from ..components.logger import AppLogger
 from ..dataclasses.audio_segment import AudioSegment
 
 BASE_URL = "http://localhost:5000"
+TEST_FILES = Path(__file__).parent / "files"
 PRESIGNED_URL = BASE_URL + "/presigned"
-TEST_FILE_PATH = Path(__file__).parent / "files" / "test.MOV"
+TEST_FILE_PATH = TEST_FILES / "test.MOV"
+FRENCH_TEST_FILE_PATH = TEST_FILES / "french.mp4"
+HINDI_TEST_FILE_PATH = TEST_FILES / "hindi.mp4"
+JAPANESE_TEST_FILE_PATH = TEST_FILES / "japanese.mp4"
+PORTUGUESE_TEST_FILE_PATH = TEST_FILES / "portuguese.mp4"
+SPANISH_TEST_FILE_PATH = TEST_FILES / "spanish.mp4"
+KOREAN_TEST_FILE_PATH = TEST_FILES / "korean.mp4"
 
 def test_health():
     response = requests.get(BASE_URL + "/health")

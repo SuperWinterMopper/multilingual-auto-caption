@@ -18,6 +18,12 @@ class PipelineRunner():
         self.asr_model = ASRModel(logger=self.logger, prod=self.prod)
         self.video_processor = VideoProcessor(logger=self.logger, prod=self.prod)
         
+        self.allowed_sample_rates = self.consolidate_sample_rates([
+            self.vad_model.allowed_sample_rates,
+            self.asr_model.allowed_sample_rates,
+            self.slid_model.allowed_sample_rates
+        ])
+        
         self.logger.logger.info('Runner initialized')
     
     def run(self):
@@ -30,7 +36,8 @@ class PipelineRunner():
         
         sample_rate, audio_tensor = self.video_processor.extract_audio(
             video=video, 
-            allowed_sample_rates=self.vad_model.allowed_sample_rates)
+            allowed_sample_rates=self.allowed_sample_rates
+        )
         
         voiced_segments = self.vad_model.detect_speech(audio_tensor, sample_rate)
         
@@ -71,3 +78,7 @@ class PipelineRunner():
         # don't delete files if in dev mode
         if self.prod:
             self.loader.cleanup_temp_files()
+
+    def consolidate_sample_rates(self, sample_rates: list[list[int]]) -> list[int]:
+        consolidated = set(rate for rates in sample_rates for rate in rates)
+        return sorted(list(consolidated))

@@ -73,10 +73,11 @@ def test_log_segments_visualization():
             start_time=data['start'],
             end_time=data['end'],
             lang=data['lang'],
-            orig_file=TEST_FILE_PATH.name
+            orig_file=TEST_FILE_PATH.name,
+            sample_rate=16000 if not video.audio else int(video.audio.fps)
         ))
     
-    logger.log_segments_visualization(video, audio_segments)
+    logger.log_segments_visualization(log_prefix="test", video=video, audio_segments=audio_segments)
     
     video.close()
     logger.stop()

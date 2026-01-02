@@ -41,10 +41,27 @@ class PipelineRunner():
             sample_rate=sample_rate,
             orig_file=self.file_path
         )
-        self.logger.log_segments_visualization(video, audio_segments)
+        self.logger.log_segments_visualization(
+            log_prefix="init", 
+            video=video, 
+            audio_segments=audio_segments
+        )
         
+        # classify each segment's language
         audio_segments = self.slid_model.classify_segments_language(audio_segments)
-        self.logger.log_segments_visualization(video, audio_segments)
+        self.logger.log_segments_visualization(
+            log_prefix="classified", 
+            video=video, 
+            audio_segments=audio_segments
+        )
+        
+        # chunk segments to max caption duration
+        audio_segments = self.video_processor.chunk_segments(audio_segments)
+        self.logger.log_segments_visualization(
+            log_prefix="chunked_classified", 
+            video=video, 
+            audio_segments=audio_segments
+        )
         
         print(f"Finished language identification for {len(audio_segments)} segments for NOW")
         

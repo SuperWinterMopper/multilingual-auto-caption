@@ -11,6 +11,7 @@ class AudioSegment:
     start_time: float
     end_time: float
     orig_file: str
+    sample_rate: int
     lang: str = unknown_language
     text: str = unknown_text
     id: uuid.UUID = uuid.uuid4()

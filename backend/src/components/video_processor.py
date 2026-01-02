@@ -4,12 +4,15 @@ import torch
 from bisect import bisect_right
 import torchaudio.transforms as T
 from ..dataclasses.audio_segment import AudioSegment
+import math
+import numpy as np
 
 class VideoProcessor():
     def __init__(self, logger: AppLogger, prod=False):
         self.logger = logger
         self.prod = prod
         self.logger.logger.info('VideoProcessor initialized')
+        self.max_caption_duration = 3 # maximum length any 1 subtitle is on screen
         
     def extract_audio(self, video: VideoFileClip, allowed_sample_rates: list[int]) -> tuple[int, torch.Tensor]:
         try:
@@ -67,7 +70,8 @@ class VideoProcessor():
                     audio=audio_segment,
                     start_time=start_time,
                     end_time=end_time,
-                    orig_file=orig_file
+                    orig_file=orig_file,
+                    sample_rate=sample_rate
                 ))
         except Exception as e:
             self.logger.logger.error(f"Error segmenting audio: {str(e)}")
@@ -77,3 +81,47 @@ class VideoProcessor():
         self.logger.logger.info(f"Segmented audio into {len(result)} segments for file {orig_file}")
         return result
         
+    def chunk_segments(self, audio_segments: list[AudioSegment]) -> list[AudioSegment]:
+        assert all(seg.audio.ndim == 1 for seg in audio_segments), "All audio segments must be mono"
+        self.logger.logger.info(f"Chunking {len(audio_segments)} audio segments with max duration {self.max_caption_duration} seconds")
+        
+        def chunk_segment(seg: AudioSegment) -> list[AudioSegment]:
+            try:
+                duration = seg.end_time - seg.start_time
+                num_chunks = int(math.ceil(duration / self.max_caption_duration))
+                chunks = []
+                for chunk in range(num_chunks):
+                    start_idx = int((chunk * self.max_caption_duration) * seg.sample_rate)
+                    end_idx = int(((chunk + 1) * self.max_caption_duration) * seg.sample_rate)
+                    
+                    start_time = seg.start_time + chunk * self.max_caption_duration
+                    end_time = min(seg.start_time + (chunk + 1) * self.max_caption_duration, seg.end_time)
+                    
+                    chunk_audio = seg.audio[start_idx:end_idx]
+                    chunks.append(AudioSegment(
+                        audio=chunk_audio,
+                        start_time=start_time,
+                        end_time=end_time,
+                        orig_file=seg.orig_file,
+                        sample_rate=seg.sample_rate,
+                        lang=seg.lang,
+                    ))
+                return chunks
+            except Exception as e:
+                self.logger.logger.error(f"Error chunking segment {seg.id}: {str(e)}")
+                raise
+    
+        new_segments = []
+        for seg in audio_segments:
+            chunked = chunk_segment(seg)
+            assert chunked[0].start_time == seg.start_time, "Chunking altered start time"
+            assert chunked[-1].end_time == seg.end_time, "Chunking altered end time"
+            
+            # extra checking only in dev mode
+            if not self.prod:
+                assert sum(c.audio.numel() for c in chunked) == seg.audio.numel(), "Chunking altered total audio samples"
+                assert np.isclose(sum(c.end_time - c.start_time for c in chunked), (seg.end_time - seg.start_time)), "Chunking altered total duration"
+            new_segments.extend(chunked)
+        
+        self.logger.logger.info(f"Finished chunking into {len(new_segments)} segments from {len(audio_segments)} original segments")
+        return new_segments

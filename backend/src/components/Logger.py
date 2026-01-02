@@ -112,7 +112,7 @@ class AppLogger():
     def log_video_metrics(self, video: VideoFileClip):
         self.logger.info(f"Video Metrics: duration={video.duration}s, fps={video.fps}, size={video.size}")
     
-    def log_segments_visualization(self, video: VideoFileClip, audio_segments: list[AudioSegment]):
+    def log_segments_visualization(self, log_prefix: str, video: VideoFileClip, audio_segments: list[AudioSegment]):
         if self.prod:
             return  # skip in prod mode
         
@@ -129,7 +129,7 @@ class AppLogger():
         
         # Get unique languages and assign colors
         langs = list(set(seg.lang for seg in audio_segments))
-        colors = plt.cm.tab10(range(len(langs)))
+        colors = plt.cm.get_cmap('tab10')(range(len(langs)))
         lang_to_color = {lang: colors[i] for i, lang in enumerate(langs)}
         
         # Draw video duration bar at the bottom
@@ -146,16 +146,17 @@ class AppLogger():
         handles.insert(0, mpatches.Patch(color='lightgray', label='Video Duration'))
         ax.legend(handles=handles, loc='upper left', bbox_to_anchor=(1, 1))
         
+        max_title_len = 30
         # Labels and title
         ax.set_xlabel('Time (seconds)')
-        ax.set_title(f'Audio Segments: {orig_file}')
+        ax.set_title(f'Audio Segments: {orig_file[:max_title_len]}{"..." if len(orig_file) > max_title_len else ""}')
         ax.set_ylim(-0.5, len(audio_segments) + 0.5)
         ax.set_xlim(0, video.duration)
         ax.set_yticks(range(len(audio_segments) + 1))
         ax.set_yticklabels(['Video'] + [f'Segment {i}' for i in range(1, len(audio_segments) + 1)])
         
         # Save figure
-        viz_path = self.log_root / f"seg_vis_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.png"
+        viz_path = self.log_root / f"{log_prefix}_vis_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.png"
         plt.savefig(viz_path, dpi=100, bbox_inches='tight')
         plt.close()
         

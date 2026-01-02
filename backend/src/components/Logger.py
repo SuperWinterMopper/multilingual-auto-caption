@@ -192,3 +192,19 @@ class AppLogger():
                 log_lines.append(format_segment(audio_segments[i], i + 1))
         
         self.logger.info("\n".join(log_lines))
+    
+    def log_transcription_results(self, audio_segments: list[AudioSegment], log_prefix: str):
+        if self.prod:
+            return  # skip in prod mode
+        
+        if not audio_segments:
+            self.logger.info("No audio segments to log transcription results.")
+            return
+        
+        results_path = self.log_root / f"{log_prefix}_transcription_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.txt"
+        
+        with open(results_path, 'w', encoding='utf-8') as f:
+            for seg in audio_segments:
+                f.write(f"{seg.start_time:.2f}\t{seg.end_time:.2f}\t{seg.text}\n")
+        
+        self.logger.info(f"Transcription results saved to {results_path}")

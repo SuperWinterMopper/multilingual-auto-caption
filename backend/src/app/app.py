@@ -7,6 +7,8 @@ from ..components.logger import AppLogger
 import logging
 from silero_vad import load_silero_vad
 from speechbrain.inference.classifiers import EncoderClassifier
+import torch
+from faster_whisper import WhisperModel
 
 # read CLI args
 parser = argparse.ArgumentParser()
@@ -16,9 +18,25 @@ PROD = args.prod
 
 app = Flask(__name__)
 
+def load_asr_model() -> WhisperModel:
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    compute_type = "float16" if torch.cuda.is_available() else "float32"
+
+    # load model on GPU if available, else cpu
+    model = WhisperModel("distil-whisper/distil-large-v3.5-ct2", device=device, compute_type=compute_type)
+
+    return model
+        
+def load_slid_model():
+    return EncoderClassifier.from_hparams(source="speechbrain/lang-id-voxlingua107-ecapa", savedir="tmp")
+
+def load_vad_model():
+    return load_silero_vad()
+    
 # define these globally to avoid re-loading on each request
-vad_model = load_silero_vad()
-slid_model = EncoderClassifier.from_hparams(source="speechbrain/lang-id-voxlingua107-ecapa", savedir="tmp")
+vad_model = load_vad_model()
+slid_model = load_slid_model()
+asr_model = load_asr_model()
 
 if args.prod:
     app.config["MODE"] = "prod"
@@ -64,7 +82,7 @@ def caption():
         return f"Error reading required uploadUrl parameter: {str(e)}", 400
 
     try:
-        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, prod=PROD)
+        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, asr_model=asr_model, prod=PROD)
         
         runner.run()
                 

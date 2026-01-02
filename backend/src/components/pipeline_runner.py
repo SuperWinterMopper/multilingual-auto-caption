@@ -7,7 +7,7 @@ from .video_processor import VideoProcessor
 import logging
 
 class PipelineRunner():
-    def __init__(self, file_path: str, vad_model, slid_model, prod=False):
+    def __init__(self, file_path: str, vad_model, slid_model, asr_model,prod=False):
         self.prod = prod
         self.file_path = file_path
         
@@ -15,7 +15,7 @@ class PipelineRunner():
         self.loader = AppDataLoader(logger=self.logger, prod=self.prod)
         self.vad_model = VADModel(model=vad_model, logger=self.logger, prod=self.prod)
         self.slid_model = SLIDModel(model=slid_model, logger=self.logger, prod=self.prod)
-        self.asr_model = ASRModel(logger=self.logger, prod=self.prod)
+        self.asr_model = ASRModel(logger=self.logger, model=asr_model, prod=self.prod)
         self.video_processor = VideoProcessor(logger=self.logger, prod=self.prod)
         
         self.allowed_sample_rates = self.consolidate_sample_rates([
@@ -68,6 +68,12 @@ class PipelineRunner():
             log_prefix="chunked_classified", 
             video=video, 
             audio_segments=audio_segments
+        )
+        
+        audio_segments = self.asr_model.transcribe_segments(audio_segments)
+        self.logger.log_transcription_results(
+            audio_segments=audio_segments, 
+            log_prefix="transcribed"
         )
         
         print(f"Finished language identification for {len(audio_segments)} segments for NOW")

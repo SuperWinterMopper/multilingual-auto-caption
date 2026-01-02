@@ -1,6 +1,0 @@
-label_encoder.txt: 2.20kB [00:00, 4.96MB/s]
-/mnt/c/Users/afkhe/Programming/Projects/ML/multilingual-auto-caption/backend/.venv/lib/python3.12/site-packages/silero_vad/utils_vad.py:305: UserWarning: Sampling rate is a multiply of 16000, casting to 16000 manually!
-  warnings.warn('Sampling rate is a multiply of 16000, casting to 16000 manually!')
-CategoricalEncoder.expect_len was never called: assuming category count of 107 to be correct! Sanity check your encoder using `.expect_len`. Ensure that downstream code also uses the correct size. If you are sure this does not apply to you, use `.ignore_len`.
-ERROR: unhashable type: 'list'
-127.0.0.1 - - [01/Jan/2026 16:25:05] "POST /caption HTTP/1.1" 500 -

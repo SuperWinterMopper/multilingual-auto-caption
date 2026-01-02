@@ -11,3 +11,6 @@ test-pipe: setup
 
 test-vis: setup
 	poetry run pytest -s -k test_log_segments_visualization
+
+test-parse: setup
+	poetry run pytest -s -k test_parse_prediction

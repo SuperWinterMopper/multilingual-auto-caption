@@ -1,6 +1,7 @@
 from .logger import AppLogger
 from ..dataclasses.audio_segment import AudioSegment
 import numpy as np
+import torch
 
 class SLIDModel():
     def __init__(self, model, logger: AppLogger, prod=False):
@@ -20,7 +21,7 @@ class SLIDModel():
                     raise ValueError(f"Segment {seg.id} has incorrect sample rate {seg.sample_rate} Hz. Expected one of {self.allowed_sample_rates}")
                 
                 prediction = self.model.classify_batch(seg.audio)
-                lang_code = prediction[3][0]  # Extract ISO code
+                lang_code = prediction[3][0].split(':')[0]  # Extract ISO code only
                 seg.lang = lang_code
                 
                 if not self.prod: # log detailed confidences of model in dev mode
@@ -35,18 +36,18 @@ class SLIDModel():
         return audio_segments
 
     def parse_prediction(self, prediction) -> dict[str, float]:
-        k = 5 # top k predictions to return
-        
-        likelihoods = np.exp(prediction[0][0])
-        breakpoint()
-        
-        idx = np.argpartition(likelihoods, -k)[-k:]
-        sorted_idx = idx[np.argsort(likelihoods[idx])[::-1]]
-        
-        ret = {}
-        for i in sorted_idx:
-            ret[self.index2lang[i]] = likelihoods[i]
-        return ret
+        try:
+            k = 3 # top k predictions to return
+            likelihoods: np.ndarray = np.exp(prediction[0][0].numpy())
+            top_k = np.argsort(likelihoods)[-k:][::-1]
+                        
+            ret = {}
+            for i in top_k:
+                ret[self.index2lang[i]] = likelihoods[i]
+            return ret
+        except Exception as e:
+            self.logger.logger.error(f"Error parsing SLID prediction from speechbrain: {str(e)}")
+            raise
     
     def create_silero_index2lang(self) -> dict[int, str]:
         return {

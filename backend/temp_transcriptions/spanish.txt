@@ -1,0 +1,52 @@
+[0.00 - 4.20]  The eyes of all are still put in Camila Mendoza Olmos,
+[4.20 - 7.60]  who disappeared in the night of Christmas in San Antonio, Texas.
+[7.60 - 10.00]  And it's that, according to what confirmed his family,
+[10.00 - 13.80]  in social media, The Body Without Life, the Morning of the Martes,
+[13.80 - 15.20]  it is about the young.
+[15.20 - 18.40]  El Alguazil Javier Salazar, who lead the investigation,
+[18.40 - 19.60]  spoke with Univision.
+[19.60 - 24.20]  We, we had not reported publicly,
+[24.20 - 27.20]  but we were looking for a weapon,
+[27.20 - 29.96]  a pistol that,
+[30.00 - 33.44]  It was of a family of Camila.
+[33.44 - 39.24]  We thought that there was a chance that she had been
+[39.24 - 39.62]  that she had been
+[39.62 - 40.88]  I had that pistol.
+[40.88 - 44.24]  In the body that we found we did
+[44.24 - 45.18]  find a pistol.
+[45.18 - 47.00]  The last images of the young
+[47.00 - 48.60]  Hispanic were being plasmadas
+[48.60 - 50.04]  in cameras of the neighbors,
+[50.04 - 51.04]  as well as in the camera
+[51.04 - 52.80]  of the table of a conductor
+[52.80 - 54.00]  where you see Camila
+[54.00 - 55.00]  walking before the
+[55.00 - 56.64]  amnest.
+[56.64 - 57.76]  They were days of intense
+[57.76 - 66.08]  of
+[66.08 - 68.08]  there are flowers and other details.
+[68.08 - 70.08]  Very, very, very sad.
+[70.08 - 76.08]  Uh, and the family just forever in our prayers and thoughts.
+[76.08 - 78.08]  Information of Camila had been passing
+[78.08 - 80.08]  for a depression after a rupture amorosa
+[80.08 - 82.08]  and they were able to the authorities
+[82.08 - 84.08]  to not discard the possibility of a suicide.
+[84.08 - 88.08]  Now, right now we know that during this time of the year,
+[88.08 - 91.08]  uh, uh, the fiestas, uh,
+[91.08 - 96.08]  much people, they, they enter something like that,
+[96.08 - 98.08]  also.
+[98.08 - 100.08]  also with this child,
+[100.08 - 102.08]  she was also having
+[102.08 - 103.08]  personal problems.
+[103.08 - 104.08]  According to the forensic
+[104.08 - 105.08]  Camila died
+[105.08 - 106.08]  for a bullet in the head
+[106.08 - 107.08]  and his death
+[107.08 - 108.08]  was determined as a
+[108.08 - 109.08]  suicide.
+[109.08 - 110.08]  From San Antonio,
+[110.08 - 111.08]  Octavio,
+[111.08 - 112.08]  I'll come with you.
+
+Info
+TranscriptionInfo(language='es', language_probability=1, duration=121.231375, duration_after_vad=121.231375, all_language_probs=None, transcription_options=TranscriptionOptions(beam_size=1, best_of=5, patience=1, length_penalty=1, repetition_penalty=1, no_repeat_ngram_size=0, log_prob_threshold=-1.0, no_speech_threshold=0.6, compression_ratio_threshold=2.4, condition_on_previous_text=True, prompt_reset_on_temperature=0.5, temperatures=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], initial_prompt=None, prefix=None, suppress_blank=True, suppress_tokens=(1, 2, 7, 8, 9, 10, 14, 25, 26, 27, 28, 29, 31, 58, 59, 60, 61, 62, 63, 90, 91, 92, 93, 359, 503, 522, 542, 873, 893, 902, 918, 922, 931, 1350, 1853, 1982, 2460, 2627, 3246, 3253, 3268, 3536, 3846, 3961, 4183, 4667, 6585, 6647, 7273, 9061, 9383, 10428, 10929, 11938, 12033, 12331, 12562, 13793, 14157, 14635, 15265, 15618, 16553, 16604, 18362, 18956, 20075, 21675, 22520, 26130, 26161, 26435, 28279, 29464, 31650, 32302, 32470, 36865, 42863, 47425, 49870, 50254, 50258, 50359, 50360, 50361, 50362, 50363), without_timestamps=False, max_initial_timestamp=1.0, word_timestamps=False, prepend_punctuations='"\'“¿([{-', append_punctuations='"\'.。,，!！?？:：”)]}、', multilingual=False, max_new_tokens=None, clip_timestamps=[0.0], hallucination_silence_threshold=None, hotwords=None), vad_options=None)

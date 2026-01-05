@@ -14,18 +14,24 @@ class ASRModel():
         assert all(seg.lang != unknown_language for seg in audio_segments), "All segments must have a known language before transcription."
         
         def transcribe_segment(seg: AudioSegment) -> AudioSegment:
-            segments, info = self.model.transcribe(audio=seg.audio.numpy(), language=seg.lang, beam_size=5)
+            segments, info = self.model.transcribe(
+                audio=seg.audio.numpy(), 
+                language=seg.lang, 
+                word_timestamps=True
+            )
             seg.text = " ".join([s.text for s in segments]).strip()
             return seg
             
         self.logger.logger.info(f"Beginning transcription for {len(audio_segments)} audio segments")
+        transcribed_segments = []
         try:
             for seg in audio_segments:
-                seg = transcribe_segment(seg)
-                self.logger.logger.debug(f"Segment {seg.id} transcribed with text length {len(seg.text)}")
+                trans_seg = transcribe_segment(seg)
+                transcribed_segments.append(trans_seg)
+                self.logger.logger.debug(f"Segment {trans_seg.id} transcribed with text length {len(trans_seg.text)}")
         except Exception as e:
             self.logger.logger.error(f"Error during transcription: {str(e)}")
             raise
-        return audio_segments
+        return transcribed_segments
 
     

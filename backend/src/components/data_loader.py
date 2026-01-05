@@ -6,6 +6,7 @@ import tempfile
 from datetime import datetime
 from urllib.parse import urlparse
 from moviepy import VideoFileClip
+from pathlib import Path
 
 class AppDataLoader():
     def __init__(self, logger: AppLogger, prod=False):
@@ -33,6 +34,7 @@ class AppDataLoader():
             '.wmv': 'video/x-ms-wmv',
         }
         self.upload_dir = 'uploads'
+        self.downloads_dir = 'downloads'
         
         self.temp_files = []    
         
@@ -113,6 +115,37 @@ class AppDataLoader():
             self.logger.logger.error(f"Error retrieving video: {str(e)}")
             raise
     
+    def save_captioned_disk(self, video: VideoFileClip) -> Path:
+        try:
+            output_filename = f"captioned_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}_{uuid.uuid4().hex}.mp4"
+            output_path = Path(self.logger.log_root) / output_filename
+            
+            self.logger.logger.info(f"Saving captioned video to: {output_path}")
+            video.write_videofile(str(output_path), codec="libx264", audio_codec="aac")
+            
+            self.temp_files.append(output_path)
+            self.logger.logger.info(f"Successfully saved captioned video: {output_path}")
+            
+            return output_path
+        except Exception as e:
+            self.logger.logger.error(f"Error saving captioned video: {str(e)}")
+            raise
+    
+    # check this
+    def save_captioned_s3(self, video_path: Path, bucket: str, key: str) -> None:
+        try:
+            self.logger.logger.info(f"Uploading captioned video to S3: s3://{bucket}/{key}")
+            self.s3_client.upload_file(
+                str(video_path),
+                bucket,
+                key,
+                ExtraArgs={"ContentType": "video/mp4"}
+            )
+            self.logger.logger.info(f"Successfully uploaded captioned video to S3: {key}")
+        except Exception as e:
+            self.logger.logger.error(f"Error uploading captioned video to S3: {str(e)}")
+            raise
+
     def cleanup_temp_files(self):
         for temp_path in self.temp_files:
             if os.path.exists(temp_path):

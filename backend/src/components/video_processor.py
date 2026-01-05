@@ -1,9 +1,9 @@
 from .logger import AppLogger
-from moviepy import VideoFileClip
+from moviepy import VideoFileClip, TextClip, CompositeVideoClip
 import torch
 from bisect import bisect_right
 import torchaudio.transforms as T
-from ..dataclasses.audio_segment import AudioSegment
+from ..dataclasses.audio_segment import AudioSegment, unknown_language, unknown_text
 import math
 import numpy as np
 
@@ -12,7 +12,7 @@ class VideoProcessor():
         self.logger = logger
         self.prod = prod
         self.logger.logger.info('VideoProcessor initialized')
-        self.max_caption_duration = 3 # maximum length any 1 subtitle is on screen
+        self.max_caption_duration = 6 # maximum length any 1 subtitle is on screen
         
     def extract_audio(self, video: VideoFileClip, allowed_sample_rates: list[int]) -> tuple[int, torch.Tensor]:
         try:
@@ -125,3 +125,34 @@ class VideoProcessor():
         
         self.logger.logger.info(f"Finished chunking into {len(new_segments)} segments from {len(audio_segments)} original segments")
         return new_segments
+    
+    
+    def embed_captions(self, video: VideoFileClip, audio_segments: list[AudioSegment]) -> CompositeVideoClip:
+        self.logger.logger.info(f"Embedding {len(audio_segments)} captions ({audio_segments[0].text}...) into video {video.filename}")
+        
+        assert all(seg.end_time <= video.duration for seg in audio_segments), "All audio segments must have end time within video duration"
+        
+        assert all(seg.lang != unknown_language for seg in audio_segments), "All segments must have known language before embedding captions"
+        assert all(seg.text != unknown_text for seg in audio_segments), "All segments must have known text before embedding captions"
+        text_clips = []
+        for seg in audio_segments:
+            duration = seg.end_time - seg.start_time
+            
+            txt_clip = TextClip(
+                text=seg.text,
+                method='label',
+                size=(int(video.w * 0.9), None),
+                font_size=48,
+                color="#F3CE32",
+            )
+            
+            txt_clip = txt_clip.with_start(seg.start_time).with_duration(duration)
+            txt_clip = txt_clip.with_position(('center', 0.85), relative=True)
+            
+            text_clips.append(txt_clip)
+        
+        final_video = CompositeVideoClip([video] + text_clips)
+        
+        self.logger.logger.info(f"Successfully embedded {len(text_clips)} captions into video")
+        return final_video
+

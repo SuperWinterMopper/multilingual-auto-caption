@@ -23,8 +23,7 @@ def load_asr_model() -> WhisperModel:
     compute_type = "float16" if torch.cuda.is_available() else "float32"
 
     # load model on GPU if available, else cpu
-    model = WhisperModel("distil-whisper/distil-large-v3.5-ct2", device=device, compute_type=compute_type)
-
+    model = WhisperModel("large-v3", device=device, compute_type=compute_type)
     return model
         
 def load_slid_model():

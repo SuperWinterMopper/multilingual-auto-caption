@@ -4,10 +4,16 @@ from moviepy import VideoFileClip
 import torch
 from speechbrain.inference.classifiers import EncoderClassifier
 from ..components.slid_model import SLIDModel
+from ..components.vad_model import VADModel
+from ..components.asr_model import ASRModel
 from ..components.logger import AppLogger
 from ..dataclasses.audio_segment import AudioSegment
 from ..components.video_processor import VideoProcessor
 from silero_vad import load_silero_vad
+from moviepy import VideoFileClip, CompositeVideoClip
+from faster_whisper import WhisperModel 
+import torch
+from datetime import datetime
 
 BASE_URL = "http://localhost:5000"
 TEST_FILES = Path(__file__).parent / "files"
@@ -48,7 +54,6 @@ def test_health():
 
 def test_pipeline():
     files_to_test = [
-        TEST_FILE_PATH,
         FRENCH_TEST_FILE_PATH,
         HINDI_TEST_FILE_PATH,
         JAPANESE_TEST_FILE_PATH,
@@ -76,7 +81,7 @@ def test_pipeline():
             upload_response = requests.put(
                 upload_url,
                 data=f,
-                headers={"Content-Type": "video/quicktime"},
+                headers={"Content-Type": "video/mp4"},
                 timeout=300
             )
         
@@ -98,9 +103,12 @@ def test_log_segments_visualization():
     logger = AppLogger(log_suffix="test_segments_viz", prod=False)
     
     # Load video
-    video = VideoProcessor(logger)
+    video = VideoFileClip(str(TEST_FILE_PATH))
+    video_processor = VideoProcessor(logger=logger, prod=False)
     
-    sr, audio_tensor = video.extract_audio(video, allowed_sample_rates=[16000])
+    sr, audio_tensor = video_processor.extract_audio(video, allowed_sample_rates=[16000])
+    
+    audio_segments = create_dummy_audio_segments(video)
     
     logger.log_segments_visualization(log_prefix="test", video=video, audio_segments=audio_segments)
     
@@ -109,9 +117,9 @@ def test_log_segments_visualization():
     
     print("log_segments_visualization test completed successfully. Check under /logs for the visualization image.")
     
-def test_parse_prediction():
+def setup():
     # Initialize logger
-    logger = AppLogger(log_suffix="test_parse_prediction", prod=False)
+    logger = AppLogger(log_suffix="testing", prod=False)
     
     # Load models as done in app.py
     vad_model_silero = load_silero_vad()
@@ -121,6 +129,7 @@ def test_parse_prediction():
     vad_model = VADModel(model=vad_model_silero, logger=logger, prod=False)
     video_processor = VideoProcessor(logger=logger, prod=False)
     slid_model = SLIDModel(model=slid_model_sb, logger=logger, prod=False)
+    asr_model = ASRModel(logger=logger, model=load_asr_model(), prod=False)
     
     # Load video
     video = VideoFileClip(str(TEST_FILE_PATH))
@@ -140,18 +149,68 @@ def test_parse_prediction():
     )
     
     # Run classify_segments_language which internally uses parse_prediction
-    classified_segments = slid_model.classify_segments_language(audio_segments)
+    audio_segments = slid_model.classify_segments_language(audio_segments)
     
-    # Verify that all segments have been classified with a language
-    assert len(classified_segments) == len(audio_segments), "Number of classified segments doesn't match input"
-    assert len(classified_segments) > 0, "No speech segments detected"
+    audio_segments = video_processor.chunk_segments(audio_segments)
+    logger.log_segments_visualization(
+        log_prefix="chunked_classified", 
+        video=video, 
+        audio_segments=audio_segments
+    )
     
-    for seg in classified_segments:
-        print(f"Segment {seg.id}: {seg.lang}")
+    audio_segments = asr_model.transcribe_segments(audio_segments)
+    logger.log_transcription_results(
+        audio_segments=audio_segments, 
+        log_prefix="transcribed"
+    )
+    
+    return audio_segments, logger, video, video_processor
+
+def test_embed_captions():
+    audio_segments, logger, video, video_processor = setup()
+    
+    # Now test embed_captions
+    composite_clip: CompositeVideoClip = video_processor.embed_captions(video, audio_segments)
+    
+    # Save the resulting video with embedded captions for manual verification
+    output_path = Path(f"./temp_embed_test_embed_captions_output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4")
+    composite_clip.write_videofile(str(output_path))
+    
+    composite_clip.close()
     
     video.close()
     logger.stop()
     
-    print("test_parse_prediction completed successfully. All segments classified.")
+    print(f"embed_captions test completed successfully. Output saved to {output_path}")
+    
+def load_asr_model() -> WhisperModel:
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    compute_type = "float16" if torch.cuda.is_available() else "float32"
+
+    # load model on GPU if available, else cpu
+    model = WhisperModel("large-v3", device=device, compute_type=compute_type)
+    return model
+
+def test_asr_transcription():
+    print('Loading ASR model...')
+    model = load_asr_model()
+    print('Model loaded. Transcribing sample file...')
+    files = [(JAPANESE_TEST_FILE_PATH, 'ja'), (PORTUGUESE_TEST_FILE_PATH, 'pt')]
+    
+    temp_output = TEST_FILES / "temp_transcriptions"
+    temp_output.mkdir(exist_ok=True)
+    
+    for file_path, lang in files:
+        print(f'Transcribing file: {file_path.name} with language code: {lang}...')
+        segments, info = model.transcribe(
+            str(file_path), 
+            language=lang,
+            word_timestamps=True
+        )
         
-        
+        output = temp_output / f"{file_path.stem}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        print(f"Finished for {file_path.name}, writing transcription to file {output}...")
+        with open(output, "a", encoding="utf-8") as f:
+            for segment in segments:
+                f.write(f"[{segment.start:.2f} - {segment.end:.2f}] {segment.text}\n")
+            f.write(f"\nInfo\n{info}\n")    

@@ -1,0 +1,31 @@
+[0.00 - 4.24]  Los ojos de todos siguen puestos en la adolescent Camila Mendoza Olmos,
+[4.34 - 7.40]  who disappeared in the vespera de navidad in San Antonio, Texas.
+[7.40 - 11.10]  And it's that, according to what confirmed his family are in socials,
+[11.10 - 15.00]  the body without life found on the morning of the march, it's about the young.
+[15.00 - 19.50]  El Alguazil Javier Salazar, who leader of the investigation, spoke with Univision.
+[30.00 - 33.44]  It was of that of Camila.
+[33.44 - 38.76]  We thought that there was a chance that she had taken that
+[38.76 - 44.04]  she had taken that pistol in the body that we found,
+[44.04 - 45.24]  we did find a pistol.
+[45.24 - 47.76]  The last images of the young woman's Hispanic
+[47.76 - 50.04]  were placed in cameras of the neighbors,
+[50.04 - 52.80]  as well as in the camera of the table of a conductor
+[52.80 - 56.64]  where you see Camila walking before the dawn.
+[56.64 - 59.00]  It was days of intense search and his parents
+[60.00 - 66.82]  of the
+[66.82 - 71.84]  is for for the family.
+[71.84 - 75.76]  and the family just forever in our prayers and thoughts.
+[75.76 - 78.00]  Information of Camila had been passing
+[78.00 - 80.44]  for a depression after a rupture amorosa
+[80.44 - 84.08]  and we have to the authorities to not discard the possibility of a suicide.
+[84.08 - 88.08]  Now, right now we know that during this time of the year,
+[88.08 - 91.04]  uh, the fiestas, uh,
+[91.04 - 94.56]  much of people's, let's enter something like depression.
+[94.56 - 98.36]  Uh, but also with this, uh,
+[98.36 - 101.68]  she apparently that she was having problems personal
+[101.84 - 105.84]  According, Camila, Camila died for a bullet of bullet in the head.
+[105.84 - 108.54]  And his death was determined as a suicide.
+[108.54 - 111.04]  From San Antonio, Octavio, back with you.
+
+Info
+TranscriptionInfo(language='es', language_probability=1, duration=121.231375, duration_after_vad=111.504, all_language_probs=None, transcription_options=TranscriptionOptions(beam_size=5, best_of=5, patience=1, length_penalty=1, repetition_penalty=1, no_repeat_ngram_size=0, log_prob_threshold=-1.0, no_speech_threshold=0.6, compression_ratio_threshold=2.4, condition_on_previous_text=True, prompt_reset_on_temperature=0.5, temperatures=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], initial_prompt=None, prefix=None, suppress_blank=True, suppress_tokens=(1, 2, 7, 8, 9, 10, 14, 25, 26, 27, 28, 29, 31, 58, 59, 60, 61, 62, 63, 90, 91, 92, 93, 359, 503, 522, 542, 873, 893, 902, 918, 922, 931, 1350, 1853, 1982, 2460, 2627, 3246, 3253, 3268, 3536, 3846, 3961, 4183, 4667, 6585, 6647, 7273, 9061, 9383, 10428, 10929, 11938, 12033, 12331, 12562, 13793, 14157, 14635, 15265, 15618, 16553, 16604, 18362, 18956, 20075, 21675, 22520, 26130, 26161, 26435, 28279, 29464, 31650, 32302, 32470, 36865, 42863, 47425, 49870, 50254, 50258, 50359, 50360, 50361, 50362, 50363), without_timestamps=False, max_initial_timestamp=1.0, word_timestamps=False, prepend_punctuations='"\'“¿([{-', append_punctuations='"\'.。,，!！?？:：”)]}、', multilingual=False, max_new_tokens=None, clip_timestamps=[0.0], hallucination_silence_threshold=None, hotwords=None), vad_options=VadOptions(threshold=0.5, neg_threshold=None, min_speech_duration_ms=10000, max_speech_duration_s=inf, min_silence_duration_ms=2000, speech_pad_ms=400))

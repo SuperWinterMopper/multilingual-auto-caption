@@ -1,0 +1,34 @@
+[0.00 - 5.08]  Exatamente isso, esse isolamento que você cita, Jussara, é um ponto a ser observado
+[5.08 - 9.90]  e já era, de alguma forma, monitorado pelo próprio PL, né?
+[9.94 - 13.86]  Vamos lembrar aí que eles estavam ali numa estratégia de fazer até que o Bolsonaro
+[14.44 - 21.80]  viajasse para tentar ali movimentar a militância no ano de 2025, entendendo que se fosse preso
+[21.80 - 27.20]  esse isolamento poderia, de alguma forma, afetar os planos do partido para as eleições
+[27.20 - 28.68]  de 2026.
+[28.68 - 30.58]  E aí eu chamo a atenção para dois pontos.
+[30.70 - 35.04]  O primeiro é essa pesquisa mostrando uma coisa que o PL, inclusive, já diz ali internamente
+[35.04 - 42.16]  nos bastidores, que é, tem um teto para a defesa da pessoa do ex-presidente Jair Bolsonaro.
+[42.32 - 48.86]  Então, os candidatos de 2026, eles vão se apoiar no bolsonarismo, nas ideias do bolsonarismo,
+[48.86 - 55.86]  mas a defesa do ex-presidente como pessoa, ela vai até um certo ponto e aí eles vão
+[55.86 - 58.66]  calcular ali esses candidatos, até que ponto.
+[58.68 - 63.42]  E aí, quanto seria benéfico ou não para as próprias candidaturas fazer essa defesa
+[63.42 - 68.04]  do ex-presidente, que pode ficar muito ali restrita, a partir do meio desse ano que acaba
+[68.04 - 72.54]  de começar, aos filhos do ex-presidente, à família do ex-presidente Jair Bolsonaro.
+[72.82 - 77.04]  E vou chamar a atenção para o que me disse ali alguns integrantes do PL sobre a postura
+[77.04 - 78.36]  de Flávio Bolsonaro, né?
+[78.42 - 84.16]  Essa figura que, para ser o herdeiro político do pai, tem que se aproximar um pouco mais,
+[84.20 - 88.58]  fazer esse movimento e esse trabalho nos próximos meses, de ser mais um pouco...
+[88.58 - 89.80]  Jair Bolsonaro, né?
+[89.86 - 94.36]  Eles cobram, por exemplo, ali, que ele abra as portas de seu gabinete para conversar com
+[94.36 - 102.44]  integrantes do partido ou aliados ali da oposição em diretórios regionais, os prefeitos ali
+[102.44 - 109.22]  dos municípios, para que seja mais acessível, para facilitar mesmo esse trabalho de transformá-lo
+[109.22 - 114.76]  nessa figura, que vai ser, pelo menos até aqui, a gente não sabe se isso vai permanecer,
+[114.80 - 118.56]  mas vai ser o pré-candidato, já é o pré-candidato, vai ser o candidato.
+[118.58 - 121.94]  O herdeiro de Bolsonaro para as urnas em 2026.
+[122.10 - 127.02]  Então, tem todo um trabalho que precisa ser feito para essa figura, que é Flávio Bolsonaro,
+[127.86 - 133.44]  diante do entendimento de que é preciso proteger, inclusive, esse capital político de Bolsonaro.
+[133.80 - 140.58]  Ou seja, chegamos nesse ano de 2026 com muita coisa aí para acontecer, mas eleições já
+[140.58 - 141.48]  começaram, né?
+[141.52 - 145.64]  As articulações já começaram e isso tem a ver com as eleições de 2026 também.
+
+Info
+TranscriptionInfo(language='pt', language_probability=1, duration=146.2160625, duration_after_vad=146.2160625, all_language_probs=None, transcription_options=TranscriptionOptions(beam_size=5, best_of=5, patience=1, length_penalty=1, repetition_penalty=1, no_repeat_ngram_size=0, log_prob_threshold=-1.0, no_speech_threshold=0.6, compression_ratio_threshold=2.4, condition_on_previous_text=True, prompt_reset_on_temperature=0.5, temperatures=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], initial_prompt=None, prefix=None, suppress_blank=True, suppress_tokens=(1, 2, 7, 8, 9, 10, 14, 25, 26, 27, 28, 29, 31, 58, 59, 60, 61, 62, 63, 90, 91, 92, 93, 359, 503, 522, 542, 873, 893, 902, 918, 922, 931, 1350, 1853, 1982, 2460, 2627, 3246, 3253, 3268, 3536, 3846, 3961, 4183, 4667, 6585, 6647, 7273, 9061, 9383, 10428, 10929, 11938, 12033, 12331, 12562, 13793, 14157, 14635, 15265, 15618, 16553, 16604, 18362, 18956, 20075, 21675, 22520, 26130, 26161, 26435, 28279, 29464, 31650, 32302, 32470, 36865, 42863, 47425, 49870, 50254, 50258, 50359, 50360, 50361, 50362, 50363), without_timestamps=False, max_initial_timestamp=1.0, word_timestamps=True, prepend_punctuations='"\'“¿([{-', append_punctuations='"\'.。,，!！?？:：”)]}、', multilingual=False, max_new_tokens=None, clip_timestamps=[0.0], hallucination_silence_threshold=None, hotwords=None), vad_options=None)

@@ -173,7 +173,10 @@ def test_embed_captions():
     composite_clip: CompositeVideoClip = video_processor.embed_captions(video, audio_segments)
     
     # Save the resulting video with embedded captions for manual verification
-    output_path = Path(f"./temp_embed_test_embed_captions_output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4")
+    output_path = TEST_FILES / "captioned_videos" / f"temp_embed_test_embed_captions_output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+    
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
     composite_clip.write_videofile(str(output_path))
     
     composite_clip.close()

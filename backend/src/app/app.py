@@ -84,6 +84,7 @@ def caption():
         runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, asr_model=asr_model, prod=PROD)
         
         runner.run()
+        
                 
         print("Finished upload job")
         return "File uploaded successfully.", 200

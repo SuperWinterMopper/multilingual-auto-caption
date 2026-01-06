@@ -1,4 +1,5 @@
 from .logger import AppLogger
+from .data_loader import AppDataLoader
 from moviepy import VideoFileClip, TextClip, CompositeVideoClip
 import torch
 from bisect import bisect_right
@@ -6,6 +7,8 @@ import torchaudio.transforms as T
 from ..dataclasses.audio_segment import AudioSegment, unknown_language, unknown_text
 import math
 import numpy as np
+from fontTools.ttLib import TTFont
+from PIL import ImageFont
 
 class VideoProcessor():
     def __init__(self, logger: AppLogger, prod=False):
@@ -13,6 +16,20 @@ class VideoProcessor():
         self.prod = prod
         self.logger.logger.info('VideoProcessor initialized')
         self.max_caption_duration = 6 # maximum length any 1 subtitle is on screen
+        
+        self.fonts = [str(font_path) for font_path in AppDataLoader.get_avail_fonts()]
+        
+        # only in dev mode, check all fonts are legal for TextClip
+        if not self.prod:
+            for font in self.fonts:
+                try:
+                    _ = ImageFont.truetype(font)
+                except Exception as e:
+                    raise ValueError(
+                        "During initialization of VideoProcessor, error with font {}, pillow failed to use it with error {}".format(
+                            font, e
+                        )
+                    )
         
     def extract_audio(self, video: VideoFileClip, allowed_sample_rates: list[int]) -> tuple[int, torch.Tensor]:
         try:
@@ -126,6 +143,21 @@ class VideoProcessor():
         self.logger.logger.info(f"Finished chunking into {len(new_segments)} segments from {len(audio_segments)} original segments")
         return new_segments
     
+    def pick_font_for_text(self, text: str) -> str:
+        def font_supports_text(font_path: str, text: str) -> bool:
+            tt = TTFont(font_path)
+            cmap = set()
+            for table in tt["cmap"].tables:
+                cmap.update(table.cmap.keys())
+            return all(ord(ch) in cmap or ch.isspace() for ch in text)
+        for font_path in self.fonts:
+            if font_supports_text(font_path, text):
+                return font_path
+        
+        # if no fonts work :(
+        default_choice = self.fonts[0]
+        self.logger.logger.warning(f"No font found that supports all characters in text: {text[:50]}. Defaulting to {default_choice}.")
+        return default_choice
     
     def embed_captions(self, video: VideoFileClip, audio_segments: list[AudioSegment]) -> CompositeVideoClip:
         self.logger.logger.info(f"Embedding {len(audio_segments)} captions ({audio_segments[0].text}...) into video {video.filename}")
@@ -134,16 +166,21 @@ class VideoProcessor():
         
         assert all(seg.lang != unknown_language for seg in audio_segments), "All segments must have known language before embedding captions"
         assert all(seg.text != unknown_text for seg in audio_segments), "All segments must have known text before embedding captions"
+        
         text_clips = []
+        
         for seg in audio_segments:
             duration = seg.end_time - seg.start_time
             
             txt_clip = TextClip(
                 text=seg.text,
-                method='label',
+                method='caption',
                 size=(int(video.w * 0.9), None),
+                font=self.pick_font_for_text(seg.text),
                 font_size=48,
-                color="#F3CE32",
+                color="white",
+                stroke_color="black",
+                stroke_width=4,
             )
             
             txt_clip = txt_clip.with_start(seg.start_time).with_duration(duration)
@@ -152,7 +189,5 @@ class VideoProcessor():
             text_clips.append(txt_clip)
         
         final_video = CompositeVideoClip([video] + text_clips)
-        
         self.logger.logger.info(f"Successfully embedded {len(text_clips)} captions into video")
         return final_video
-

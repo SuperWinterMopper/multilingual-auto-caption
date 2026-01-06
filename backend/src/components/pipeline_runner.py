@@ -3,7 +3,7 @@ from .data_loader import AppDataLoader
 from .asr_model import ASRModel
 from .vad_model import VADModel
 from .slid_model import SLIDModel
-from .video_processor import VideoProcessor
+from .video_processor import VideoProcessor, CompositeVideoClip
 import logging
 
 class PipelineRunner():
@@ -76,7 +76,13 @@ class PipelineRunner():
             log_prefix="transcribed"
         )
         
-        print(f"Finished language identification for {len(audio_segments)} segments for NOW")
+        captioned_video: CompositeVideoClip = self.video_processor.embed_captions(video, audio_segments)
+        
+        output_path = self.loader.save_captioned_disk(captioned_video)
+        
+        bucket, key = self.loader.save_captioned_s3(video_path=output_path)
+        
+        self.logger.logger.info("Pipeline finished successfully.")
         
         # requried to stop logging
         self.logger.stop()
@@ -84,6 +90,8 @@ class PipelineRunner():
         # don't delete files if in dev mode
         if self.prod:
             self.loader.cleanup_temp_files()
+            
+        return output_path
 
     def consolidate_sample_rates(self, sample_rates: list[list[int]]) -> list[int]:
         consolidated = set(rate for rates in sample_rates for rate in rates)

@@ -1,11 +1,10 @@
 import boto3
 from .logger import AppLogger
-import uuid
 import os 
 import tempfile
 from datetime import datetime
 from urllib.parse import urlparse
-from moviepy import VideoFileClip
+from moviepy import VideoFileClip, CompositeVideoClip
 from pathlib import Path
 
 class AppDataLoader():
@@ -20,8 +19,8 @@ class AppDataLoader():
             self.logger.logger.error(f"Failed to create S3 client: {str(e)}")
             raise
         
-        self.BUCKET = os.getenv("UPLOAD_BUCKET")
-        if not self.BUCKET:
+        self.BUCKET = os.getenv("UPLOAD_BUCKET") or ""
+        if self.BUCKET == "":
             raise ValueError("UPLOAD_BUCKET environment variable is not set")
 
         self.allowed_formats = ('.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv')
@@ -33,10 +32,25 @@ class AppDataLoader():
             '.flv': 'video/x-flv',
             '.wmv': 'video/x-ms-wmv',
         }
-        self.upload_dir = 'uploads'
-        self.downloads_dir = 'downloads'
+        self.aws_upload_dir = 'uploads'
+        self.aws_downloads_dir = 'downloads'
         
-        self.temp_files = []    
+        self.fonts = self.get_avail_fonts()
+        
+        self.temp_files = []  
+    
+    @classmethod
+    def get_avail_fonts(cls) -> list[Path]:
+        fonts_dir = Path(__file__).resolve().parent.parent.parent / "assets" / "fonts"
+        
+        return [
+            fonts_dir / "NotoSans-Regular.ttf",
+            fonts_dir / "NotoSans-Regular.ttf",
+            fonts_dir / "NotoSansCJKjp-Regular.otf",
+            fonts_dir / "NotoSansArabic-Regular.ttf",
+            fonts_dir / "NotoSansDevanagari-Regular.ttf",
+            fonts_dir / "NotoSansThai-Regular.ttf",
+        ]
         
     def gen_s3_presigned_url(self, filename: str) -> dict:
         if not filename.lower().endswith(self.allowed_formats):
@@ -45,7 +59,7 @@ class AppDataLoader():
         try:
             timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
             file_ext = filename[filename.rfind('.'):]
-            key = f"{self.upload_dir}/videos/{timestamp}_{uuid.uuid4().hex}{file_ext}"
+            key = f"{self.aws_upload_dir}/{timestamp}{file_ext}"
             expiration = 300  # 5 minutes
             content_type = self.content_types.get(file_ext.lower())
         except Exception as e:
@@ -115,15 +129,17 @@ class AppDataLoader():
             self.logger.logger.error(f"Error retrieving video: {str(e)}")
             raise
     
-    def save_captioned_disk(self, video: VideoFileClip) -> Path:
+    def save_captioned_disk(self, video: CompositeVideoClip) -> Path:
         try:
-            output_filename = f"captioned_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}_{uuid.uuid4().hex}.mp4"
+            output_filename = f"captioned_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.mp4"
             output_path = Path(self.logger.log_root) / output_filename
             
             self.logger.logger.info(f"Saving captioned video to: {output_path}")
             video.write_videofile(str(output_path), codec="libx264", audio_codec="aac")
             
+            # make sure to delete afterwards
             self.temp_files.append(output_path)
+            
             self.logger.logger.info(f"Successfully saved captioned video: {output_path}")
             
             return output_path
@@ -131,20 +147,34 @@ class AppDataLoader():
             self.logger.logger.error(f"Error saving captioned video: {str(e)}")
             raise
     
-    # check this
-    def save_captioned_s3(self, video_path: Path, bucket: str, key: str) -> None:
+    def save_captioned_s3(self, video_path: Path) -> tuple[str, str]:
+        try: 
+            timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+            file_ext = video_path.suffix
+            key = f"{self.aws_downloads_dir}/{timestamp}{file_ext}"
+            content_type = self.content_types.get(file_ext.lower())
+
+            self.logger.logger.info(f"Uploading captioned video to S3: s3://{self.BUCKET}/{key}")
+        except Exception as e:
+            self.logger.logger.error(f"Error preparing S3 upload parameters: {str(e)}")
+            raise
+        
         try:
-            self.logger.logger.info(f"Uploading captioned video to S3: s3://{bucket}/{key}")
             self.s3_client.upload_file(
                 str(video_path),
-                bucket,
+                self.BUCKET,
                 key,
-                ExtraArgs={"ContentType": "video/mp4"}
+                ExtraArgs={"ContentType": content_type}
             )
-            self.logger.logger.info(f"Successfully uploaded captioned video to S3: {key}")
+            self.logger.logger.info(f"Successfully uploaded captioned video to S3: s3://{self.BUCKET}/{key}")
+            
+            return self.BUCKET, key
+            
         except Exception as e:
             self.logger.logger.error(f"Error uploading captioned video to S3: {str(e)}")
             raise
+    
+    def 
 
     def cleanup_temp_files(self):
         for temp_path in self.temp_files:

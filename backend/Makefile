@@ -14,3 +14,6 @@ test-vis: setup
 
 test-parse: setup
 	poetry run pytest -s -k test_parse_prediction
+
+test-trans: setup
+	poetry run pytest -s src/tests/test_translate.py

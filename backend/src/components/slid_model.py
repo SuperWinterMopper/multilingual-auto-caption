@@ -1,7 +1,7 @@
 from .logger import AppLogger
 from ..dataclasses.audio_segment import AudioSegment
 import numpy as np
-import torch
+import uuid
 
 class SLIDModel():
     def __init__(self, model, logger: AppLogger, prod=False):
@@ -12,8 +12,11 @@ class SLIDModel():
         self.index2lang = self.create_silero_index2lang()
         self.logger.logger.info('SLIDModel initialized')
         
-    def classify_segments_language(self, audio_segments: list[AudioSegment]) -> list[AudioSegment]:
+    def classify_segments_language(self, audio_segments: list[AudioSegment], allowed_langs: list[str]) -> list[AudioSegment]:
         self.logger.logger.info(f"Beginning language classification for {len(audio_segments)} audio segments")
+        
+        allowed_langs_set = set(allowed_langs)
+        
         for seg in audio_segments:
             try:
                 # Validate sample rate
@@ -21,12 +24,25 @@ class SLIDModel():
                     raise ValueError(f"Segment {seg.id} has incorrect sample rate {seg.sample_rate} Hz. Expected one of {self.allowed_sample_rates}")
                 
                 prediction = self.model.classify_batch(seg.audio)
-                lang_code = prediction[3][0].split(':')[0]  # Extract ISO code only
-                seg.lang = lang_code
                 
-                if not self.prod: # log detailed confidences of model in dev mode
-                    top_k_preds = self.parse_prediction(prediction)
-                    self.logger.logger.info(f"Segment {seg.id} classified as {lang_code} with top predictions: {top_k_preds}")
+                # Get all predictions sorted by probability
+                all_preds = self.parse_all_predictions(prediction)
+                
+                # Get top k for logging
+                top_k_preds = self.get_top_k_predictions(all_preds, k=3)
+                
+                # Filter to allowed languages and get best match
+                filtered_preds = self.filter_predictions_by_allowed_langs(all_preds, allowed_langs_set)
+                
+                if not filtered_preds:
+                    raise ValueError(f"Segment {seg.id}: No predictions match allowed languages {allowed_langs}")
+                
+                # Assign the highest probability language from allowed_langs
+                best_lang = self.get_best_lang(filtered_preds)
+                seg.lang = best_lang
+                
+                # Log predictions with filtering info
+                self.log_prediction_results(seg.id, best_lang, top_k_preds, allowed_langs_set)
                     
             except Exception as e:
                 self.logger.logger.error(f"Error classifying language for segment {seg.id}: {str(e)}")
@@ -35,21 +51,51 @@ class SLIDModel():
         self.logger.log_audio_segments_list(audio_segments)
         return audio_segments
 
-    def parse_prediction(self, prediction) -> dict[str, float]:
+    def parse_all_predictions(self, prediction) -> dict[str, float]:
         try:
-            k = 3 # top k predictions to return
             likelihoods: np.ndarray = np.exp(prediction[0][0].numpy())
-            top_k = np.argsort(likelihoods)[-k:][::-1]
-                        
             ret = {}
-            for i in top_k:
-                ret[self.index2lang[i]] = likelihoods[i]
+            for i, prob in enumerate(likelihoods):
+                lang_code = self.index2lang[i].split(':')[0]
+                ret[lang_code] = float(prob)
             return ret
         except Exception as e:
             self.logger.logger.error(f"Error parsing SLID prediction from speechbrain: {str(e)}")
             raise
+
+    def get_top_k_predictions(self, all_preds: dict[str, float], k: int = 3) -> dict[str, float]:
+        sorted_preds = sorted(all_preds.items(), key=lambda x: x[1], reverse=True)
+        return dict(sorted_preds[:k])
+
+    def get_best_lang(self, filtered_preds: dict[str, float]) -> str:
+        best_lang, best_prob = "undetermined_lang", float('-inf')
+        for lang, prob in filtered_preds.items():
+            if prob > best_prob:
+                best_lang, best_prob = lang, prob
+        return best_lang
+
+    def filter_predictions_by_allowed_langs(self, all_preds: dict[str, float], allowed_langs_set: set[str]) -> dict[str, float]:
+        return {lang: prob for lang, prob in all_preds.items() if lang in allowed_langs_set}
+
+    def log_prediction_results(self, seg_id: uuid.UUID, assigned_lang: str, top_k_preds: dict[str, float], allowed_langs_set: set[str]) -> None:
+        top_k_langs = set(top_k_preds.keys())
+        ignored_langs = top_k_langs - allowed_langs_set
+        
+        if not ignored_langs:
+            # All top k predictions are in allowed_langs
+            self.logger.logger.info(f"Segment {seg_id} classified as {assigned_lang} with top predictions: {top_k_preds}")
+        else:
+            # Some predictions were filtered out
+            ignored_preds = {lang: prob for lang, prob in top_k_preds.items() if lang in ignored_langs}
+            used_preds = {lang: prob for lang, prob in top_k_preds.items() if lang in allowed_langs_set}
+            self.logger.logger.info(
+                f"Segment {seg_id} classified as {assigned_lang}. "
+                f"Ignored predictions (not in allowed_langs): {ignored_preds}. "
+                f"Used predictions: {used_preds}"
+            )
     
-    def create_silero_index2lang(self) -> dict[int, str]:
+    @classmethod
+    def create_silero_index2lang(cls) -> dict[int, str]:
         return {
             0: 'ab: Abkhazian',
             1: 'af: Afrikaans',
@@ -159,3 +205,6 @@ class SLIDModel():
             105: 'yo: Yoruba',
             106: 'zh: Chinese'
         }
+    
+    def get_allowed_langs(self) -> list[str]:
+        return list(set(lang.split(':')[0] for lang in self.index2lang.values()))

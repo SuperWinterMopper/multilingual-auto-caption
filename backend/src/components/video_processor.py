@@ -181,13 +181,18 @@ class VideoProcessor():
                 color="white",
                 stroke_color="black",
                 stroke_width=4,
+                margin=(10, 10),
             )
             
             txt_clip = txt_clip.with_start(seg.start_time).with_duration(duration)
-            txt_clip = txt_clip.with_position(('center', 0.85), relative=True)
+            
+            # Position text so its bottom edge is 8% from video bottom
+            bottom_margin = int(video.h * 0.08)
+            y_position = video.h - txt_clip.h - bottom_margin
+            txt_clip = txt_clip.with_position(('center', max(0, y_position)))
             
             text_clips.append(txt_clip)
         
-        final_video = CompositeVideoClip([video] + text_clips)
+        final_video = CompositeVideoClip([video] + text_clips, size=(video.w, video.h))
         self.logger.logger.info(f"Successfully embedded {len(text_clips)} captions into video")
         return final_video

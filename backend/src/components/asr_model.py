@@ -1,6 +1,7 @@
 from .logger import AppLogger
 from ..dataclasses.audio_segment import AudioSegment, unknown_language
 from faster_whisper import WhisperModel
+from faster_whisper.tokenizer import _LANGUAGE_CODES
 
 class ASRModel():
     def __init__(self, logger: AppLogger, model: WhisperModel, prod=False):
@@ -8,6 +9,7 @@ class ASRModel():
         self.prod = prod
         self.allowed_sample_rates = [16000] # made up for this moment, just matches the other models
         self.model = model
+        self.allowed_langs = [str(lang_code) for lang_code in _LANGUAGE_CODES]
         self.logger.logger.info('ASRModel initialized')
     
     def transcribe_segments(self, audio_segments: list[AudioSegment]) -> list[AudioSegment]:
@@ -33,5 +35,3 @@ class ASRModel():
             self.logger.logger.error(f"Error during transcription: {str(e)}")
             raise
         return transcribed_segments
-
-    

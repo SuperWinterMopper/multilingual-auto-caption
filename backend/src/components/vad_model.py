@@ -18,6 +18,7 @@ class VADModel():
                 model=self.model,
                 sampling_rate=sample_rate,
                 return_seconds=True
+                min_silence_duration_ms=300,
             )
             log_speech_max_length = 10 # how many segments to log
             

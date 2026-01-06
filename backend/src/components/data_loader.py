@@ -52,7 +52,7 @@ class AppDataLoader():
             fonts_dir / "NotoSansThai-Regular.ttf",
         ]
         
-    def gen_s3_presigned_url(self, filename: str) -> dict:
+    def gen_s3_upload_url(self, filename: str) -> dict:
         if not filename.lower().endswith(self.allowed_formats):
             raise ValueError(f"Only {', '.join(self.allowed_formats)} files are supported")
         
@@ -174,7 +174,21 @@ class AppDataLoader():
             self.logger.logger.error(f"Error uploading captioned video to S3: {str(e)}")
             raise
     
-    def 
+    def gen_s3_download_url(self, bucket: str, key: str, expiration: int = 3600) -> str:
+        try:
+            url = self.s3_client.generate_presigned_url(
+                ClientMethod="get_object",
+                Params={
+                    "Bucket": bucket,
+                    "Key": key,
+                },
+                ExpiresIn=expiration,
+            )
+            self.logger.logger.info(f"Generated download URL for s3://{bucket}/{key} (expires in {expiration}s)")
+            return url
+        except Exception as e:
+            self.logger.logger.error(f"Error generating download URL: {str(e)}")
+            raise
 
     def cleanup_temp_files(self):
         for temp_path in self.temp_files:

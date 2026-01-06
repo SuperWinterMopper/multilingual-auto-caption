@@ -9,6 +9,7 @@ from silero_vad import load_silero_vad
 from speechbrain.inference.classifiers import EncoderClassifier
 import torch
 from faster_whisper import WhisperModel
+from deep_translator import GoogleTranslator
 
 # read CLI args
 parser = argparse.ArgumentParser()
@@ -36,6 +37,7 @@ def load_vad_model():
 vad_model = load_vad_model()
 slid_model = load_slid_model()
 asr_model = load_asr_model()
+translate_model = GoogleTranslator()
 
 if args.prod:
     app.config["MODE"] = "prod"
@@ -57,7 +59,7 @@ def presigned_s3():
     logger = AppLogger(log_suffix='s3_presign', level=logging.INFO, prod=PROD)
     loader = AppDataLoader(logger=logger, prod=PROD)
     try:
-        url = loader.gen_s3_presigned_url(filename)
+        url = loader.gen_s3_upload_url(filename)
         return url, 200
     except Exception as e:
         print(f"ERROR: {str(e)}")
@@ -71,7 +73,6 @@ def presigned_s3():
 @app.route("/caption", methods=["POST"])
 def caption():
     upload_url = ""
-    
     try:
         data = request.get_json()
         print(f"Received caption request with data: {data}")
@@ -79,17 +80,15 @@ def caption():
         assert upload_url != ""
     except Exception as e:
         return f"Error reading required uploadUrl parameter: {str(e)}", 400
-
     try:
-        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, asr_model=asr_model, prod=PROD)
+        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, asr_model=asr_model, translate_model=translate_model, prod=PROD)
         
-        runner.run()
+        s3_download_url = runner.run()
         
-                
-        print("Finished upload job")
-        return "File uploaded successfully.", 200
+        print(f"Finished upload job, video saved to {s3_download_url}")
+        return { "downloadUrl": s3_download_url }, 200
     except Exception as e:
-        print(f"ERROR: {str(e)}")
+        print(f"Error processing /caption upload: {str(e)}")
         return f"Error processing upload: {str(e)}", 500
     
 if __name__ == "__main__":

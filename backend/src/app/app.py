@@ -81,7 +81,8 @@ def caption():
     except Exception as e:
         return f"Error reading required uploadUrl parameter: {str(e)}", 400
     try:
-        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, asr_model=asr_model, translate_model=translate_model, prod=PROD)
+        # translate to English for now
+        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, asr_model=asr_model, translate_model=translate_model, convert_to="en", prod=PROD)
         
         s3_download_url = runner.run()
         

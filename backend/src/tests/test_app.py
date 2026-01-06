@@ -59,7 +59,8 @@ def test_pipeline():
         JAPANESE_TEST_FILE_PATH,
         PORTUGUESE_TEST_FILE_PATH,
         SPANISH_TEST_FILE_PATH,
-        KOREAN_TEST_FILE_PATH
+        KOREAN_TEST_FILE_PATH, 
+        TEST_FILE_PATH,
     ]
     
     for test_file in files_to_test:
@@ -149,7 +150,7 @@ def setup():
     )
     
     # Run classify_segments_language which internally uses parse_prediction
-    audio_segments = slid_model.classify_segments_language(audio_segments)
+    audio_segments = slid_model.classify_segments_language(audio_segments, allowed_langs=slid_model.get_allowed_langs())
     
     audio_segments = video_processor.chunk_segments(audio_segments)
     logger.log_segments_visualization(

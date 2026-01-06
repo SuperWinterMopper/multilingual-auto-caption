@@ -159,7 +159,7 @@ class VideoProcessor():
         self.logger.logger.warning(f"No font found that supports all characters in text: {text[:50]}. Defaulting to {default_choice}.")
         return default_choice
     
-    def embed_captions(self, video: VideoFileClip, audio_segments: list[AudioSegment]) -> CompositeVideoClip:
+    def embed_captions(self, video: VideoFileClip, audio_segments: list[AudioSegment], caption_color="white", font_size=48, stroke_width=4) -> CompositeVideoClip:
         self.logger.logger.info(f"Embedding {len(audio_segments)} captions ({audio_segments[0].text}...) into video {video.filename}")
         
         assert all(seg.end_time <= video.duration for seg in audio_segments), "All audio segments must have end time within video duration"
@@ -177,10 +177,10 @@ class VideoProcessor():
                 method='caption',
                 size=(int(video.w * 0.9), None),
                 font=self.pick_font_for_text(seg.text),
-                font_size=48,
-                color="white",
+                font_size=font_size,
+                color=caption_color,
                 stroke_color="black",
-                stroke_width=4,
+                stroke_width=stroke_width,
                 margin=(10, 10),
             )
             

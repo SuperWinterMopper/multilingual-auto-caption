@@ -8,7 +8,7 @@ from .translater import AppTranslater
 import logging
 
 class PipelineRunner():
-    def __init__(self, file_path: str, vad_model, slid_model, asr_model,translate_model, explicit_langs: list[str]=[], prod=False):
+    def __init__(self, file_path: str, vad_model, slid_model, asr_model,translate_model, convert_to="", explicit_langs: list[str]=[], prod=False):
         self.prod = prod
         self.file_path = file_path
         
@@ -17,7 +17,7 @@ class PipelineRunner():
         self.vad_model = VADModel(model=vad_model, logger=self.logger, prod=self.prod)
         self.slid_model = SLIDModel(model=slid_model, logger=self.logger, prod=self.prod)
         self.asr_model = ASRModel(logger=self.logger, model=asr_model, prod=self.prod)
-        self.translater = AppTranslater(logger=self.logger, translate_model=translate_model, prod=self.prod)
+        self.translater = AppTranslater(logger=self.logger, prod=self.prod)
         self.video_processor = VideoProcessor(logger=self.logger, prod=self.prod)
         
         self.consolidated_langs = self.consolidate_sample_rates([
@@ -37,9 +37,13 @@ class PipelineRunner():
         if len(explicit_langs) > 0:
             self.allowed_langs = self.consolidate_allowed_langs([self.allowed_langs, explicit_langs])
         
+        # convert all subtitles to this language if provided. otherwise, subtitles remain in their original language
+        self.convert_to = convert_to
+        assert self.convert_to in self.translater.allowed_langs or self.convert_to == "", f"Conversion language '{self.convert_to}' is not supported by the translation model"
+        
         self.logger.logger.info('Runner initialized')
     
-    def run(self) -> str:
+    def run(self, caption_color="white", font_size=48, stroke_width=4) -> str:
         self.logger.logger.info(f'Starting pipeline for file: {self.file_path}')
         
         video = self.loader.retrieve_video(self.file_path)
@@ -67,7 +71,6 @@ class PipelineRunner():
             audio_segments=audio_segments
         )
         
-        
         audio_segments = self.slid_model.classify_segments_language(
             audio_segments=audio_segments,
             allowed_langs=self.allowed_langs
@@ -93,6 +96,12 @@ class PipelineRunner():
             log_prefix="transcribed"
         )
         
+        if self.convert_to != "":
+            audio_segments = self.translater.translate_audio_segments(
+                audio_segments=audio_segments,
+                target_lang=self.convert_to
+            )
+            
         captioned_video: CompositeVideoClip = self.video_processor.embed_captions(video, audio_segments)
         
         output_path = self.loader.save_captioned_disk(captioned_video)

@@ -14,6 +14,8 @@ from moviepy import VideoFileClip, CompositeVideoClip
 from faster_whisper import WhisperModel 
 import torch
 from datetime import datetime
+from dataclasses import dataclass
+from .app_input import AppInput
 
 BASE_URL = "http://localhost:5000"
 TEST_FILES = Path(__file__).parent / "files"
@@ -167,25 +169,25 @@ def setup():
     
     return audio_segments, logger, video, video_processor
 
-def test_embed_captions():
-    audio_segments, logger, video, video_processor = setup()
+# def test_embed_captions():
+#     audio_segments, logger, video, video_processor = setup()
     
-    # Now test embed_captions
-    composite_clip: CompositeVideoClip = video_processor.embed_captions(video, audio_segments)
+#     # Now test embed_captions
+#     composite_clip: CompositeVideoClip = video_processor.embed_captions(video, audio_segments)
     
-    # Save the resulting video with embedded captions for manual verification
-    output_path = TEST_FILES / "captioned_videos" / f"temp_embed_test_embed_captions_output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+#     # Save the resulting video with embedded captions for manual verification
+#     output_path = TEST_FILES / "captioned_videos" / f"temp_embed_test_embed_captions_output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
     
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+#     output_path.parent.mkdir(parents=True, exist_ok=True)
     
-    composite_clip.write_videofile(str(output_path))
+#     composite_clip.write_videofile(str(output_path))
     
-    composite_clip.close()
+#     composite_clip.close()
     
-    video.close()
-    logger.stop()
+#     video.close()
+#     logger.stop()
     
-    print(f"embed_captions test completed successfully. Output saved to {output_path}")
+#     print(f"embed_captions test completed successfully. Output saved to {output_path}")
     
 def load_asr_model() -> WhisperModel:
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -218,3 +220,91 @@ def test_asr_transcription():
             for segment in segments:
                 f.write(f"[{segment.start:.2f} - {segment.end:.2f}] {segment.text}\n")
             f.write(f"\nInfo\n{info}\n")    
+
+def test_pipeline_updated():
+    inputs = [
+        # AppInput(
+        #     video_path=TEST_FILE_PATH,
+        #     caption_color="#00FFFF",
+        #     font_size=64,
+        #     convert_to="ko",
+        #     explicit_langs=["ja", "en"]
+        # ),
+        AppInput(
+            video_path=JAPANESE_TEST_FILE_PATH,
+            caption_color="#000000",
+            font_size=52,
+            stroke_width=0,
+            convert_to="",
+            explicit_langs=["ja"]
+        ),
+        AppInput(
+            video_path=SPANISH_TEST_FILE_PATH,
+            stroke_width=6,
+            convert_to="fr",
+            explicit_langs=["es"]
+        ),
+        AppInput(
+            video_path=HINDI_TEST_FILE_PATH,
+            caption_color="#2539FF",
+            font_size=80,
+            convert_to=""
+        ),
+        AppInput(
+            video_path=FRENCH_TEST_FILE_PATH,
+            caption_color="#FFD700",
+            font_size=36,
+            stroke_width=2,
+            convert_to="en"
+        ),
+        AppInput(
+            video_path=PORTUGUESE_TEST_FILE_PATH,
+        ),
+        AppInput(
+            video_path=KOREAN_TEST_FILE_PATH,
+            font_size=96,
+            explicit_langs=["es"],
+            convert_to="en"
+        ),
+    ]
+        
+    for input_instance in inputs:
+        print(f"Testing pipeline with file: {input_instance.video_path.name}")
+        
+        # Step 1: Get presigned URL
+        response = requests.get(PRESIGNED_URL, params={"filename": str(input_instance.video_path.name)})
+        assert response.status_code == 200, f"Presigned URL request failed with status text {response.text}"
+        print(f"Presigned test successful, response: {response.text}")
+        
+        # Parse response
+        data = response.json()
+        upload_url = data["uploadUrl"]
+        bucket = data["bucket"]
+        key = data["key"]
+        
+        # Upload file to S3
+        with open(input_instance.video_path, "rb") as f:
+            upload_response = requests.put(
+                upload_url,
+                data=f,
+                headers={"Content-Type": "video/mp4"},
+                timeout=300
+            )
+        
+        assert upload_response.status_code == 200, f"S3 upload failed with status {upload_response.status_code}: {upload_response.text}"
+        print(f"File successfully uploaded to s3://{bucket}/{key}")
+        
+        # Kick off captioning with the uploaded object and styling options
+        caption_response = requests.post(
+            url=BASE_URL + "/caption",
+            json={
+                "uploadUrl": upload_url,
+                "captionColor": input_instance.caption_color,
+                "fontSize": input_instance.font_size,
+                "strokeWidth": input_instance.stroke_width,
+                "convertTo": input_instance.convert_to
+            },
+        )
+
+        assert caption_response.status_code == 200, f"Caption request failed with status {caption_response.status_code}: {caption_response.text}"
+        print(f"Caption request accepted for {upload_url}")

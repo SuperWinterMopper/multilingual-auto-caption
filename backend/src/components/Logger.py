@@ -119,35 +119,42 @@ class AppLogger():
         if not audio_segments:
             return
         
+        self.logger.info(f"Creating segments visualization for {len(audio_segments)} segments...")
         # Validate all segments have the same orig_file
         orig_file = audio_segments[0].orig_file
         if not all(seg.orig_file == orig_file for seg in audio_segments):
             self.logger.warning("Not all audio segments have the same orig_file. Skipping visualization.")
             return
         
-        _, ax = plt.subplots(figsize=(12, 4))
+        fig, ax = plt.subplots(figsize=(12, 4))
         
         # Get unique languages and assign colors
         langs = list(set(seg.lang for seg in audio_segments))
-        colors = plt.cm.get_cmap('tab10')(range(len(langs)))
-        lang_to_color = {lang: colors[i] for i, lang in enumerate(langs)}
+        cmap = plt.colormaps['tab10']
+        lang_to_color = {lang: cmap(i) for i, lang in enumerate(langs)}
         
         # Draw video duration bar at the bottom
-        ax.barh(0, video.duration, height=0.5, color='lightgray', edgecolor='black', label='Video Duration')
+        ax.broken_barh([(0, video.duration)], (-0.25, 0.5), facecolors='lightgray', edgecolors='black')
         
-        # Draw audio segment bars
-        for i, segment in enumerate(audio_segments, start=1):
-            duration = segment.end_time - segment.start_time
-            color = lang_to_color[segment.lang]
-            ax.barh(i, duration, left=segment.start_time, height=0.5, color=color, edgecolor='black')
+        # Group segments by language for batch drawing
+        lang_segments: dict[str, list[tuple[float, float, int]]] = {lang: [] for lang in langs}
+        for i, seg in enumerate(audio_segments, start=1):
+            lang_segments[seg.lang].append((seg.start_time, seg.end_time - seg.start_time, i))
         
-        # Create legend outside the plot area
-        handles = [mpatches.Patch(color=lang_to_color[lang], label=lang) for lang in langs]
-        handles.insert(0, mpatches.Patch(color='lightgray', label='Video Duration'))
+        # Draw all segments of each language in one call
+        for lang, segments in lang_segments.items():
+            xranges = [(start, duration) for start, duration, _ in segments]
+            yranges = [(idx - 0.25, 0.5) for _, _, idx in segments]
+            for xr, yr in zip(xranges, yranges):
+                ax.broken_barh([xr], yr, facecolors=lang_to_color[lang], edgecolors='black')
+        
+        # Create legend
+        handles = [mpatches.Patch(color='lightgray', label='Video Duration')]
+        handles.extend(mpatches.Patch(color=lang_to_color[lang], label=lang) for lang in langs)
         ax.legend(handles=handles, loc='upper left', bbox_to_anchor=(1, 1))
         
-        max_title_len = 30
         # Labels and title
+        max_title_len = 30
         ax.set_xlabel('Time (seconds)')
         ax.set_title(f'Audio Segments: {orig_file[:max_title_len]}{"..." if len(orig_file) > max_title_len else ""}')
         ax.set_ylim(-0.5, len(audio_segments) + 0.5)
@@ -155,10 +162,10 @@ class AppLogger():
         ax.set_yticks(range(len(audio_segments) + 1))
         ax.set_yticklabels(['Video'] + [f'Segment {i}' for i in range(1, len(audio_segments) + 1)])
         
-        # Save figure
+        # Save figure with optimized settings
         viz_path = self.log_root / f"{log_prefix}_vis_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.png"
-        plt.savefig(viz_path, dpi=100, bbox_inches='tight')
-        plt.close()
+        fig.savefig(viz_path, dpi=100, bbox_inches='tight')
+        plt.close(fig)
         
         self.logger.info(f"Segments visualization saved to {viz_path}")
         
@@ -201,10 +208,10 @@ class AppLogger():
             self.logger.info("No audio segments to log transcription results.")
             return
         
-        results_path = self.log_root / f"{log_prefix}_transcription_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.txt"
+        results_path = self.log_root / f"{log_prefix}_{audio_segments[0].lang}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.txt"
         
         with open(results_path, 'w', encoding='utf-8') as f:
             for seg in audio_segments:
                 f.write(f"{seg.start_time:.2f}\t{seg.end_time:.2f}\t{seg.text}\n")
         
-        self.logger.info(f"Transcription results saved to {results_path}")
+        self.logger.info(f"Transcription results saved to {results_path}. The language of the first segment is part of the filename, not necessarily all languages")

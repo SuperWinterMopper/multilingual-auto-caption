@@ -9,7 +9,6 @@ from silero_vad import load_silero_vad
 from speechbrain.inference.classifiers import EncoderClassifier
 import torch
 from faster_whisper import WhisperModel
-from deep_translator import GoogleTranslator
 
 # read CLI args
 parser = argparse.ArgumentParser()
@@ -24,7 +23,7 @@ def load_asr_model() -> WhisperModel:
     compute_type = "float16" if torch.cuda.is_available() else "float32"
 
     # load model on GPU if available, else cpu
-    model = WhisperModel("large-v3", device=device, compute_type=compute_type)
+    model = WhisperModel("small", device=device, compute_type=compute_type)
     return model
         
 def load_slid_model():
@@ -37,7 +36,6 @@ def load_vad_model():
 vad_model = load_vad_model()
 slid_model = load_slid_model()
 asr_model = load_asr_model()
-translate_model = GoogleTranslator()
 
 if args.prod:
     app.config["MODE"] = "prod"
@@ -72,6 +70,52 @@ def presigned_s3():
 
 @app.route("/caption", methods=["POST"])
 def caption():
+    """
+    Process a video to add captions/subtitles.
+    
+    Request Body (JSON):
+        uploadUrl (str, required): The S3 presigned URL or key of the uploaded video file.
+        
+        captionColor (str, optional): Hex color code for caption text. 
+            Default: "#FFFFFF" (white)
+            Example: "#FF0000" (red), "#00FF00" (green)
+        
+        fontSize (int, optional): Font size in pixels for caption text.
+            Default: 48
+            Range: Typically 24-96 depending on video resolution
+        
+        strokeWidth (int, optional): Width of the text outline/stroke in pixels.
+            Default: 4
+            Set to 0 for no outline
+        
+        convertTo (str, optional): ISO 639-1 language code to translate captions to.
+            Default: "" (no translation, keep original language)
+            Examples: "en" (English), "ja" (Japanese), "es" (Spanish)
+        
+        explicitLangs (list[str], optional): List of ISO 639-1 language codes to 
+            explicitly specify the languages present in the video. Useful when 
+            automatic language detection may be inaccurate.
+            Default: [] (auto-detect languages)
+            Example: ["en", "es"] for a video with English and Spanish speech
+    
+    Returns:
+        200: JSON with downloadUrl containing presigned S3 URL to download the captioned video
+             Example: {"downloadUrl": "https://s3.amazonaws.com/..."}
+        400: Error reading required uploadUrl parameter
+        500: Error processing the video
+    
+    Example Request:
+        POST /caption
+        Content-Type: application/json
+        {
+            "uploadUrl": "https://bucket.s3.amazonaws.com/uploads/2026_01_06.mp4",
+            "captionColor": "#FFD700",
+            "fontSize": 56,
+            "strokeWidth": 3,
+            "convertTo": "en",
+            "explicitLangs": ["fr", "it"]
+        }
+    """
     upload_url = ""
     try:
         data = request.get_json()
@@ -80,11 +124,30 @@ def caption():
         assert upload_url != ""
     except Exception as e:
         return f"Error reading required uploadUrl parameter: {str(e)}", 400
+
+    caption_color: str = data.get("captionColor", "#FFFFFF")
+    font_size: int = data.get("fontSize", 48)
+    stroke_width: int = data.get("strokeWidth", 4)
+    convert_to: str = data.get("convertTo", "")
+    explicit_langs: list[str] = data.get("explicitLangs", [])
     try:
         # translate to English for now
-        runner = PipelineRunner(file_path=upload_url, vad_model=vad_model, slid_model=slid_model, asr_model=asr_model, translate_model=translate_model, convert_to="en", prod=PROD)
-        
-        s3_download_url = runner.run()
+        runner = PipelineRunner(
+            file_path=upload_url, 
+            vad_model=vad_model, 
+            slid_model=slid_model, 
+            asr_model=asr_model, 
+            convert_to=convert_to,
+            explicit_langs=explicit_langs,
+            prod=PROD
+        )
+
+        # caption_color is a hex string like "#FFFFFF"
+        s3_download_url = runner.run(
+            caption_color=caption_color, 
+            font_size=font_size, 
+            stroke_width=stroke_width
+        )
         
         print(f"Finished upload job, video saved to {s3_download_url}")
         return { "downloadUrl": s3_download_url }, 200
@@ -95,5 +158,4 @@ def caption():
 if __name__ == "__main__":
     host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", "5000"))
-    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
-    app.run(host=host, port=port, debug=debug)
+    app.run(host=host, port=port)

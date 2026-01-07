@@ -6,9 +6,10 @@ from .slid_model import SLIDModel
 from .video_processor import VideoProcessor, CompositeVideoClip
 from .translater import AppTranslater
 import logging
+from moviepy import TextClip
 
 class PipelineRunner():
-    def __init__(self, file_path: str, vad_model, slid_model, asr_model,translate_model, convert_to="", explicit_langs: list[str]=[], prod=False):
+    def __init__(self, file_path: str, vad_model, slid_model, asr_model, convert_to="", explicit_langs: list[str]=[], prod=False):
         self.prod = prod
         self.file_path = file_path
         
@@ -43,10 +44,14 @@ class PipelineRunner():
         
         self.logger.logger.info('Runner initialized')
     
-    def run(self, caption_color="white", font_size=48, stroke_width=4) -> str:
+    # caption_color is a hex string like "#FFFFFF"
+    def run(self, caption_color="#FFFFFF", font_size=48, stroke_width=4) -> str:
+        # validate caption format parameters before running pipeline
+        self.validate_caption_format(caption_color, font_size, stroke_width)
+        
         self.logger.logger.info(f'Starting pipeline for file: {self.file_path}')
         
-        video = self.loader.retrieve_video(self.file_path)
+        video, video_path = self.loader.retrieve_video(self.file_path)
         self.logger.logger.info('Video is loaded as variable `video` in PipelineRunner.run(),')
         self.logger.log_video_metrics(video)
         self.logger.log_metrics_snapshot()
@@ -65,6 +70,12 @@ class PipelineRunner():
             sample_rate=sample_rate,
             orig_file=self.file_path
         )
+        
+        if not audio_segments:
+            bucket, key = self.loader.save_captioned_s3(video_path=video_path)
+            s3_download_url = self.loader.gen_s3_download_url(bucket=bucket, key=key)
+            return s3_download_url
+            
         self.logger.log_segments_visualization(
             log_prefix="init", 
             video=video, 
@@ -101,8 +112,20 @@ class PipelineRunner():
                 audio_segments=audio_segments,
                 target_lang=self.convert_to
             )
+            self.logger.logger.info("Translated language, logging the new transcription results ")
+            self.logger.log_transcription_results(
+                audio_segments=audio_segments, 
+                log_prefix="transcribed"
+            )
+
             
-        captioned_video: CompositeVideoClip = self.video_processor.embed_captions(video, audio_segments)
+        captioned_video: CompositeVideoClip = self.video_processor.embed_captions(
+            video, 
+            audio_segments, 
+            caption_color, 
+            font_size, 
+            stroke_width
+        )
         
         output_path = self.loader.save_captioned_disk(captioned_video)
         
@@ -129,3 +152,19 @@ class PipelineRunner():
         langs_sets = [set(lang_list) for lang_list in allowed_langs_lists]
         consolidated_set = set.intersection(*langs_sets)
         return sorted(list(consolidated_set))
+
+    def validate_caption_format(self, caption_color, font_size, stroke_width):
+        try:
+            _ = TextClip(
+                text="test",
+                method='caption',
+                size=(100, None),
+                font_size=font_size,
+                color=caption_color,
+                stroke_color="black",
+                stroke_width=stroke_width,
+                margin=(10, 10))
+            
+        except Exception as e:
+            self.logger.logger.error(f"Caption format validation failed: {str(e)}")
+            raise ValueError(f"Invalid caption format parameters: {str(e)}")

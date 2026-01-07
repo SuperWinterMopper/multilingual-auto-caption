@@ -90,6 +90,7 @@ class VideoProcessor():
                     orig_file=orig_file,
                     sample_rate=sample_rate
                 ))
+                
         except Exception as e:
             self.logger.logger.error(f"Error segmenting audio: {str(e)}")
             raise
@@ -145,54 +146,89 @@ class VideoProcessor():
     
     def pick_font_for_text(self, text: str) -> str:
         def font_supports_text(font_path: str, text: str) -> bool:
-            tt = TTFont(font_path)
-            cmap = set()
-            for table in tt["cmap"].tables:
-                cmap.update(table.cmap.keys())
-            return all(ord(ch) in cmap or ch.isspace() for ch in text)
-        for font_path in self.fonts:
-            if font_supports_text(font_path, text):
-                return font_path
+            if not text: # if text is empty any font will do
+                self.logger.logger.warning(f"Text is empty so deeming font is valid for text:<{text}> at {font_path}")
+                return True
+            try:
+                tt = TTFont(font_path)
+                cmap = set()
+                for table in tt["cmap"].tables:
+                    cmap.update(table.cmap.keys())
+                return all(ord(ch) in cmap or ch.isspace() for ch in text)
+            except Exception as e:
+                self.logger.logger.error(f"Error occured in font_supports_text: {e}. Deeming that ")
+                return True
+        try:
+            for font_path in self.fonts:
+                if font_supports_text(font_path, text):
+                    return font_path
+        except Exception as e:
+            self.logger.logger.error(f"Error in main loop for pick_font_for_text: {e}")
+            raise
         
         # if no fonts work :(
         default_choice = self.fonts[0]
         self.logger.logger.warning(f"No font found that supports all characters in text: {text[:50]}. Defaulting to {default_choice}.")
         return default_choice
     
-    def embed_captions(self, video: VideoFileClip, audio_segments: list[AudioSegment], caption_color="white", font_size=48, stroke_width=4) -> CompositeVideoClip:
+    # caption_color is a hex string like  "#FFFFFF"
+    def embed_captions(self, video: VideoFileClip, audio_segments: list[AudioSegment], caption_color: str, font_size: int, stroke_width: int) -> CompositeVideoClip:
+        if video is None:
+            raise ValueError("video object is None - video retrieval may have failed")
+        if audio_segments is None:
+            raise ValueError("audio_segments is None - audio processing may have failed")
+        
+        # Debug logging for None checks
+        self.logger.logger.info(f"embed_captions called with video={video}, audio_segments type={type(audio_segments)}, len={len(audio_segments)}")
+        
+        
         self.logger.logger.info(f"Embedding {len(audio_segments)} captions ({audio_segments[0].text}...) into video {video.filename}")
         
         assert all(seg.end_time <= video.duration for seg in audio_segments), "All audio segments must have end time within video duration"
-        
         assert all(seg.lang != unknown_language for seg in audio_segments), "All segments must have known language before embedding captions"
         assert all(seg.text != unknown_text for seg in audio_segments), "All segments must have known text before embedding captions"
         
         text_clips = []
         
-        for seg in audio_segments:
-            duration = seg.end_time - seg.start_time
-            
-            txt_clip = TextClip(
-                text=seg.text,
-                method='caption',
-                size=(int(video.w * 0.9), None),
-                font=self.pick_font_for_text(seg.text),
-                font_size=font_size,
-                color=caption_color,
-                stroke_color="black",
-                stroke_width=stroke_width,
-                margin=(10, 10),
-            )
-            
-            txt_clip = txt_clip.with_start(seg.start_time).with_duration(duration)
-            
-            # Position text so its bottom edge is 8% from video bottom
-            bottom_margin = int(video.h * 0.08)
-            y_position = video.h - txt_clip.h - bottom_margin
-            txt_clip = txt_clip.with_position(('center', max(0, y_position)))
-            
-            text_clips.append(txt_clip)
+        try:
+            for seg in audio_segments:
+                duration = seg.end_time - seg.start_time
+                
+                if seg.text == '':
+                    continue
+                try:
+                    txt_clip = TextClip(
+                        text=seg.text,
+                        method='caption',
+                        size=(int(video.w * 0.8), None),
+                        font=self.pick_font_for_text(seg.text),
+                        font_size=font_size,
+                        color=caption_color,
+                        stroke_color="black",
+                        stroke_width=stroke_width,
+                        margin=(10, 10),
+                    )
+                    
+                    txt_clip = txt_clip.with_start(seg.start_time).with_duration(duration)
+                except Exception as e:
+                    self.logger.logger.error(f"Error occured in indiviaul TextClip creation: {e}")
+                    raise
+                
+                # Position text so its bottom edge is 8% from video bottom
+                bottom_margin = int(video.h * 0.08)
+                y_position = video.h - txt_clip.h - bottom_margin
+                txt_clip = txt_clip.with_position(('center', max(0, y_position)))
+                
+                text_clips.append(txt_clip)
+        except Exception as e:
+            self.logger.logger.error(f"Error occured during creation of TextClips for embedding into video: {e}")
+            raise
         
-        final_video = CompositeVideoClip([video] + text_clips, size=(video.w, video.h))
+        try:
+            final_video = CompositeVideoClip([video] + text_clips, size=(video.w, video.h))
+        except Exception as e:
+            self.logger.logger.error(f"Error occured during creation of CompositeVideoClip: {e}")
+            raise 
+        
         self.logger.logger.info(f"Successfully embedded {len(text_clips)} captions into video")
         return final_video

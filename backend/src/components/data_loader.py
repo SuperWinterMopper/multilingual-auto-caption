@@ -87,7 +87,7 @@ class AppDataLoader():
             self.logger.logger.error(f"Error generating presigned URL: {str(e)}")
             raise
         
-    def retrieve_video(self, s3_url: str) -> VideoFileClip:
+    def retrieve_video(self, s3_url: str) -> tuple[VideoFileClip, Path]:
         key = ""
         try:
             if s3_url.startswith("http"):
@@ -108,7 +108,7 @@ class AppDataLoader():
                 delete=False,
                 dir=self.logger.log_root
             )
-            temp_path = temp_file.name
+            temp_path = Path(temp_file.name)
             temp_file.close()
             
             self.temp_files.append(temp_path)
@@ -120,7 +120,7 @@ class AppDataLoader():
             video_clip = VideoFileClip(temp_path)
 
             self.logger.logger.info(f"Successfully retrieved video: {key}")
-            return video_clip
+            return video_clip, temp_path
 
         except self.s3_client.exceptions.NoSuchKey:
             self.logger.logger.error(f"Video not found in S3: {key}")
@@ -164,7 +164,7 @@ class AppDataLoader():
                 str(video_path),
                 self.BUCKET,
                 key,
-                ExtraArgs={"ContentType": content_type}
+                ExtraArgs={"ContentType": content_type},
             )
             self.logger.logger.info(f"Successfully uploaded captioned video to S3: s3://{self.BUCKET}/{key}")
             
@@ -174,7 +174,17 @@ class AppDataLoader():
             self.logger.logger.error(f"Error uploading captioned video to S3: {str(e)}")
             raise
     
-    def gen_s3_download_url(self, bucket: str, key: str, expiration: int = 3600) -> str:
+    def gen_s3_download_url(self, bucket: str, key: str, expiration: int = 5 * 24 * 60 * 60) -> str:
+        """Generates s3 download url
+
+        Args:
+            bucket (str): S3 bucket
+            key (str): S3 key
+            expiration (int, optional): Expiration time. Defaults to 5*24*60*60 (5 days)
+
+        Returns:
+            str: download url
+        """
         try:
             url = self.s3_client.generate_presigned_url(
                 ClientMethod="get_object",

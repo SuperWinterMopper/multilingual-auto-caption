@@ -23,7 +23,11 @@ class ASRModel():
                 language=seg.lang, 
                 word_timestamps=True
             )
-            seg.text = " ".join([s.text for s in segments]).strip()
+            seg.text = " ".join([s.text for s in segments]).strip() or ""
+            
+            # debugging, double make sure not None
+            if seg.text == None:
+                seg.text = ""
             return idx, seg
             
         self.logger.logger.info(f"Beginning transcription for {len(audio_segments)} audio segments")

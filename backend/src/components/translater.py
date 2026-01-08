@@ -42,7 +42,11 @@ class AppTranslater:
                 )[0]
                 
                 seg.text = translated_text
+                if type(seg.text) != type("str"):
+                    seg.text = ""
                 seg.lang = target_lang
+                
+                assert seg.text, f".text field of AudioSegment cannot be None, is currently: {seg.text} for segment {seg}"
                 
             except Exception as e:
                 self.logger.logger.error(f"Error translating segment {seg.id}: {str(e)}")

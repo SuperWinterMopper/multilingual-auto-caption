@@ -7,6 +7,7 @@ from .video_processor import VideoProcessor, CompositeVideoClip
 from .translater import AppTranslater
 import logging
 from moviepy import TextClip
+from ..dataclasses.audio_segment import AudioSegment
 
 class PipelineRunner():
     def __init__(self, file_path: str, vad_model, slid_model, asr_model, convert_to="", explicit_langs: list[str]=[], prod=False):
@@ -86,6 +87,7 @@ class PipelineRunner():
             audio_segments=audio_segments,
             allowed_langs=self.allowed_langs
         )
+        audio_segments = self.clean_audio_segments(audio_segments)
         
         self.logger.log_segments_visualization(
             log_prefix="classified", 
@@ -100,12 +102,14 @@ class PipelineRunner():
             video=video, 
             audio_segments=audio_segments
         )
+        audio_segments = self.clean_audio_segments(audio_segments)
         
         audio_segments = self.asr_model.transcribe_segments(audio_segments)
         self.logger.log_transcription_results(
             audio_segments=audio_segments, 
             log_prefix="transcribed"
         )
+        audio_segments = self.clean_audio_segments(audio_segments)
         
         if self.convert_to != "":
             audio_segments = self.translater.translate_audio_segments(
@@ -117,6 +121,7 @@ class PipelineRunner():
                 audio_segments=audio_segments, 
                 log_prefix="transcribed"
             )
+            audio_segments = self.clean_audio_segments(audio_segments)
 
             
         captioned_video: CompositeVideoClip = self.video_processor.embed_captions(
@@ -168,3 +173,10 @@ class PipelineRunner():
         except Exception as e:
             self.logger.logger.error(f"Caption format validation failed: {str(e)}")
             raise ValueError(f"Invalid caption format parameters: {str(e)}")
+    
+    def clean_audio_segments(self, audio_segments: list[AudioSegment]):
+        for seg in audio_segments:
+            if type(seg.text) != type("str"):
+                seg.text = ""
+        return audio_segments
+                

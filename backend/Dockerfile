@@ -9,10 +9,7 @@ RUN pip install poetry
 
 COPY . .
 
-RUN poetry config virtualenvs.create false
-RUN poetry install --no-dev
-
-RUN mkdir -p logs
+RUN poetry install
 
 ENV UPLOAD_BUCKET=multilingual-auto-caption
 

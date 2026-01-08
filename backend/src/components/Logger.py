@@ -13,6 +13,7 @@ from ..dataclasses.audio_segment import AudioSegment
 class AppLogger():
     def __init__(self, log_suffix, level: int = logging.INFO, prod=False):
         self.logs_dir = Path(__file__).parent.parent.parent / 'logs'
+        self.logs_dir.mkdir(exist_ok=True)
         self.prod = prod
         self.log_root, self.log_file = self.create_log_directory(logs_root=self.logs_dir, log_suffix=log_suffix)
         

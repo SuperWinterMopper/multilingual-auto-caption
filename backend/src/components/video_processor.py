@@ -194,8 +194,9 @@ class VideoProcessor():
             for seg in audio_segments:
                 duration = seg.end_time - seg.start_time
                 
-                if seg.text == '':
+                if seg.text == '' or seg.text is None:
                     continue
+                
                 try:
                     txt_clip = TextClip(
                         text=seg.text,

@@ -283,7 +283,7 @@ export function VideoUploader() {
             label="Provide explicit languages"
             value={options.explicitLanguages}
             onChange={(explicitLanguages) => setOptions((prev) => ({ ...prev, explicitLanguages }))}
-            note="If spoken language detection is inaccurate, explicitly providing the spoken languages will restrict to picking only from those provided"
+            note="If spoken language detection is inaccurate, explicitly providing the spoken languages will restrict to classifying only from those provided."
           />
 
         </div>

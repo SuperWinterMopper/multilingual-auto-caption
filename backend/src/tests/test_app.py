@@ -10,7 +10,7 @@ from ..components.logger import AppLogger
 from ..dataclasses.audio_segment import AudioSegment
 from ..components.video_processor import VideoProcessor
 from silero_vad import load_silero_vad
-from moviepy import VideoFileClip, CompositeVideoClip
+from moviepy import VideoFileClip
 from faster_whisper import WhisperModel 
 import torch
 from datetime import datetime

@@ -13,8 +13,7 @@ from faster_whisper import WhisperModel
 # read CLI args
 parser = argparse.ArgumentParser()
 parser.add_argument('--prod', action='store_true', help='Run the app in production mode (makes it not store large files on disk, just text and image log files)')
-args = parser.parse_args()
-PROD = args.prod
+PROD = False
 
 app = Flask(__name__)
 
@@ -37,7 +36,7 @@ vad_model = load_vad_model()
 slid_model = load_slid_model()
 asr_model = load_asr_model()
 
-if args.prod:
+if PROD:
     app.config["MODE"] = "prod"
     print("Running in PRODUCTION mode")
 else:
@@ -156,6 +155,6 @@ def caption():
         return f"Error processing upload: {str(e)}", 500
     
 if __name__ == "__main__":
-    host = os.environ.get("HOST", "0.0.0.0")
-    port = int(os.environ.get("PORT", "5000"))
-    app.run(host=host, port=port)
+    args = parser.parse_args()
+    PROD = args.prod
+    app.run()

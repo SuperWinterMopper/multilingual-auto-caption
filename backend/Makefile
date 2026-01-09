@@ -21,6 +21,9 @@ test-parse: setup
 test-trans: setup
 	poetry run pytest -s src/tests/test_translate.py
 
+test-pipe2:
+	poetry run pytest -s src/tests/test_api.py
+
 docker-build:
 	docker build -t multilingual-auto-caption .
 

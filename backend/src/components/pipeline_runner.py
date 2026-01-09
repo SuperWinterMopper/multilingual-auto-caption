@@ -29,6 +29,7 @@ class PipelineRunner():
         ])
         
         # classify each segment's language
+        breakpoint()
         self.allowed_langs = self.consolidate_allowed_langs([
             self.slid_model.get_allowed_langs(),
             self.asr_model.allowed_langs,
@@ -37,7 +38,12 @@ class PipelineRunner():
         
         # if explicit langs are provided, further restrict allowed langs
         if len(explicit_langs) > 0:
+            self.logger.logger.info(f"Explicit languages provided: {explicit_langs}, consolidating with existing allowed languages: {self.allowed_langs}")
             self.allowed_langs = self.consolidate_allowed_langs([self.allowed_langs, explicit_langs])
+            self.logger.logger.info(f"Explicit languages provided, consolidated allowed languages are now: {self.allowed_langs}")
+        
+        if self.allowed_langs == []:
+            raise ValueError("No allowed languages remain after consolidation. Please check the provided explicit languages.")
         
         # convert all subtitles to this language if provided. otherwise, subtitles remain in their original language
         self.convert_to = convert_to
@@ -50,7 +56,7 @@ class PipelineRunner():
         # validate caption format parameters before running pipeline
         self.validate_caption_format(caption_color, font_size, stroke_width)
         
-        self.logger.logger.info(f'Starting pipeline for file: {self.file_path}')
+        self.logger.logger.info(f'Starting pipeline for file: {self.file_path} with allowed langs: {self.allowed_langs} and convert_to: {self.convert_to}')
         
         video, video_path = self.loader.retrieve_video(self.file_path)
         self.logger.logger.info('Video is loaded as variable `video` in PipelineRunner.run(),')
@@ -154,6 +160,7 @@ class PipelineRunner():
         return sorted(list(consolidated))
     
     def consolidate_allowed_langs(self, allowed_langs_lists: list[list[str]]) -> list[str]:
+        self.logger.logger.info(f"Consolidating allowed languages from lists: {allowed_langs_lists}")
         langs_sets = [set(lang_list) for lang_list in allowed_langs_lists]
         consolidated_set = set.intersection(*langs_sets)
         return sorted(list(consolidated_set))

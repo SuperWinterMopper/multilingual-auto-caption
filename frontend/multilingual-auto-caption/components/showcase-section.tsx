@@ -9,25 +9,25 @@ export function ShowcaseSection() {
       description: "Automatically detects and transcribes multiple languages in a single video",
     },
     {
-      before: "/interview-video-frame-without-subtitles.jpg",
-      after: "/interview-video-frame-with-styled-captions.jpg",
+      before: "/hi_norm.png",
+      after: "/hi_custom.png",
       title: "Custom Styling",
       description: "Customize font size, colors, and stroke to match your brand",
     },
-    {
-      before: "/presentation-video-frame-without-text-overlay.jpg",
-      after: "/presentation-video-frame-with-translated-captions.jpg",
-      title: "Real-time Translation",
-      description: "Translate captions to 30+ languages with a single click",
-    },
+    // {
+    //   before: "/presentation-video-frame-without-text-overlay.jpg",
+    //   after: "/presentation-video-frame-with-translated-captions.jpg",
+    //   title: "Real-time Translation",
+    //   description: "Translate captions to 30+ languages with a single click",
+    // },
   ]
 
   return (
     <section className="py-16">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-foreground mb-4">See the Magic in Action</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-4">See MAC in action</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Transform your videos with professional-quality captions in seconds
+          Real examples
         </p>
       </div>
 

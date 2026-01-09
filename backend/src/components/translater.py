@@ -68,5 +68,4 @@ class AppTranslater:
             self.logger.logger.info("Converting language code 'zh' to 'zh-CN' for GoogleTranslator")
             return "zh-CN"
         
-        
         return lang_code

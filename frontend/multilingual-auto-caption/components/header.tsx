@@ -5,7 +5,7 @@ export default function Header() {
             Multilingual Auto Caption
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-            Caption your multilingual videos automatically, no matter the languages
+            Caption your multilingual videos automatically, whatever the languages
           </p>
         </div>
     )

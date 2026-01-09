@@ -20,7 +20,7 @@ class ASRModel():
             idx, seg = idx_seg
             segments, info = self.model.transcribe(
                 audio=seg.audio.numpy(), 
-                language=seg.lang, 
+                language=seg.lang,
                 word_timestamps=True
             )
             seg.text = " ".join([s.text for s in segments]).strip() or ""

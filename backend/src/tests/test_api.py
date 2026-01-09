@@ -5,14 +5,14 @@ from ..app.app import app
 
 # Test file paths
 TEST_FILES = Path(__file__).parent / "files"
-TEST_FILE_PATH = TEST_FILES / "test.MOV"
+JAP_ENG_TEST_FILE_PATH = TEST_FILES / "jap-eng2.mp4"
 FRENCH_TEST_FILE_PATH = TEST_FILES / "french.mp4"
 HINDI_TEST_FILE_PATH = TEST_FILES / "hindi.mp4"
 JAPANESE_TEST_FILE_PATH = TEST_FILES / "japanese.mp4"
 PORTUGUESE_TEST_FILE_PATH = TEST_FILES / "portuguese.mp4"
 SPANISH_TEST_FILE_PATH = TEST_FILES / "spanish.mp4"
 KOREAN_TEST_FILE_PATH = TEST_FILES / "korean.mp4"
-
+ARABIC_TEST_FILE_PATH = TEST_FILES / "arabic.mp4"
 
 @pytest.fixture
 def client():
@@ -21,15 +21,15 @@ def client():
         yield client
 
 @pytest.mark.parametrize("video_path,caption_color,font_size,stroke_width,explicitLangs,convert_to", [
-    pytest.param(TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "", id="japanese and english-"),
-    pytest.param(KOREAN_TEST_FILE_PATH, "#9B1919", 48, 4, ["zh"], "", id="korean-to-chinese"),
-    pytest.param(KOREAN_TEST_FILE_PATH, "#FFFFFF", 48, 4, ["fa"], "", id="korean-to-farsi"),
-    pytest.param(KOREAN_TEST_FILE_PATH, "#52FF77", 48, 4, ["de"], "", id="korean-to-german"),
-    # pytest.param(SPANISH_TEST_FILE_PATH, "#FFFFFF", 48, 6, ["es"], "fr", id="spanish-to-french"),
-    # pytest.param(HINDI_TEST_FILE_PATH, "#2539FF", 80, 4, [], "", id="hindi-blue-captions"),
-    # pytest.param(FRENCH_TEST_FILE_PATH, "#FFD700", 36, 2, [], "en", id="french-to-english"),
-    # pytest.param(PORTUGUESE_TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "en", id="portuguese-defaults"),
-    # pytest.param(KOREAN_TEST_FILE_PATH, "#FFFFFF", 96, 4, [], "en", id="korean-to-english"),
+    pytest.param(JAP_ENG_TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "", id="japanese and english"),
+    pytest.param(KOREAN_TEST_FILE_PATH, "#9B1919", 48, 4, ["ko"], "zh", id="korean-to-chinese"),
+    pytest.param(KOREAN_TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "fa", id="korean-to-farsi"),
+    pytest.param(KOREAN_TEST_FILE_PATH, "#52FF77", 48, 4, [], "de", id="korean-to-german"),
+    pytest.param(KOREAN_TEST_FILE_PATH, "#FFFFFF", 120, 12, [], "", id="korean-no-tranlsation-large-captions"),
+    pytest.param(JAPANESE_TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "es", id="japanese-to-spanish"),
+    
+    pytest.param(ARABIC_TEST_FILE_PATH, "#3E8FB4", 48, 4, [], "", id="arabic-no-convert"),
+    
 ])
 
 def test_pipeline_updated(client, video_path, caption_color, font_size, stroke_width, explicitLangs, convert_to):

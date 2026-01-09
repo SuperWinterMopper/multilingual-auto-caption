@@ -29,7 +29,7 @@ class PipelineRunner():
         ])
         
         # classify each segment's language
-        breakpoint()
+        # breakpoint()
         self.allowed_langs = self.consolidate_allowed_langs([
             self.slid_model.get_allowed_langs(),
             self.asr_model.allowed_langs,
@@ -47,7 +47,7 @@ class PipelineRunner():
         
         # convert all subtitles to this language if provided. otherwise, subtitles remain in their original language
         self.convert_to = convert_to
-        assert self.convert_to in self.translater.allowed_langs or self.convert_to == "", f"Conversion language '{self.convert_to}' is not supported by the translation model"
+        assert self.convert_to in self.translater.allowed_langs or self.convert_to == "" or convert_to == "zh", f"Conversion language '{self.convert_to}' is not supported by the translation model"
         
         self.logger.logger.info('Runner initialized')
     
@@ -162,7 +162,20 @@ class PipelineRunner():
     def consolidate_allowed_langs(self, allowed_langs_lists: list[list[str]]) -> list[str]:
         self.logger.logger.info(f"Consolidating allowed languages from lists: {allowed_langs_lists}")
         langs_sets = [set(lang_list) for lang_list in allowed_langs_lists]
-        consolidated_set = set.intersection(*langs_sets)
+        
+        # special handling for Chinese variants - normalize zh-CN, zh-TW, etc. to 'zh'
+        normalized_sets = []
+        for lang_set in langs_sets:
+            normalized = set()
+            for lang in lang_set:
+                if lang.startswith("zh"):
+                    normalized.add("zh")
+                else:
+                    normalized.add(lang)
+            normalized_sets.append(normalized)
+            self.logger.logger.info(f"Normalized lang set: {normalized}")
+        
+        consolidated_set = set.intersection(*normalized_sets)
         return sorted(list(consolidated_set))
 
     def validate_caption_format(self, caption_color, font_size, stroke_width):
@@ -186,4 +199,3 @@ class PipelineRunner():
             if type(seg.text) != type("str"):
                 seg.text = ""
         return audio_segments
-                

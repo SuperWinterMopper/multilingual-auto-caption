@@ -2,11 +2,13 @@
 
 import type React from "react"
 
-import { useState, useRef, useCallback } from "react"
-import { Upload, Loader2, Download, Video, X } from "lucide-react"
+import { useState, useRef, useCallback, useEffect } from "react"
+import { Upload, Loader2, Download, Video, X, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { uploadVideo, type UploadResponse } from "@/lib/upload-handler"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { uploadVideo, estimateProcessingTime, sendDownloadLinkEmail, type UploadResponse } from "@/lib/upload-handler"
 import { type CaptionOptions, validateCaptionOptions } from "@/lib/validation"
 import { ColorPicker } from "./color-picker"
 import { NumberInput } from "./number-input"
@@ -24,10 +26,13 @@ export function VideoUploader() {
   })
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [videoDuration, setVideoDuration] = useState<number>(0)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadResult, setUploadResult] = useState<UploadResponse | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [email, setEmail] = useState("")
+  const [emailSent, setEmailSent] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -45,6 +50,15 @@ export function VideoUploader() {
       return rest
     })
     setUploadResult(null)
+
+    // Get video duration
+    const video = document.createElement("video")
+    video.preload = "metadata"
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src)
+      setVideoDuration(video.duration)
+    }
+    video.src = URL.createObjectURL(file)
   }, [])
 
   const handleDrop = useCallback(
@@ -87,8 +101,14 @@ export function VideoUploader() {
     setErrors({})
 
     try {
-      const result = await uploadVideo(selectedFile, options)
+      const result = await uploadVideo(selectedFile, options, email || undefined)
       setUploadResult(result)
+      
+      // Send email with download link if email was provided
+      if (email && result.success && result.downloadUrl) {
+        const emailResult = await sendDownloadLinkEmail(email, result.downloadUrl)
+        setEmailSent(emailResult.success)
+      }
     } catch (error) {
       setUploadResult({
         success: false,
@@ -101,9 +121,16 @@ export function VideoUploader() {
 
   const resetForm = () => {
     setSelectedFile(null)
+    setVideoDuration(0)
     setUploadResult(null)
     setErrors({})
+    setEmail("")
+    setEmailSent(false)
   }
+
+  const estimatedTime = selectedFile 
+    ? estimateProcessingTime(selectedFile.size / (1024 * 1024), videoDuration)
+    : 0
 
   if (isUploading) {
     return (
@@ -117,7 +144,35 @@ export function VideoUploader() {
           </div>
           <div className="text-center space-y-2">
             <h3 className="text-xl font-semibold text-foreground">Processing your video...</h3>
-            <p className="text-muted-foreground">Your processed video will be available in a few minutes</p>
+            <p className="text-muted-foreground">
+              Please wait while we add captions to your video
+              {estimatedTime > 0 && (
+                <span className="block mt-1">
+                  (estimated time: {Math.ceil(estimatedTime)} minute{Math.ceil(estimatedTime) !== 1 ? 's' : ''})
+                </span>
+              )}
+            </p>
+          </div>
+          
+          <div className="w-full max-w-md space-y-3 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm text-foreground flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Email (optional)
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-background border-border"
+              />
+              <p className="text-xs text-muted-foreground">
+                Processing can take a while. If you want, I'll send the download link to your email 
+                (don't worry, I won't send anything else. I personally do not appreciate intrusive emails)
+              </p>
+            </div>
           </div>
         </div>
       </Card>
@@ -134,6 +189,12 @@ export function VideoUploader() {
           <div className="text-center space-y-2">
             <h3 className="text-xl font-semibold text-foreground">Video processed successfully!</h3>
             <p className="text-muted-foreground">Your captioned video is ready for download</p>
+            {emailSent && (
+              <p className="text-sm text-primary">
+                <Mail className="h-4 w-4 inline mr-1" />
+                Download link sent to {email}
+              </p>
+            )}
           </div>
           <div className="flex gap-4">
             <Button
@@ -269,7 +330,7 @@ export function VideoUploader() {
                 max={20}
               />
               {errors.strokeWidth && <p className="text-sm text-destructive mt-1">{errors.strokeWidth}</p>}
-            </div>
+            </div>  
           </div>
 
           <SingleLanguageSelector

@@ -6,7 +6,7 @@ class VADModel():
     def __init__(self, model, logger: AppLogger, prod=False):
         self.logger = logger
         self.prod = prod
-        self.model = model 
+        self.model = model
         self.allowed_sample_rates = [16000] # silero VAD compatible rates
         self.logger.logger.info('VADModel initialized')
     

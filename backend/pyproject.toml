@@ -20,7 +20,8 @@ dependencies = [
     "matplotlib (>=3.10.8,<4.0.0)",
     "speechbrain @ git+https://github.com/speechbrain/speechbrain.git@develop",
     "faster-whisper (>=1.2.1,<2.0.0)",
-    "deep-translator (>=1.11.4,<2.0.0)"
+    "deep-translator (>=1.11.4,<2.0.0)",
+    "pydantic (>=2.12.5,<3.0.0)"
 ]
 
 

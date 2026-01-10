@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState, useRef, useCallback, useEffect } from "react"
-import { Upload, Loader2, Download, Video, X, Mail } from "lucide-react"
+import { useState, useRef, useCallback } from "react"
+import { Upload, Loader2, Download, Video, X, Mail, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -32,6 +32,7 @@ export function VideoUploader() {
   const [isDragging, setIsDragging] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [email, setEmail] = useState("")
+  const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -105,7 +106,7 @@ export function VideoUploader() {
       setUploadResult(result)
       
       // Send email with download link if email was provided
-      if (email && result.success && result.downloadUrl) {
+      if (emailSubmitted && email && result.success && result.downloadUrl) {
         const emailResult = await sendDownloadLinkEmail(email, result.downloadUrl)
         setEmailSent(emailResult.success)
       }
@@ -125,6 +126,7 @@ export function VideoUploader() {
     setUploadResult(null)
     setErrors({})
     setEmail("")
+    setEmailSubmitted(false)
     setEmailSent(false)
   }
 
@@ -160,18 +162,52 @@ export function VideoUploader() {
                 <Mail className="h-4 w-4" />
                 Email (optional)
               </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-background border-border"
-              />
-              <p className="text-xs text-muted-foreground">
-                Processing can take a while. If you want, I'll send the download link to your email 
-                (don't worry, I won't send anything else. I personally do not appreciate intrusive emails)
-              </p>
+              <div className="flex gap-2">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setEmailSubmitted(false)
+                  }}
+                  disabled={emailSubmitted}
+                  className={cn(
+                    "bg-background border-border flex-1",
+                    emailSubmitted && "opacity-70"
+                  )}
+                />
+                {emailSubmitted ? (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-primary/20 text-primary rounded-md">
+                    <Check className="h-4 w-4" />
+                    <span className="text-sm">Saved</span>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      if (email && email.includes("@")) {
+                        setEmailSubmitted(true)
+                      }
+                    }}
+                    disabled={!email || !email.includes("@")}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </div>
+              {emailSubmitted ? (
+                <p className="text-xs text-primary">
+                  ✓ We'll send the download link to {email} when processing is complete.
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Processing can take a while. If you want, I'll send the download link to your email 
+                  (don't worry, I won't send anything else. I personally do not appreciate intrusive emails)
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -344,7 +380,7 @@ export function VideoUploader() {
             label="Provide explicit languages"
             value={options.explicitLanguages}
             onChange={(explicitLanguages) => setOptions((prev) => ({ ...prev, explicitLanguages }))}
-            note="If spoken language detection is inaccurate, explicitly providing the spoken languages will restrict to classifying only from those provided."
+            note="If spoken language detection is inaccurate, explicitly providing the spoken languages will restrict to classifying only from those provided. In most cases, this is not necessary."
           />
 
         </div>

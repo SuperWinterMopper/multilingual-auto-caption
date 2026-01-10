@@ -42,3 +42,7 @@ class ASRModel():
             raise
         self.logger.logger.info(f"Completed transcription for {len(audio_segments)} audio segments")
         return transcribed_segments
+    
+    @classmethod
+    def get_allowed_langs(cls) -> list[str]:
+        return sorted([str(lang_code) for lang_code in _LANGUAGE_CODES])

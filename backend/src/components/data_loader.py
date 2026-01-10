@@ -1,4 +1,5 @@
 import boto3
+from pydantic import AnyHttpUrl
 from .logger import AppLogger
 import os 
 import tempfile
@@ -78,7 +79,7 @@ class AppDataLoader():
             )
 
             return {
-                "uploadUrl": url,
+                "upload_url": url,
                 "bucket": self.BUCKET,
                 "key": key,
                 "expiresIn": expiration,
@@ -87,14 +88,12 @@ class AppDataLoader():
             self.logger.logger.error(f"Error generating presigned URL: {str(e)}")
             raise
         
-    def retrieve_video(self, s3_url: str) -> tuple[VideoFileClip, Path]:
+    def retrieve_video(self, s3_url: AnyHttpUrl) -> tuple[VideoFileClip, Path]:
         key = ""
         try:
-            if s3_url.startswith("http"):
-                parsed = urlparse(s3_url)
-                key = parsed.path.lstrip("/")
-            else:
-                key = s3_url
+            # AnyHttpUrl guarantees this is an http/https URL
+            # Extract the path component directly (e.g., "/uploads/video.mp4")
+            key = s3_url.unicode_string()
 
             self.logger.logger.info(f"Retrieving video from S3: {key}")
             if not key.lower().endswith(self.allowed_formats):

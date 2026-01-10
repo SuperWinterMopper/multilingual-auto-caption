@@ -57,8 +57,10 @@ class AppTranslater:
                 raise
         
         return audio_segments
-            
-    def get_allowed_langs(self, langs: Union[list, dict]) -> list[str]:
+
+    @classmethod
+    def get_allowed_langs(cls) -> list[str]:
+        langs = GoogleTranslator().get_supported_languages(as_dict=True)
         assert isinstance(langs, (dict)), "langs must be a dict"
         return [str(lang_code) for lang_code in langs.values()]
     

@@ -2,6 +2,7 @@ import pytest
 import requests
 from pathlib import Path
 from ..app.app import app
+from ..dataclasses.inputs.caption import CaptionInput
 
 # Test file paths
 TEST_FILES = Path(__file__).parent / "files"
@@ -14,25 +15,53 @@ SPANISH_TEST_FILE_PATH = TEST_FILES / "spanish.mp4"
 KOREAN_TEST_FILE_PATH = TEST_FILES / "korean.mp4"
 ARABIC_TEST_FILE_PATH = TEST_FILES / "arabic.mp4"
 
+# Placeholder URL for test cases (will be replaced with actual presigned URL)
+PLACEHOLDER_URL = "https://example.com/placeholder"
+
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
 
-@pytest.mark.parametrize("video_path,caption_color,font_size,stroke_width,explicitLangs,convert_to", [
-    pytest.param(JAP_ENG_TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "", id="japanese and english"),
-    pytest.param(KOREAN_TEST_FILE_PATH, "#9B1919", 48, 4, ["ko"], "zh", id="korean-to-chinese"),
-    pytest.param(KOREAN_TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "fa", id="korean-to-farsi"),
-    pytest.param(KOREAN_TEST_FILE_PATH, "#52FF77", 48, 4, [], "de", id="korean-to-german"),
-    pytest.param(KOREAN_TEST_FILE_PATH, "#FFFFFF", 120, 12, [], "", id="korean-no-tranlsation-large-captions"),
-    pytest.param(JAPANESE_TEST_FILE_PATH, "#FFFFFF", 48, 4, [], "es", id="japanese-to-spanish"),
-    
-    pytest.param(ARABIC_TEST_FILE_PATH, "#3E8FB4", 48, 4, [], "", id="arabic-no-convert"),
-    
+@pytest.mark.parametrize("video_path,caption_input", [
+    pytest.param(
+        JAP_ENG_TEST_FILE_PATH,
+        CaptionInput(upload_url=PLACEHOLDER_URL),
+        id="japanese and english"
+    ),
+    pytest.param(
+        KOREAN_TEST_FILE_PATH,
+        CaptionInput(upload_url=PLACEHOLDER_URL, caption_color="#9B1919", explicit_langs=["ko"], convert_to="zh"),
+        id="korean-to-chinese"
+    ),
+    pytest.param(
+        KOREAN_TEST_FILE_PATH,
+        CaptionInput(upload_url=PLACEHOLDER_URL, convert_to="fa"),
+        id="korean-to-farsi"
+    ),
+    pytest.param(
+        KOREAN_TEST_FILE_PATH,
+        CaptionInput(upload_url=PLACEHOLDER_URL, caption_color="#52FF77", convert_to="de"),
+        id="korean-to-german"
+    ),
+    pytest.param(
+        KOREAN_TEST_FILE_PATH,
+        CaptionInput(upload_url=PLACEHOLDER_URL, font_size=120, stroke_width=10),
+        id="korean-no-translation-large-captions"
+    ),
+    pytest.param(
+        JAPANESE_TEST_FILE_PATH,
+        CaptionInput(upload_url=PLACEHOLDER_URL, convert_to="es"),
+        id="japanese-to-spanish"
+    ),
+    pytest.param(
+        ARABIC_TEST_FILE_PATH,
+        CaptionInput(upload_url=PLACEHOLDER_URL, caption_color="#3E8FB4"),
+        id="arabic-no-convert"
+    ),
 ])
-
-def test_pipeline_updated(client, video_path, caption_color, font_size, stroke_width, explicitLangs, convert_to):
+def test_pipe_local(client, video_path, caption_input: CaptionInput):
     """Test the full captioning pipeline with various video inputs and styling options."""
     print(f"Testing pipeline with file: {video_path.name}")
     
@@ -41,7 +70,7 @@ def test_pipeline_updated(client, video_path, caption_color, font_size, stroke_w
     print(f"Presigned test successful, response: {response.text}")
     
     data = response.get_json()
-    upload_url = data["uploadUrl"]
+    upload_url = data["upload_url"]
     bucket = data["bucket"]
     key = data["key"]
     
@@ -56,17 +85,18 @@ def test_pipeline_updated(client, video_path, caption_color, font_size, stroke_w
     assert upload_response.status_code == 200, f"S3 upload failed with status {upload_response.status_code}: {upload_response.text}"
     print(f"File successfully uploaded to s3://{bucket}/{key}")
     
+    # Update the upload_url with the actual presigned URL and serialize to dict
+    caption_input_dict = caption_input.model_dump(by_alias=True)
+    caption_input_dict["upload_url"] = upload_url
+    
     caption_response = client.post(
         "/caption",
-        json={
-            "uploadUrl": upload_url,
-            "captionColor": caption_color,
-            "fontSize": font_size,
-            "strokeWidth": stroke_width,
-            "convertTo": convert_to,
-            "explicitLangs": explicitLangs
-        },
+        json=caption_input_dict,
     )
 
     assert caption_response.status_code == 200, f"Caption request failed with status {caption_response.status_code}: {caption_response.text}"
     print(f"Caption request accepted for {upload_url}")
+
+
+def test_pipe_docker():
+    pass

@@ -8,9 +8,10 @@ from .translater import AppTranslater
 import logging
 from moviepy import TextClip
 from ..dataclasses.audio_segment import AudioSegment
+from pydantic import AnyHttpUrl
 
 class PipelineRunner():
-    def __init__(self, file_path: str, vad_model, slid_model, asr_model, convert_to="", explicit_langs: list[str]=[], prod=False):
+    def __init__(self, file_path: AnyHttpUrl, vad_model, slid_model, asr_model, convert_to="", explicit_langs: list[str]=[], prod=False):
         self.prod = prod
         self.file_path = file_path
         
@@ -32,8 +33,8 @@ class PipelineRunner():
         # breakpoint()
         self.allowed_langs = self.consolidate_allowed_langs([
             self.slid_model.get_allowed_langs(),
-            self.asr_model.allowed_langs,
-            self.translater.allowed_langs
+            self.asr_model.get_allowed_langs(),
+            self.translater.get_allowed_langs()
         ])
         
         # if explicit langs are provided, further restrict allowed langs

@@ -87,7 +87,7 @@ class VideoProcessor():
                     audio=audio_segment,
                     start_time=start_time,
                     end_time=end_time,
-                    orig_file=orig_file,
+                    orig_file=orig_file.,
                     sample_rate=sample_rate
                 ))
                 

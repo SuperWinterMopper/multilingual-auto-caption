@@ -75,7 +75,7 @@ def test_pipeline():
         
         # Parse response
         data = response.json()
-        upload_url = data["uploadUrl"]
+        upload_url = data["upload_url"]
         bucket = data["bucket"]
         key = data["key"]
         
@@ -94,7 +94,7 @@ def test_pipeline():
         # Kick off captioning with the uploaded object
         caption_response = requests.post(
             url=BASE_URL + "/caption",
-            json={"uploadUrl": upload_url},
+            json={"upload_url": upload_url},
         )
 
         assert caption_response.status_code == 200, f"Caption request failed with status {caption_response.status_code}: {caption_response.text}"
@@ -278,7 +278,7 @@ def test_pipeline_updated():
         
         # Parse response
         data = response.json()
-        upload_url = data["uploadUrl"]
+        upload_url = data["upload_url"]
         bucket = data["bucket"]
         key = data["key"]
         
@@ -298,7 +298,7 @@ def test_pipeline_updated():
         caption_response = requests.post(
             url=BASE_URL + "/caption",
             json={
-                "uploadUrl": upload_url,
+                "upload_url": upload_url,
                 "captionColor": input_instance.caption_color,
                 "fontSize": input_instance.font_size,
                 "strokeWidth": input_instance.stroke_width,

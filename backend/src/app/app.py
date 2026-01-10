@@ -1,5 +1,4 @@
 from flask import Flask, request
-import os
 import argparse
 from ..components.pipeline_runner import PipelineRunner
 from ..components.data_loader import AppDataLoader
@@ -9,6 +8,7 @@ from silero_vad import load_silero_vad
 from speechbrain.inference.classifiers import EncoderClassifier
 import torch
 from faster_whisper import WhisperModel
+from ..dataclasses.inputs.caption import CaptionInput
 
 # read CLI args
 parser = argparse.ArgumentParser()
@@ -73,7 +73,7 @@ def caption():
     Process a video to add captions/subtitles.
     
     Request Body (JSON):
-        uploadUrl (str, required): The S3 presigned URL or key of the uploaded video file.
+        upload_url (str, required): The S3 presigned URL or key of the uploaded video file.
         
         captionColor (str, optional): Hex color code for caption text. 
             Default: "#FFFFFF" (white)
@@ -100,52 +100,44 @@ def caption():
     Returns:
         200: JSON with downloadUrl containing presigned S3 URL to download the captioned video
              Example: {"downloadUrl": "https://s3.amazonaws.com/..."}
-        400: Error reading required uploadUrl parameter
+        400: Error reading required upload_url parameter
         500: Error processing the video
     
     Example Request:
         POST /caption
         Content-Type: application/json
         {
-            "uploadUrl": "https://bucket.s3.amazonaws.com/uploads/2026_01_06.mp4",
-            "captionColor": "#FFD700",
-            "fontSize": 56,
-            "strokeWidth": 3,
-            "convertTo": "en",
-            "explicitLangs": ["fr", "it"]
+            "upload_url": "https://bucket.s3.amazonaws.com/uploads/2026_01_06.mp4",
+            "caption_color": "#FFD700",
+            "font_size": 56,
+            "stroke_width": 3,
+            "convert_to": "en",
+            "explicit_langs": ["fr", "it"]
         }
     """
-    upload_url = ""
     try:
         data = request.get_json()
+        input = CaptionInput(**data)
         print(f"Received caption request with data: {data}")
-        upload_url = data.get("uploadUrl", "")
-        assert upload_url != ""
     except Exception as e:
-        return f"Error reading required uploadUrl parameter: {str(e)}", 400
+        return f"Error reading parameters for application: {str(e)}", 400
 
-    caption_color: str = data.get("captionColor", "#FFFFFF")
-    font_size: int = data.get("fontSize", 48)
-    stroke_width: int = data.get("strokeWidth", 4)
-    convert_to: str = data.get("convertTo", "")
-    explicit_langs: list[str] = data.get("explicitLangs", [])
     try:
-        # translate to English for now
         runner = PipelineRunner(
-            file_path=upload_url, 
+            file_path=input.upload_url,
             vad_model=vad_model, 
             slid_model=slid_model, 
             asr_model=asr_model, 
-            convert_to=convert_to,
-            explicit_langs=explicit_langs,
+            convert_to=input.convert_to,
+            explicit_langs=input.explicit_langs,
             prod=PROD
         )
 
         # caption_color is a hex string like "#FFFFFF"
         s3_download_url = runner.run(
-            caption_color=caption_color, 
-            font_size=font_size, 
-            stroke_width=stroke_width
+            caption_color=input.caption_color, 
+            font_size=input.font_size, 
+            stroke_width=input.stroke_width
         )
         
         print(f"Finished upload job, video saved to {s3_download_url}")

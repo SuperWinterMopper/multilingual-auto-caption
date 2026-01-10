@@ -22,8 +22,8 @@ export function ShowcaseSection() {
     {
       title: "Custom Styling",
       description: "Customize font size, colors, and stroke",
-      leftImage: "/ko-red-chinese.png",
-      rightImage: "/ko-white.png",
+      leftImage: "/ko-white.png",
+      rightImage: "/ko-red-chinese.png",
     },
     {
       title: "More Examples",

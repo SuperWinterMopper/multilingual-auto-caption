@@ -13,50 +13,54 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
     - uses: actions/checkout@v5
-    - name: Print backend directory
-      run: |
-        cd backend
-        pwd
+
+    - name: Print working directory
+      run: pwd
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE }}
         aws-region: "us-east-2"
+
     - name: Test AWS Credentials
       run: aws sts get-caller-identity
+
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
         python-version: "3.12.3"
+
     - name: Install os dependencies
       run: | 
         sudo apt-get update
-        sudo apt-get install -y ffmpeg libsndfile1  libsox-dev sox git build-essential python3-dev portaudio19-dev
+        sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
+
     - name: Install python dependencies
       run: |
-        cd backend
         pip install poetry
         poetry install
+
     - name: Test application integrated tests for application
-      run: |
-        cd backend
-        make test-pipe-local
-    - name: Print some log results
-      run: |
-        cd backend 
-        make print-last-logs
-    # WORK FROM HERE
+      run: make test-pipe-local
+
+    - name: Print log results of tests
+      run: make print-last-logs
+
     - name: Authenticate Docker client 
-      run: 
-        aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 089276191632.dkr.ecr.us-east-2.amazonaws.com
+      run: |
+        aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 013748579700.dkr.ecr.us-east-2.amazonaws.com
+
     - name: Build Docker image
-      run: 
-        docker build -t musicnu/warbler-backend .
+      run: docker build -t multilingual-auto-caption .
+
     - name: Tag image
-      run:  
-        docker tag musicnu/warbler-backend:latest 089276191632.dkr.ecr.us-east-2.amazonaws.com/musicnu/warbler-backend:latest
+      run: docker tag multilingual-auto-caption:latest 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest
+
     - name: Push image to ECR  
-      run:
-        docker push 089276191632.dkr.ecr.us-east-2.amazonaws.com/musicnu/warbler-backend:latest
+      run: docker push 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest

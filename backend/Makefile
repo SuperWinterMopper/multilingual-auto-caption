@@ -18,9 +18,6 @@ test-pipe-docker:
 print-last-logs:
 	poetry run python -m src.tests.print_last_log
 
-docker-build:
-	docker build -t multilingual-auto-caption .
-
 docker-run:
 	docker run -d -p 5000:5000 -e AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) -e AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) -e UPLOAD_BUCKET=$(UPLOAD_BUCKET) --name captioner multilingual-auto-caption
 

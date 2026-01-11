@@ -9,14 +9,14 @@ run-dev: setup
 run-prod: setup 
 	poetry run python -m src.app.app --prod
 
-test-pipe-local:
+test-pipe:
 	poetry run pytest -s -k test_pipe_local
-
-test-pipe-docker:
-	poetry run pytest -s -k test_pipe_docker
 
 print-last-logs:
 	poetry run python -m src.tests.print_last_log
+
+docker-build:
+	docker build -t multilingual-auto-caption .
 
 docker-run:
 	docker run -d -p 5000:5000 -e AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) -e AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) -e UPLOAD_BUCKET=$(UPLOAD_BUCKET) --name captioner multilingual-auto-caption

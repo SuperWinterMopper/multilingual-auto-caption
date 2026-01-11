@@ -15,5 +15,5 @@ EXPOSE 5000
 
 RUN useradd app
 USER app
-
+    
 CMD ["poetry", "run", "python", "-m", "src.app.app", "--prod"]

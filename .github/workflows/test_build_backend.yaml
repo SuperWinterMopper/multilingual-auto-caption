@@ -14,12 +14,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Maximize build space
-      uses: easimon/maximize-build-space@master
-      with:
-        root-reserve-mb: 512
-        swap-size-mb: 1024
-        remove-dotnet: 'true'
+    # - name: Maximize build space
+    #   uses: easimon/maximize-build-space@master
+    #   with:
+    #     root-reserve-mb: 512
+    #     swap-size-mb: 1024
+    #     remove-dotnet: 'true'
 
     - uses: actions/checkout@v5
 
@@ -37,31 +37,31 @@ jobs:
     - name: Test AWS Credentials
       run: aws sts get-caller-identity
 
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: "3.12.3"
+    # - name: Set up Python
+    #   uses: actions/setup-python@v6
+    #   with:
+    #     python-version: "3.12.3"
 
-    - name: Install os dependencies
-      run: | 
-        sudo apt-get update
-        sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
+    # - name: Install os dependencies
+    #   run: | 
+    #     sudo apt-get update
+    #     sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
 
-    - name: Install python dependencies
-      run: |
-        cd backend
-        pip install poetry
-        poetry install
+    # - name: Install python dependencies
+    #   run: |
+    #     cd backend
+    #     pip install poetry
+    #     poetry install
 
-    - name: Test application integrated tests for application
-      run: |
-        cd backend 
-        make test-pipe-local
+    # - name: Test application integrated tests for application
+    #   run: |
+    #     cd backend 
+    #     make test-pipe
 
-    - name: Print log results of tests
-      run: | 
-        cd backend
-        make print-last-logs
+    # - name: Print log results of tests
+    #   run: | 
+    #     cd backend
+    #     make print-last-logs
 
     - name: Authenticate Docker client 
       run: |

@@ -11,8 +11,6 @@ COPY . .
 
 RUN poetry install
 
-ENV UPLOAD_BUCKET=multilingual-auto-caption
-
 EXPOSE 5000
 
 RUN useradd app

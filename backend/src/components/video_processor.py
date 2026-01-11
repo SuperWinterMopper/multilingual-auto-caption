@@ -1,3 +1,4 @@
+from pydantic import AnyHttpUrl
 from .logger import AppLogger
 from .data_loader import AppDataLoader
 from moviepy import VideoFileClip, TextClip, CompositeVideoClip
@@ -70,7 +71,7 @@ class VideoProcessor():
             self.logger.logger.error(f"Error extracting audio from video: {str(e)}")
             raise
     
-    def segment_audio(self, audio_tensor: torch.Tensor, segments: list[dict[str, float]], sample_rate: int, orig_file: str) -> list[AudioSegment]:
+    def segment_audio(self, audio_tensor: torch.Tensor, segments: list[dict[str, float]], sample_rate: int, orig_file: AnyHttpUrl) -> list[AudioSegment]:
         result = []
         assert audio_tensor.ndim == 1, "Audio tensor must be mono"
         try:
@@ -87,8 +88,8 @@ class VideoProcessor():
                     audio=audio_segment,
                     start_time=start_time,
                     end_time=end_time,
-                    orig_file=orig_file.,
-                    sample_rate=sample_rate
+                    orig_file=orig_file.unicode_string(),
+                    sample_rate=sample_rate,
                 ))
                 
         except Exception as e:

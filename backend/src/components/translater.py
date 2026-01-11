@@ -7,7 +7,7 @@ class AppTranslater:
     def __init__(self, logger: AppLogger, prod=False):
         self.prod = prod
         self.logger = logger
-        self.allowed_langs = self.get_allowed_langs(GoogleTranslator().get_supported_languages(as_dict=True))
+        self.allowed_langs = self.get_allowed_langs()
         self.logger.logger.info('AppTranslater initialized')
         
     def translate_text(self, texts: list[str], source_lang: str, target_lang: str) -> list[str]:

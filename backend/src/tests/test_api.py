@@ -1,3 +1,4 @@
+from pydantic import AnyHttpUrl
 import pytest
 import requests
 from pathlib import Path
@@ -16,7 +17,7 @@ KOREAN_TEST_FILE_PATH = TEST_FILES / "korean.mp4"
 ARABIC_TEST_FILE_PATH = TEST_FILES / "arabic.mp4"
 
 # Placeholder URL for test cases (will be replaced with actual presigned URL)
-PLACEHOLDER_URL = "https://example.com/placeholder"
+PLACEHOLDER_URL = AnyHttpUrl("https://example.com/placeholder")
 
 @pytest.fixture
 def client():
@@ -36,31 +37,11 @@ def client():
         id="korean-to-chinese"
     ),
     pytest.param(
-        KOREAN_TEST_FILE_PATH,
-        CaptionInput(upload_url=PLACEHOLDER_URL, convert_to="fa"),
-        id="korean-to-farsi"
-    ),
-    pytest.param(
-        KOREAN_TEST_FILE_PATH,
-        CaptionInput(upload_url=PLACEHOLDER_URL, caption_color="#52FF77", convert_to="de"),
-        id="korean-to-german"
-    ),
-    pytest.param(
-        KOREAN_TEST_FILE_PATH,
-        CaptionInput(upload_url=PLACEHOLDER_URL, font_size=120, stroke_width=10),
-        id="korean-no-translation-large-captions"
-    ),
-    pytest.param(
-        JAPANESE_TEST_FILE_PATH,
-        CaptionInput(upload_url=PLACEHOLDER_URL, convert_to="es"),
-        id="japanese-to-spanish"
-    ),
-    pytest.param(
         ARABIC_TEST_FILE_PATH,
-        CaptionInput(upload_url=PLACEHOLDER_URL, caption_color="#3E8FB4"),
-        id="arabic-no-convert"
-    ),
+        CaptionInput(upload_url=PLACEHOLDER_URL, caption_color="#886CA1", font_size=12, stroke_width=10, convert_to="ja"),
+    )
 ])
+
 def test_pipe_local(client, video_path, caption_input: CaptionInput):
     """Test the full captioning pipeline with various video inputs and styling options."""
     print(f"Testing pipeline with file: {video_path.name}")

@@ -20,9 +20,7 @@ class AppDataLoader():
             self.logger.logger.error(f"Failed to create S3 client: {str(e)}")
             raise
         
-        self.BUCKET = os.getenv("UPLOAD_BUCKET") or ""
-        if self.BUCKET == "":
-            raise ValueError("UPLOAD_BUCKET environment variable is not set")
+        self.BUCKET = "multilingual-auto-caption"
 
         self.allowed_formats = ('.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv')
         self.content_types = {
@@ -93,11 +91,12 @@ class AppDataLoader():
         try:
             # AnyHttpUrl guarantees this is an http/https URL
             # Extract the path component directly (e.g., "/uploads/video.mp4")
-            key = s3_url.unicode_string()
+            # Use .path to get just the path without query parameters
+            key = urlparse(s3_url.unicode_string()).path.lstrip("/")
 
             self.logger.logger.info(f"Retrieving video from S3: {key}")
             if not key.lower().endswith(self.allowed_formats):
-                raise ValueError(f"For downloading, only {', '.join(self.allowed_formats)} files are supported")
+                raise ValueError(f"For downloading, only {', '.join(self.allowed_formats)} files are supported. Given: {key}")
 
             file_ext = key[key.rfind("."):]
 

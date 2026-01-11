@@ -1,0 +1,55 @@
+name: Python unit tests over API and functions using Pytest
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "*" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@main
+      with:
+        role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE }}
+        aws-region: "us-east-2"
+    - name: Test AWS Credentials
+      run: aws sts get-caller-identity
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.12.3"
+    - name: Install os dependencies
+      run: | 
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg libsndfile1  libsox-dev sox git build-essential python3-dev portaudio19-dev
+    - name: Install python dependencies
+      run: |
+        poetry install 
+    - name: Test application integrated tests for application
+      run: |
+          make test-pipe-local
+
+
+
+
+    # WORK FROM HERE
+    - name: Authenticate Docker client 
+      run: 
+        aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 089276191632.dkr.ecr.us-east-2.amazonaws.com
+    - name: Build Docker image
+      run: 
+        docker build -t musicnu/warbler-backend .
+    - name: Tag image
+      run:  
+        docker tag musicnu/warbler-backend:latest 089276191632.dkr.ecr.us-east-2.amazonaws.com/musicnu/warbler-backend:latest
+    - name: Push image to ECR  
+      run:
+        docker push 089276191632.dkr.ecr.us-east-2.amazonaws.com/musicnu/warbler-backend:latest

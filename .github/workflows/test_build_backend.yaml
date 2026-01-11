@@ -15,12 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
-    - name: Print working directory
-      run: pwd
-
-      # Change to backend directory
-    - name: Change to backend directory
-      run: cd backend
+    - name: Print backend directory
+      run: |
+        cd backend
+        pwd
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@main
       with:
@@ -38,14 +36,17 @@ jobs:
         sudo apt-get install -y ffmpeg libsndfile1  libsox-dev sox git build-essential python3-dev portaudio19-dev
     - name: Install python dependencies
       run: |
-        poetry install 
+        cd backend
+        pip install poetry
+        poetry install
     - name: Test application integrated tests for application
       run: |
-          make test-pipe-local
-
-
-
-
+        cd backend
+        make test-pipe-local
+    - name: Print some log results
+      run: |
+        cd backend 
+        make print-last-logs
     # WORK FROM HERE
     - name: Authenticate Docker client 
       run: 

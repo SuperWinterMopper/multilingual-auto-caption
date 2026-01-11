@@ -15,6 +15,9 @@ test-pipe-local:
 test-pipe-docker:
 	poetry run pytest -s -k test_pipe_docker
 
+print-last-logs:
+	poetry run python -m src.tests.print_last_log
+
 docker-build:
 	docker build -t multilingual-auto-caption .
 

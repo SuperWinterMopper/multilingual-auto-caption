@@ -35,11 +35,15 @@ jobs:
       with:
         python-version: "3.12.3"
 
-    - name: Install os dependencies
-      run: | 
-        sudo apt-get update
-        sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
-
+    # I am self hosting so these are installed but if it isn't for you then you must install these
+    # - name: Install os dependencies
+    #   run: | 
+    #     sudo apt-get update
+    #     sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
+    - name: Export path to backend/src
+      run: |
+        cd backend 
+        export PYTHONPATH=$PWD/src
     - name: Install python dependencies
       run: |
         cd backend

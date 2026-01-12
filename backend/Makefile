@@ -10,7 +10,7 @@ run-prod: setup
 	poetry run python -m src.app.app --prod
 
 test-pipe:
-	poetry run pytest -s -k test_pipe
+	poetry run pytest -s -k test_pipe_full
 
 print-last-logs:
 	poetry run python -m src.tests.print_last_log

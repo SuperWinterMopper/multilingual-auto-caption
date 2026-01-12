@@ -20,9 +20,12 @@ ARABIC_TEST_FILE_PATH = TEST_FILES / "arabic.mp4"
 # Placeholder URL for test cases (will be replaced with actual presigned URL)
 PLACEHOLDER_URL = AnyHttpUrl("https://example.com/placeholder")
 
-TEST_IMAGE = True
-DOCKER_ENDPOINT = "http://localhost:5000"
+DOCKER_BACKEND = "http://localhost:5000"
 
+@pytest.fixture(scope="session")
+def backend(request):
+    return request.config.getoption("--backend")
+    
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
@@ -46,19 +49,27 @@ def client():
     )
 ])
 
-def test_pipe(client, video_path, caption_input: CaptionInput):
+def test_pipe_full(backend, client, video_path, caption_input: CaptionInput):
     """Test the full captioning pipeline with various video inputs and styling options."""
     print(f"Testing pipeline with file: {video_path.name}")
-    if TEST_IMAGE:
-        response = requests.get(DOCKER_ENDPOINT + "/presigned", params={"filename": video_path.name})
-    else:
+    
+    assert backend in ['local', 'docker'], f"Invalid backend specified: {backend}, must be either local or docker"
+    TEST_ON_DOCKER = backend == 'docker'
+    
+    print(f"Backend is {backend}")
+    
+    if not TEST_ON_DOCKER:
         response = client.get("/presigned", query_string={"filename": video_path.name})
-    
-    
+        data = response.get_json()
+    elif TEST_ON_DOCKER:
+        response = requests.get(DOCKER_BACKEND + "/presigned", params={"filename": video_path.name})
+        data = response.json()
+    else:
+        raise ValueError("Invalid backend specified")
+
     assert response.status_code == 200, f"Presigned URL request failed with status text {response.text}"
     print(f"Presigned test successful, response: {response.text}")
     
-    data = response.json()
     upload_url = data["upload_url"]
     bucket = data["bucket"]
     key = data["key"]
@@ -78,16 +89,18 @@ def test_pipe(client, video_path, caption_input: CaptionInput):
     caption_input_dict = caption_input.model_dump(by_alias=True)
     caption_input_dict["upload_url"] = upload_url
     
-    if TEST_IMAGE:
-        caption_response = requests.post(
-            DOCKER_ENDPOINT + "/caption",
-            json=caption_input_dict,
-        )
-    else:
+    if not TEST_ON_DOCKER:
         caption_response = client.post(
             "/caption",
             json=caption_input_dict,
         )
+    elif TEST_ON_DOCKER:
+        caption_response = requests.post(
+            DOCKER_BACKEND + "/caption",
+            json=caption_input_dict,
+        )
+    else:
+        raise ValueError("Invalid backend specified")
 
     assert caption_response.status_code == 200, f"Caption request failed with status {caption_response.status_code}: {caption_response.text}"
     print(f"Caption request accepted for {upload_url}")

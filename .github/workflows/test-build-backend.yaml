@@ -40,25 +40,24 @@ jobs:
     #   run: | 
     #     sudo apt-get update
     #     sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
-    - name: Export path to backend/src
-      run: |
-        cd backend 
-        export PYTHONPATH=$PWD/src
     - name: Install python dependencies
       run: |
         cd backend
+        export PYTHONPATH=$PWD/src
         pip install poetry
         poetry install
 
-    - name: Test application integrated tests for application
+    - name: Test integrated tests application locally
       run: |
-        cd backend 
-        make test-pipe
+        cd backend
+        export PYTHONPATH=$PWD/src
+        poety run pytest --backend local -s -k test_pipe
 
     - name: Print log results of tests
       run: | 
         cd backend
-        make print-last-logs
+        export PYTHONPATH=$PWD/src
+        poetry run python -m src.tests.print_last_log
 
     - name: Authenticate Docker client 
       run: |
@@ -66,11 +65,24 @@ jobs:
 
     - name: Build Docker image
       run: |
-        cd backend
         docker build -t multilingual-auto-caption .
 
     - name: Tag image
       run: docker tag multilingual-auto-caption:latest 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest
+
+    - name: Run docker image
+      run: |
+        docker container run --detach --publish 5000:5000 --name mac-backend-test multilingual-auto-caption
+        sleep 15 # wait for the container to be fully up and running
+    
+    - name: Test integrated tests application in docker
+      run: |
+        cd backend
+        export PYTHONPATH=$PWD/src
+        poetry run pytest --backend docker -s -k test_pipe
+    
+    - name: Stop docker container
+      run: docker rm -f mac-backend-test
 
     - name: Push image to ECR
       run: docker push 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest

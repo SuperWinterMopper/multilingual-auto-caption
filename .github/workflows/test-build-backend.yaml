@@ -51,7 +51,7 @@ jobs:
       run: |
         cd backend
         export PYTHONPATH=$PWD/src
-        poety run pytest --backend local -s -k test_pipe
+        poetry run pytest --backend local -s -k test_pipe
 
     - name: Print log results of tests
       run: | 

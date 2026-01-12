@@ -1,4 +1,4 @@
-name: Python unit tests over API and functions using Pytest
+name: Test, Build, and Push Backend Image to ECR
 
 on:
   push:
@@ -12,15 +12,8 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-    # - name: Maximize build space
-    #   uses: easimon/maximize-build-space@master
-    #   with:
-    #     root-reserve-mb: 512
-    #     swap-size-mb: 1024
-    #     remove-dotnet: 'true'
-
     - uses: actions/checkout@v5
 
     - name: Print working directory
@@ -37,31 +30,31 @@ jobs:
     - name: Test AWS Credentials
       run: aws sts get-caller-identity
 
-    # - name: Set up Python
-    #   uses: actions/setup-python@v6
-    #   with:
-    #     python-version: "3.12.3"
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.12.3"
 
-    # - name: Install os dependencies
-    #   run: | 
-    #     sudo apt-get update
-    #     sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
+    - name: Install os dependencies
+      run: | 
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
 
-    # - name: Install python dependencies
-    #   run: |
-    #     cd backend
-    #     pip install poetry
-    #     poetry install
+    - name: Install python dependencies
+      run: |
+        cd backend
+        pip install poetry
+        poetry install
 
-    # - name: Test application integrated tests for application
-    #   run: |
-    #     cd backend 
-    #     make test-pipe
+    - name: Test application integrated tests for application
+      run: |
+        cd backend 
+        make test-pipe
 
-    # - name: Print log results of tests
-    #   run: | 
-    #     cd backend
-    #     make print-last-logs
+    - name: Print log results of tests
+      run: | 
+        cd backend
+        make print-last-logs
 
     - name: Authenticate Docker client 
       run: |
@@ -75,5 +68,5 @@ jobs:
     - name: Tag image
       run: docker tag multilingual-auto-caption:latest 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest
 
-    - name: Push image to ECR  
+    - name: Push image to ECR
       run: docker push 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest

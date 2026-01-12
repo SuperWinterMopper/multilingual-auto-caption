@@ -13,6 +13,7 @@ from ..dataclasses.inputs.caption import CaptionInput
 # read CLI args
 parser = argparse.ArgumentParser()
 parser.add_argument('--prod', action='store_true', help='Run the app in production mode (makes it not store large files on disk, just text and image log files)')
+
 PROD = False
 
 app = Flask(__name__)

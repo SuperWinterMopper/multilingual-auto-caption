@@ -3,7 +3,7 @@ FROM python:3.13-slim
 WORKDIR /app
 
 RUN apt-get update
-RUN apt-get install -y ffmpeg libsndfile1  libsox-dev sox git build-essential python3-dev portaudio19-dev
+RUN apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
 
 RUN pip install poetry
 

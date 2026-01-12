@@ -20,7 +20,7 @@ ARABIC_TEST_FILE_PATH = TEST_FILES / "arabic.mp4"
 # Placeholder URL for test cases (will be replaced with actual presigned URL)
 PLACEHOLDER_URL = AnyHttpUrl("https://example.com/placeholder")
 
-TEST_IMAGE = False
+TEST_IMAGE = True
 DOCKER_ENDPOINT = "http://localhost:5000"
 
 @pytest.fixture

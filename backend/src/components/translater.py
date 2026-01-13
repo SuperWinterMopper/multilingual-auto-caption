@@ -1,4 +1,4 @@
-from .logger import AppLogger
+from .logger_component import AppLogger
 from deep_translator import GoogleTranslator
 from typing import Union
 from ..dataclasses.audio_segment import AudioSegment

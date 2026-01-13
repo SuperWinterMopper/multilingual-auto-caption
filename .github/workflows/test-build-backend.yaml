@@ -79,7 +79,7 @@ jobs:
       run: |
         cd backend
         export PYTHONPATH=$PWD/src
-        poetry run pytest --backend docker -s -k test_pipe_full
+        poetry run python -m pytest -s --backend docker src/tests/test_api.py::test_pipe_full
     
     - name: Stop docker container
       run: docker rm -f mac-backend-test

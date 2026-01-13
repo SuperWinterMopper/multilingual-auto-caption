@@ -1,4 +1,4 @@
-from .logger import AppLogger
+from .logger_component import AppLogger
 from ..dataclasses.audio_segment import AudioSegment
 import numpy as np
 import uuid

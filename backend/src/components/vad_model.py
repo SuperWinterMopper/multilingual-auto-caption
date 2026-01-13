@@ -1,4 +1,4 @@
-from .logger import AppLogger
+from .logger_component import AppLogger
 from silero_vad import get_speech_timestamps
 import torch
 

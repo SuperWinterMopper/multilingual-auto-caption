@@ -2,7 +2,7 @@ from flask import Flask, request
 import argparse
 from ..components.pipeline_runner import PipelineRunner
 from ..components.data_loader import AppDataLoader
-from ..components.logger import AppLogger
+from ..components.logger_component import AppLogger
 import logging
 from silero_vad import load_silero_vad
 from speechbrain.inference.classifiers import EncoderClassifier

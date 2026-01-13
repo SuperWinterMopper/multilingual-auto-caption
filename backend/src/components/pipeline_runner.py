@@ -1,4 +1,4 @@
-from .logger import AppLogger
+from .logger_component import AppLogger
 from .data_loader import AppDataLoader
 from .asr_model import ASRModel
 from .vad_model import VADModel

@@ -1,6 +1,6 @@
 import boto3
 from pydantic import AnyHttpUrl
-from .logger import AppLogger
+from .logger_component import AppLogger
 import os 
 import tempfile
 from datetime import datetime

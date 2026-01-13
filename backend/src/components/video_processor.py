@@ -1,5 +1,5 @@
 from pydantic import AnyHttpUrl
-from .logger import AppLogger
+from .logger_component import AppLogger
 from .data_loader import AppDataLoader
 from moviepy import VideoFileClip, TextClip, CompositeVideoClip
 import torch

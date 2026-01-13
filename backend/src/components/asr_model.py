@@ -1,4 +1,4 @@
-from .logger import AppLogger
+from .logger_component import AppLogger
 from ..dataclasses.audio_segment import AudioSegment, unknown_language
 from faster_whisper import WhisperModel
 from faster_whisper.tokenizer import _LANGUAGE_CODES

@@ -40,6 +40,7 @@ jobs:
     #   run: | 
     #     sudo apt-get update
     #     sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
+    
     - name: Install python dependencies
       run: |
         cd backend

@@ -44,20 +44,17 @@ jobs:
     - name: Install python dependencies
       run: |
         cd backend
-        export PYTHONPATH=$PWD/src
         pip install poetry
         poetry install
 
     - name: Test integrated tests application locally
       run: |
         cd backend
-        export PYTHONPATH=$PWD/src
         poetry run python -m pytest -s --backend local src/tests/test_api.py::test_pipe_full
 
     - name: Print log results of tests
       run: | 
         cd backend
-        export PYTHONPATH=$PWD/src
         poetry run python -m src.tests.print_last_log
 
     - name: Authenticate Docker client 
@@ -66,6 +63,7 @@ jobs:
 
     - name: Build Docker image
       run: |
+        cd backend
         docker build -t multilingual-auto-caption .
 
     - name: Tag image
@@ -73,13 +71,13 @@ jobs:
 
     - name: Run docker image
       run: |
+        cd backend
         docker container run --detach --publish 5000:5000 --name mac-backend-test multilingual-auto-caption
-        sleep 15 # wait for the container to be fully up and running
+        sleep 10 # wait for the container to be fully up and running
     
     - name: Test integrated tests application in docker
       run: |
         cd backend
-        export PYTHONPATH=$PWD/src
         poetry run python -m pytest -s --backend docker src/tests/test_api.py::test_pipe_full
     
     - name: Stop docker container

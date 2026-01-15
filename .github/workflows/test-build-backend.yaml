@@ -72,16 +72,26 @@ jobs:
     - name: Run docker image
       run: |
         cd backend
-        docker container run --detach --publish 5000:5000 --name mac-backend-test multilingual-auto-caption
-        sleep 10 # wait for the container to be fully up and running
+        docker run --name mac-backend-test --detach --rm -p 5000:5000 \
+          -v ~/.aws:/home/app/.aws:ro \
+          -e AWS_SHARED_CREDENTIALS_FILE=/home/app/.aws/credentials \
+          -e AWS_PROFILE=default \
+          -e AWS_REGION=us-east-2 \
+          multilingual-auto-caption
+        sleep 30 # wait for the container to be fully up and running
     
     - name: Test integrated tests application in docker
       run: |
         cd backend
         poetry run python -m pytest -s --backend docker src/tests/test_api.py::test_pipe_full
     
-    - name: Stop docker container
-      run: docker rm -f mac-backend-test
-
     - name: Push image to ECR
       run: docker push 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest
+
+    - name : Stop docker container
+      run: | 
+        cd backend
+        docker container stop mac-backend-test
+
+    - name: Remove docker container
+      run: docker rm -f mac-backend-test

@@ -68,6 +68,7 @@ def test_pipe_full(backend, client, video_path, caption_input: CaptionInput):
         data = response.get_json()
     elif TEST_ON_DOCKER:
         response = requests.get(DOCKER_BACKEND + "/presigned", params={"filename": video_path.name})
+        breakpoint()
         data = response.json()
     else:
         raise ValueError("Invalid backend specified")

@@ -16,7 +16,7 @@ RUN poetry install
 COPY . .
 RUN useradd -m app
 RUN mkdir -p /app
-RUN chown -R app:app /app /home/app  /
+RUN chown -R app:app /app /home/app
 USER app
 
 EXPOSE 5000

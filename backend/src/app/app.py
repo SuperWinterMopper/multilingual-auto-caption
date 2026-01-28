@@ -62,7 +62,7 @@ def presigned_s3():
     except Exception as e:
         print(f"ERROR: {str(e)}")
         logger.logger.error(f"Error generating presigned URL: {str(e)}")
-        return "Error generating presigned URL", 500
+        return f"Error generating presigned URL: {str(e)}", 500
     finally:
         logger.stop()
         if PROD:

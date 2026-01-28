@@ -4,16 +4,16 @@ setup:
 	echo "UPLOAD_BUCKET: $(UPLOAD_BUCKET)"
 
 run-dev: setup
-	poetry run python -m src.app.app
+	uv run gunicorn -w 2 -k gthread --threads 2 -b 0.0.0.0:5000 src.app.app:app
 
 run-prod: setup 
-	poetry run python -m src.app.app --prod
+	uv run python -m src.app.app --prod
 
 test-pipe:
-	poetry run pytest -s -k test_pipe_full
+	uv run pytest -s -k test_pipe_full
 
 print-last-logs:
-	poetry run python -m src.tests.print_last_log
+	uv run python -m src.tests.print_last_log
 
 docker-build:
 	docker build -t multilingual-auto-caption .
@@ -25,4 +25,4 @@ docker-stop:
 	docker stop multilingual-auto-caption:latest
 
 test-temp:
-	poetry run python -m src.tests.temp
+	uv run python -m src.tests.temp

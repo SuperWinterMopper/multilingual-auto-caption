@@ -11,14 +11,15 @@ COPY pyproject.toml uv.lock* ./
 # will break at runtime if you create a virtualenv in docker 
 ENV UV_SYSTEM_PYTHON=1
 
-RUN uv sync --frozen
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
 
-COPY . .
 RUN useradd -m app
 RUN mkdir -p /app
-RUN chown -R app:app /app /home/app
+
+COPY --chown=app:app . .
+
 USER app
 
 EXPOSE 5000
 
-CMD ["gunicorn", "-w", "2", "-k", "gthread", "--threads", "2", "-b", "0.0.0.0:5000", "src.app.app:app"]
+CMD ["uv", "run", "gunicorn", "-w", "2", "-k", "gthread", "--threads", "2", "-b", "0.0.0.0:5000", "src.app.app:app"]

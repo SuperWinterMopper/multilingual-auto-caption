@@ -107,12 +107,14 @@ wheels = [
 [[package]]
 name = "captioner"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "boto3" },
     { name = "deep-translator" },
     { name = "faster-whisper" },
     { name = "flask" },
+    { name = "gunicorn" },
+    { name = "k2" },
     { name = "matplotlib" },
     { name = "moviepy" },
     { name = "psutil" },
@@ -131,6 +133,8 @@ requires-dist = [
     { name = "deep-translator", specifier = ">=1.11.4,<2.0.0" },
     { name = "faster-whisper", specifier = ">=1.2.1,<2.0.0" },
     { name = "flask", specifier = ">=3.1.2,<4.0.0" },
+    { name = "gunicorn", specifier = ">=24.1.1" },
+    { name = "k2", specifier = ">=0.3.0" },
     { name = "matplotlib", specifier = ">=3.10.8,<4.0.0" },
     { name = "moviepy", specifier = ">=2.2.1,<3.0.0" },
     { name = "psutil", specifier = ">=7.2.1,<8.0.0" },
@@ -552,6 +556,27 @@ wheels = [
 ]
 
 [[package]]
+name = "graphviz"
+version = "0.21"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f8/b3/3ac91e9be6b761a4b30d66ff165e54439dcd48b83f4e20d644867215f6ca/graphviz-0.21.tar.gz", hash = "sha256:20743e7183be82aaaa8ad6c93f8893c923bd6658a04c32ee115edb3c8a835f78", size = 200434, upload-time = "2025-06-15T09:35:05.824Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl", hash = "sha256:54f33de9f4f911d7e84e4191749cac8cc5653f815b06738c54db9a15ab8b1e42", size = 47300, upload-time = "2025-06-15T09:35:04.433Z" },
+]
+
+[[package]]
+name = "gunicorn"
+version = "24.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/78/0a/10739c03537ec5b131a867bf94df2e412b437696c7e5d26970e2198a80d2/gunicorn-24.1.1.tar.gz", hash = "sha256:f006d110e5cb3102859b4f5cd48335dbd9cc28d0d27cd24ddbdafa6c60929408", size = 287567, upload-time = "2026-01-24T01:15:31.359Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/90/cfe637677916fc6f53cd2b05d5746e249f683e1fa14c9e745a88c66f7290/gunicorn-24.1.1-py3-none-any.whl", hash = "sha256:757f6b621fc4f7581a90600b2cd9df593461f06a41d7259cb9b94499dc4095a8", size = 114920, upload-time = "2026-01-24T01:15:29.656Z" },
+]
+
+[[package]]
 name = "hf-xet"
 version = "1.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -706,6 +731,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/41/f2/d34e8b3a08a9cc79a50b2208a93dce981fe615b64d5a4d4abee421d898df/joblib-1.5.3.tar.gz", hash = "sha256:8561a3269e6801106863fd0d6d84bb737be9e7631e33aaed3fb9ce5953688da3", size = 331603, upload-time = "2025-12-15T08:41:46.427Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7b/91/984aca2ec129e2757d1e4e3c81c3fcda9d0f85b74670a094cc443d9ee949/joblib-1.5.3-py3-none-any.whl", hash = "sha256:5fc3c5039fc5ca8c0276333a188bbd59d6b7ab37fe6632daa76bc7f9ec18e713", size = 309071, upload-time = "2025-12-15T08:41:44.973Z" },
+]
+
+[[package]]
+name = "k2"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "graphviz" },
+    { name = "torch" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/0e/69103f86e135b76cd1af70f4591bd5655eed8269be38da2d68b77ab155bd/k2-0.3.0-py36-none-any.whl", hash = "sha256:3916417cab371c1794a70891c600ae5764fba406211a254c905a524d192a86b3", size = 47373286, upload-time = "2021-01-21T01:32:21.661Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/b2/99047895c04798fe13088c8a6e099eaea001059a11726ec816e3ceee8574/k2-0.3.0-py37-none-any.whl", hash = "sha256:704fb74082898432e10e45cf11f5068723102dba6c38d516cb5f9cb95cd0dbc3", size = 47374702, upload-time = "2021-01-21T01:32:31.524Z" },
+    { url = "https://files.pythonhosted.org/packages/56/6c/f1ccc09c9fdce6d273883a14982ea21042b4fbddbef2f959c60819b8e645/k2-0.3.0-py38-none-any.whl", hash = "sha256:6a5a2dc55bdbcfd25c581c5cfba962ca413231f94023a7fb5e08e7e7c68edc69", size = 47370015, upload-time = "2021-01-21T01:32:40.494Z" },
 ]
 
 [[package]]

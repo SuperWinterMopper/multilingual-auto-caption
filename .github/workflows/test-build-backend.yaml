@@ -44,18 +44,18 @@ jobs:
     - name: Install python dependencies
       run: |
         cd backend
-        pip install poetry
-        poetry install
+        pipx install uv
+        uv install
 
     - name: Test integrated tests application locally
       run: |
         cd backend
-        poetry run python -m pytest -s --backend local src/tests/test_api.py::test_pipe_full
+        uv run python -m pytest -s --backend local src/tests/test_api.py::test_pipe_full
 
     - name: Print log results of tests
       run: | 
         cd backend
-        poetry run python -m src.tests.print_last_log
+        uv run python -m src.tests.print_last_log
 
     - name: Authenticate Docker client 
       run: |
@@ -83,7 +83,7 @@ jobs:
     - name: Test integrated tests application in docker
       run: |
         cd backend
-        poetry run python -m pytest -s --backend docker src/tests/test_api.py::test_pipe_full
+        uv run python -m pytest -s --backend docker src/tests/test_api.py::test_pipe_full
     
     - name: Push image to ECR
       run: docker push 013748579700.dkr.ecr.us-east-2.amazonaws.com/multilingual-auto-caption:latest

@@ -33,11 +33,6 @@ def client():
         yield client
 
 @pytest.mark.parametrize("video_path,caption_input", [
-    # pytest.param(
-    #     JAP_ENG_TEST_FILE_PATH,
-    #     CaptionInput(upload_url=PLACEHOLDER_URL),
-    #     id="japanese and english"
-    # ),
     pytest.param(
         KOREAN_TEST_FILE_PATH,
         CaptionInput(
@@ -48,10 +43,6 @@ def client():
         ),
         id="korean-to-chinese"
     ),
-    # pytest.param(
-    #     ARABIC_TEST_FILE_PATH,
-    #     CaptionInput(upload_url=PLACEHOLDER_URL, caption_color="#886CA1", font_size=12, stroke_width=10, convert_to="ja"),
-    # )
 ])
 
 def test_pipe_full(backend, client, video_path, caption_input: CaptionInput):

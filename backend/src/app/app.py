@@ -70,52 +70,6 @@ def presigned_s3():
 
 @app.route("/caption", methods=["POST"])
 def caption():
-    """
-    Process a video to add captions/subtitles.
-    
-    Request Body (JSON):
-        upload_url (str, required): The S3 presigned URL or key of the uploaded video file.
-        
-        captionColor (str, optional): Hex color code for caption text. 
-            Default: "#FFFFFF" (white)
-            Example: "#FF0000" (red), "#00FF00" (green)
-        
-        fontSize (int, optional): Font size in pixels for caption text.
-            Default: 48
-            Range: Typically 24-96 depending on video resolution
-        
-        strokeWidth (int, optional): Width of the text outline/stroke in pixels.
-            Default: 4
-            Set to 0 for no outline
-        
-        convertTo (str, optional): ISO 639-1 language code to translate captions to.
-            Default: "" (no translation, keep original language)
-            Examples: "en" (English), "ja" (Japanese), "es" (Spanish)
-        
-        explicitLangs (list[str], optional): List of ISO 639-1 language codes to 
-            explicitly specify the languages present in the video. Useful when 
-            automatic language detection may be inaccurate.
-            Default: [] (auto-detect languages)
-            Example: ["en", "es"] for a video with English and Spanish speech
-    
-    Returns:
-        200: JSON with downloadUrl containing presigned S3 URL to download the captioned video
-             Example: {"downloadUrl": "https://s3.amazonaws.com/..."}
-        400: Error reading required upload_url parameter
-        500: Error processing the video
-    
-    Example Request:
-        POST /caption
-        Content-Type: application/json
-        {
-            "upload_url": "https://bucket.s3.amazonaws.com/uploads/2026_01_06.mp4",
-            "caption_color": "#FFD700",
-            "font_size": 56,
-            "stroke_width": 3,
-            "convert_to": "en",
-            "explicit_langs": ["fr", "it"]
-        }
-    """
     try:
         data = request.get_json()
         input = CaptionInput(**data)

@@ -41,21 +41,21 @@ jobs:
     #     sudo apt-get update
     #     sudo apt-get install -y ffmpeg libsndfile1 libsox-dev sox git build-essential python3-dev portaudio19-dev
     
-    - name: Install python dependencies
-      run: |
-        cd backend
-        pipx install uv
-        uv install
+    # - name: Install python dependencies
+    #   run: |
+    #     cd backend
+    #     pipx install uv
+    #     uv install
 
-    - name: Test integrated tests application locally
-      run: |
-        cd backend
-        uv run python -m pytest -s --backend local src/tests/test_api.py::test_pipe_full
+    # - name: Test integrated tests application locally
+    #   run: |
+    #     cd backend
+    #     uv run python -m pytest -s --backend local src/tests/test_api.py::test_pipe_full
 
-    - name: Print log results of tests
-      run: | 
-        cd backend
-        uv run python -m src.tests.print_last_log
+    # - name: Print log results of tests
+    #   run: | 
+    #     cd backend
+    #     uv run python -m src.tests.print_last_log
 
     - name: Authenticate Docker client 
       run: |

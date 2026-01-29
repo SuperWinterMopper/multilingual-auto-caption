@@ -363,7 +363,7 @@ export function VideoUploader() {
                 value={options.strokeWidth}
                 onChange={(strokeWidth) => setOptions((prev) => ({ ...prev, strokeWidth }))}
                 min={0}
-                max={20}
+                max={10}
               />
               {errors.strokeWidth && <p className="text-sm text-destructive mt-1">{errors.strokeWidth}</p>}
             </div>  

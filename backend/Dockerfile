@@ -13,10 +13,13 @@ ENV UV_SYSTEM_PYTHON=1
 
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
 
+# Copy the source code and assets
+COPY . .
+
 RUN useradd -m app
 RUN mkdir -p /app
 
-COPY --chown=app:app . .
+RUN chown -R app:app /app
 
 USER app
 

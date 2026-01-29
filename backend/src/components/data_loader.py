@@ -84,7 +84,7 @@ class AppDataLoader():
             }
         except Exception as e:
             self.logger.logger.error(f"Error generating presigned URL: {str(e)}")
-            raise
+            raise ConnectionError(f"Error in trying to generate presigned URL: {str(e)}")
         
     def retrieve_video(self, s3_url: AnyHttpUrl) -> tuple[VideoFileClip, Path]:
         key = ""

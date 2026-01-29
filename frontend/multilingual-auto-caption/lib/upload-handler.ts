@@ -1,6 +1,7 @@
 import type { CaptionOptions } from "./validation"
+import type { CaptionInput } from "./types"
 
-export const API_ROOT = "/api/py"
+export const API_ROOT = "https://mu-d68e0144d9624aadb19f02da2628c6e5.ecs.us-east-2.on.aws"
 
 export interface UploadResponse {
   success: boolean
@@ -27,69 +28,78 @@ export async function uploadVideo(file: File, options: CaptionOptions, email?: s
 
   try {
     const filename = encodeURIComponent(file.name)
+    let uploadUrl = ""
 
     // 1) Request presigned upload URL from backend (GET)
-    const presignedUrlEndpoint = `${API_ROOT}/presigned?filename=${filename}`
-    console.log(`[Client] 1. Requesting presigned URL... GET ${presignedUrlEndpoint}`)
-    
-    const presignedRes = await fetch(presignedUrlEndpoint, {
-      method: "GET",
-    })
+    try {
+        const presignedUrlEndpoint = `${API_ROOT}/presigned?filename=${filename}`
+        console.log(`[Client] 1. Requesting presigned URL... GET ${presignedUrlEndpoint}`)
+        
+        const presignedRes = await fetch(presignedUrlEndpoint, {
+          method: "GET",
+        })
 
-    if (!presignedRes.ok) {
-      const text = await presignedRes.text()
-      console.error(`[Client] Presigned request failed: ${presignedRes.status} ${text}`)
-      return { success: false, error: `Presigned request failed: ${presignedRes.status} ${text}` }
-    }
-    
-    // Parse response - expecting URL string or JSON
-    let uploadUrl = ""
-    const contentType = presignedRes.headers.get("content-type")
-    if (contentType && contentType.includes("application/json")) {
-        const presignedJson = await presignedRes.json()
-        uploadUrl = presignedJson.upload_url || presignedJson.uploadUrl || presignedJson
-    } else {
-        uploadUrl = await presignedRes.text()
-        uploadUrl = uploadUrl.replace(/^"|"$/g, '').trim() // Remove potential quotes
-    }
-    
-    console.log(`[Client] Received upload URL (truncated): ${uploadUrl.substring(0, 50)}...`)
+        if (!presignedRes.ok) {
+          const text = await presignedRes.text()
+          console.error(`[Client] Presigned request failed: ${presignedRes.status} ${text}`)
+          return { success: false, error: `Presigned request failed: ${presignedRes.status} ${text}` }
+        }
+        
+        // Parse response - expecting URL string or JSON
+        const contentType = presignedRes.headers.get("content-type")
+        if (contentType && contentType.includes("application/json")) {
+            const presignedJson = await presignedRes.json()
+            uploadUrl = presignedJson.upload_url || presignedJson.uploadUrl || presignedJson
+        } else {
+            uploadUrl = await presignedRes.text()
+            uploadUrl = uploadUrl.replace(/^"|"$/g, '').trim() // Remove potential quotes
+        }
+        
+        console.log(`[Client] Received upload URL (truncated): ${uploadUrl.substring(0, 50)}...`)
 
-    if (!uploadUrl) {
-       console.error("[Client] Presigned response was empty")
-       return { success: false, error: "Presigned response did not include upload_url" }
+        if (!uploadUrl) {
+           console.error("[Client] Presigned response was empty")
+           return { success: false, error: "Presigned response did not include upload_url" }
+        }
+    } catch (err) {
+        console.error("[Client] Exception during presigned URL request:", err)
+        return { success: false, error: `Exception during presigned URL request: ${String(err)}` }
     }
 
     // 2) Upload the file to the presigned URL (PUT)
-    console.log(`[Client] 2. Uploading file to S3 presigned URL...`)
-    const putRes = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type || "video/mp4",
-      },
-      body: file,
-    })
+    try {
+        console.log(`[Client] 2. Uploading file to S3 presigned URL...${uploadUrl.substring(0, 50)}...`)
+        const putRes = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": file.type || "video/mp4",
+          },
+          body: file,
+        })
 
-    console.log(`[Client] Upload PUT response status: ${putRes.status}`)
+        console.log(`[Client] Upload PUT response status: ${putRes.status}`)
 
-    if (!putRes.ok) {
-      const text = await putRes.text()
-      console.error(`[Client] Upload failed: ${putRes.status} ${text}`)
-      return { success: false, error: `Upload failed: ${putRes.status} ${text}` }
+        if (!putRes.ok) {
+          const text = await putRes.text()
+          console.error(`[Client] Upload failed: ${putRes.status} ${text}`)
+          return { success: false, error: `Upload failed: ${putRes.status} ${text}` }
+        }
+    } catch (err) {
+        console.error("[Client] Exception during S3 upload:", err)
+        return { success: false, error: `Exception during S3 upload: ${String(err)}` }
     }
 
     // 3) Notify backend to start captioning by posting to /caption
     console.log(`[Client] 3. Starting captioning job...`)
     
     // Construct payload with explicit snake_case keys for Python backend compatibility
-    const snakeCasePayload = {
+    const snakeCasePayload: CaptionInput = {
         upload_url: uploadUrl.split('?')[0], // Use clean URL if possible, or full URL if backend needs sign params
         caption_color: options.captionColor,
         font_size: options.fontSize,
         stroke_width: options.strokeWidth,
-        convert_to: options.convertTo,
+        convert_to: options.convertTo || "",
         explicit_langs: options.explicitLanguages || [],
-        email: email
     }
     // Safety fallback: If backend expects full signed URL to download file using standard http client
     if (uploadUrl.includes("?")) {
@@ -97,27 +107,32 @@ export async function uploadVideo(file: File, options: CaptionOptions, email?: s
     }
     
     console.log(`[Client] Caption Payload:`, snakeCasePayload)
-
-    const captionRes = await fetch(`${API_ROOT}/caption`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(snakeCasePayload),
-    })
-
-    console.log(`[Client] Caption response status: ${captionRes.status}`)
-
-    if (!captionRes.ok) {
-      const text = await captionRes.text()
-      console.error(`[Client] Caption request failed: ${captionRes.status} ${text}`)
-      return { success: false, error: `Caption request failed: ${captionRes.status} ${text}` }
-    }
-
+    
     let captionJson: any = {}
-    try { 
+    try {
+      const captionRes = await fetch(`${API_ROOT}/caption`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(snakeCasePayload),
+      })
+      
+      console.log(`[Client] Caption response status: ${captionRes.status}`)
+      
+      if (!captionRes.ok) {
+        const text = await captionRes.text()
+        console.error(`[Client] Caption request failed: ${captionRes.status} ${text}`)
+        return { success: false, error: `Caption request failed: ${captionRes.status} ${text}` }
+      }
+      
+      try { 
         captionJson = await captionRes.json() 
         console.log(`[Client] Caption JSON Response:`, captionJson)
-    } catch (e) { 
+      } catch (e) { 
         console.warn("[Client] Could not parse caption response JSON") 
+      }
+    } catch (err) {
+      console.error("[Client] Exception during caption request fetch:", err)
+      return { success: false, error: `Exception during caption request: ${String(err)}` }
     }
 
     const downloadUrl = captionJson.download_url || captionJson.downloadUrl || captionJson.download || undefined

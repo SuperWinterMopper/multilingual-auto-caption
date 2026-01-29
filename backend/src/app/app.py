@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 import argparse
 from ..components.pipeline_runner import PipelineRunner
 from ..components.data_loader import AppDataLoader
@@ -17,6 +18,7 @@ parser.add_argument('--prod', action='store_true', help='Run the app in producti
 PROD = False
 
 app = Flask(__name__)
+CORS(app)
 
 def load_asr_model() -> WhisperModel:
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -49,7 +51,7 @@ def health_check():
     return "OK", 200
 
 @app.route("/presigned", methods=["GET"])
-def presigned_s3(): 
+def presigned_s3():
     filename = request.args.get("filename")
     if not filename:
         return "\"filename\" query parameter is required.", 400

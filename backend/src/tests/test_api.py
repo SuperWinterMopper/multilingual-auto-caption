@@ -67,9 +67,12 @@ def test_pipe_full(backend, client, video_path, caption_input: CaptionInput):
     assert response.status_code == 200, f"Presigned URL request failed with status text {response.text}"
     print(f"Presigned test successful, response: {response.text}")
     
-    upload_url = data["upload_url"]
-    bucket = data["bucket"]
-    key = data["key"]
+    try:
+        upload_url = data["upload_url"]
+        bucket = data["bucket"]
+        key = data["key"]
+    except KeyError as e:
+        raise KeyError(f"Missing expected key in presigned URL response: {e}")
     
     with open(video_path, "rb") as f:
         upload_response = requests.put(

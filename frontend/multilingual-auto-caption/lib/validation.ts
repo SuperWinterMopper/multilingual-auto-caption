@@ -9,7 +9,7 @@ export const captionOptionsSchema = z.object({
   strokeWidth: z
     .number()
     .min(0, "Stroke width must be at least 0")
-    .max(20, "Stroke width must be at most 20")
+    .max(10, "Stroke width must be at most 10")
     .default(4),
   convertTo: z.string().nullable().default(null),
   explicitLanguages: z.array(z.string()).default([]),

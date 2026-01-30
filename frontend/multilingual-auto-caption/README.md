@@ -16,6 +16,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Email delivery
+
+The app sends download links via email using SMTP in the API route. Create a local .env file in this folder and set the required variables:
+
+- SMTP_HOST
+- SMTP_PORT (default 587)
+- SMTP_USER
+- SMTP_PASS
+- SMTP_SECURE (true for port 465)
+- SMTP_FROM (required sender address)
+- SMTP_FROM_NAME (optional)
+- SMTP_REPLY_TO (optional)
+
+You can copy from .env.example and fill in your SMTP credentials.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

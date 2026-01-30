@@ -236,7 +236,7 @@ class AppDataLoader:
 
     def upload_status_file(self, caption_status: CaptionStatus):
         try:
-            key = self.gen_status_file_key(str(caption_status.job_id))
+            key = self.gen_status_file_key(caption_status.job_id)
             self.s3_client.put_object(
                 Body=caption_status.model_dump_json(),
                 Bucket=self.BUCKET,
@@ -250,7 +250,7 @@ class AppDataLoader:
             self.logger.logger.error(f"Error uploading status file to S3: {str(e)}")
             raise
 
-    def get_caption_status(self, job_id: str) -> CaptionStatus:
+    def get_caption_status(self, job_id: UUID) -> CaptionStatus:
         try:
             key = self.gen_status_file_key(job_id)
             obj = self.s3_client.get_object(Bucket=self.BUCKET, Key=key)
@@ -260,24 +260,24 @@ class AppDataLoader:
             except Exception as e:
                 self.logger.logger.error(f"Error parsing status file JSON: {str(e)}")
                 return CaptionStatus(
-                    job_id=UUID(job_id),
+                    job_id=job_id,
                     status=Status.FAILED,
                     message="Error parsing status file JSON",
                 )
 
         except self.s3_client.exceptions.NoSuchKey:
             return CaptionStatus(
-                job_id=UUID(job_id),
+                job_id=job_id,
                 status=Status.UNINITIATED,
                 message="No status file found for this job_id",
             )
         except Exception as e:
             self.logger.logger.error(f"Error retrieving status file from S3: {str(e)}")
             return CaptionStatus(
-                job_id=UUID(job_id),
+                job_id=job_id,
                 status=Status.FAILED,
                 message="Error retrieving status file from S3: " + str(e),
             )
 
-    def gen_status_file_key(self, job_id: str) -> str:
-        return f"{self.aws_upload_dir}/{job_id}_status.txt"
+    def gen_status_file_key(self, job_id: UUID) -> str:
+        return f"{self.aws_upload_dir}/{str(job_id)}_status.txt"

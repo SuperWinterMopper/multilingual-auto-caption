@@ -1,13 +1,22 @@
 import type { CaptionOptions } from "./validation"
 import type { CaptionInput } from "./types"
 
-export const API_ROOT = "https://mu-d68e0144d9624aadb19f02da2628c6e5.ecs.us-east-2.on.aws"
+export const API_ROOT = "http://localhost:5000"
+// export const API_ROOT = "https://mu-d68e0144d9624aadb19f02da2628c6e5.ecs.us-east-2.on.aws"
 
 export interface UploadResponse {
   success: boolean
   videoUrl?: string
+  jobId?: string
   downloadUrl?: string
   error?: string
+}
+
+export interface JobStatus {
+  job_id: string
+  status: "PENDING" | "COMPLETED" | "FAILED" | "UNINITIATED"
+  message?: string
+  output_url?: string
 }
 
 export async function checkBackendHealth(): Promise<boolean> {
@@ -135,25 +144,45 @@ export async function uploadVideo(file: File, options: CaptionOptions, email?: s
       return { success: false, error: `Exception during caption request: ${String(err)}` }
     }
 
-    const downloadUrl = captionJson.download_url || captionJson.downloadUrl || captionJson.download || undefined
+    const jobId = captionJson.job_id || captionJson.jobId
 
-    if (downloadUrl) {
-        console.log(`[Client] Success! Download URL: ${downloadUrl}`)
-        // If email was provided, we can trigger it here or let UI trigger it. 
-        // Logic in UI: if (uploadResult.success && email) -> sendDownloadLinkEmail
-        // So we just return success here.
+    if (jobId) {
+        console.log(`[Client] Job started successfully! Job ID: ${jobId}`)
+        return {
+          success: true,
+          videoUrl: URL.createObjectURL(file),
+          jobId: jobId
+        }
     } else {
-        console.warn(`[Client] Warning: No download URL found in response`)
+        console.warn(`[Client] Warning: No job_id found in response`)
+        return { success: false, error: "No job_id returned from backend" }
     }
 
-    return {
-      success: true,
-      videoUrl: URL.createObjectURL(file), 
-      downloadUrl,
-    }
   } catch (err: any) {
     console.error("[Client] Exception during uploadVideo:", err)
     return { success: false, error: String(err) }
+  }
+}
+
+export async function getJobStatus(jobId: string): Promise<JobStatus | null> {
+  console.log(`[Client] Polling status for job ${jobId}...`)
+  try {
+    // using query param for GET request compatibility with browsers
+    const res = await fetch(`${API_ROOT}/caption/status?job_id=${jobId}`, {
+      method: "GET",
+    })
+
+    if (!res.ok) {
+      console.error(`[Client] Status check failed: ${res.status}`)
+      return null
+    }
+
+    const data = await res.json()
+    console.log(`[Client] Status response:`, data)
+    return data as JobStatus
+  } catch (err) {
+    console.error("[Client] Exception polling status:", err)
+    return null
   }
 }
 

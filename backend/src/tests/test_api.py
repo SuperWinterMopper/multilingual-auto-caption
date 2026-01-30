@@ -181,7 +181,7 @@ def test_s3_status_upload_download():
     loader.upload_status_file(status_obj)
 
     # 3. Retrieve it
-    retrieved_status: CaptionStatus = loader.get_caption_status(str(job_id))
+    retrieved_status: CaptionStatus = loader.get_caption_status(job_id)
     print(f"Retrieved status: {retrieved_status}")
 
     assert retrieved_status is not None
@@ -197,7 +197,7 @@ def test_s3_status_upload_download():
     loader.upload_status_file(status_obj)
 
     # 5. Retrieve again
-    retrieved_status_2: CaptionStatus = loader.get_caption_status(str(job_id))
+    retrieved_status_2: CaptionStatus = loader.get_caption_status(job_id)
 
     assert retrieved_status_2.status == Status.COMPLETED
     assert retrieved_status_2.output_url == "http://example.com/result.mp4"

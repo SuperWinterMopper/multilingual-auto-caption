@@ -2,13 +2,13 @@
 
 import type React from "react"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import { Upload, Loader2, Download, Video, X, Mail, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { uploadVideo, estimateProcessingTime, sendDownloadLinkEmail, type UploadResponse } from "@/lib/upload-handler"
+import { uploadVideo, estimateProcessingTime, sendDownloadLinkEmail, getJobStatus, type UploadResponse, type JobStatus } from "@/lib/upload-handler"
 import { type CaptionOptions, validateCaptionOptions } from "@/lib/validation"
 import { ColorPicker } from "./color-picker"
 import { NumberInput } from "./number-input"
@@ -28,6 +28,8 @@ export function VideoUploader() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [videoDuration, setVideoDuration] = useState<number>(0)
   const [isUploading, setIsUploading] = useState(false)
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null)
+  const [jobStatus, setJobStatus] = useState<string | null>(null)
   const [uploadResult, setUploadResult] = useState<UploadResponse | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -36,6 +38,50 @@ export function VideoUploader() {
   const [emailSent, setEmailSent] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!currentJobId) return
+
+    const checkStatus = async () => {
+        const statusData = await getJobStatus(currentJobId)
+        if (statusData) {
+            console.log(`[VideoUploader] Job ${currentJobId} status: ${statusData.status}`)
+            setJobStatus(statusData.status)
+
+            if (statusData.status === "COMPLETED") {
+                setCurrentJobId(null)
+                setIsUploading(false)
+                
+                // Construct result based on what we have
+                setUploadResult({
+                    success: true,
+                    // If backend provides videoUrl or similar, use it. 
+                    // But output_url is likely the captioned video.
+                    videoUrl: statusData.output_url, // Use the actual result
+                    downloadUrl: statusData.output_url
+                })
+
+                // Send email if needed
+                if (emailSubmitted && email && statusData.output_url) {
+                    sendDownloadLinkEmail(email, statusData.output_url).then(res => setEmailSent(res.success))
+                }
+            } else if (statusData.status === "FAILED") {
+                setCurrentJobId(null)
+                setIsUploading(false)
+                setUploadResult({
+                    success: false,
+                    error: statusData.message || "Job failed during processing"
+                })
+            }
+        }
+    }
+
+    // Check immediately then interval
+    checkStatus()
+    const interval = setInterval(checkStatus, 5000)
+
+    return () => clearInterval(interval)
+  }, [currentJobId, email, emailSubmitted])
 
   const handleFileSelect = useCallback((file: File) => {
     if (!file.type.startsWith("video/")) {
@@ -103,21 +149,28 @@ export function VideoUploader() {
 
     try {
       const result = await uploadVideo(selectedFile, options, email || undefined)
-      setUploadResult(result)
       
-      // Send email with download link if email was provided
-      if (emailSubmitted && email && result.success && result.downloadUrl) {
-        const emailResult = await sendDownloadLinkEmail(email, result.downloadUrl)
-        setEmailSent(emailResult.success)
+      if (result.success && result.jobId) {
+          console.log(`[VideoUploader] Upload successful, waiting for job ${result.jobId}...`)
+          setCurrentJobId(result.jobId)
+          // Don't set uploadResult yet, wait for polling
+      } else {
+          // Handled failure immediately
+          setUploadResult({
+              success: false,
+              error: result.error || "Failed to start upload job"
+          })
+          setIsUploading(false)
       }
+      
     } catch (error) {
       setUploadResult({
         success: false,
         error: "Failed to process video. Please try again.",
       })
-    } finally {
       setIsUploading(false)
     }
+    // Finally block removed - setIsUploading(false) happens when job completes or fails
   }
 
   const resetForm = () => {
@@ -147,8 +200,11 @@ export function VideoUploader() {
           <div className="text-center space-y-2">
             <h3 className="text-xl font-semibold text-foreground">Processing your video...</h3>
             <p className="text-muted-foreground">
-              Please wait while we add captions to your video
-              {estimatedTime > 0 && (
+              Please wait while we add captions to your video              {jobStatus && (
+                  <span className="block font-semibold text-primary mt-2">
+                      Status: {jobStatus}
+                  </span>
+              )}              {estimatedTime > 0 && (
                 <span className="block mt-1">
                   (estimated time: {Math.ceil(estimatedTime)} minute{Math.ceil(estimatedTime) !== 1 ? 's' : ''})
                 </span>
@@ -213,6 +269,37 @@ export function VideoUploader() {
         </div>
       </Card>
     )
+  }
+
+  if (uploadResult?.success === false && uploadResult.error) {
+     return (
+        <Card className="p-8 bg-card border-border border-destructive/20">
+            <div className="flex flex-col items-center justify-center gap-6 py-12">
+                <div className="h-16 w-16 rounded-full bg-destructive/20 flex items-center justify-center">
+                    <X className="h-8 w-8 text-destructive" />
+                </div>
+                <div className="text-center space-y-2">
+                    <h3 className="text-xl font-semibold text-foreground">Processing Failed</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto">
+                        Unfortunately, the captioning job encountered an error.
+                    </p>
+                    <div className="p-4 bg-destructive/10 rounded-md mt-4 border border-destructive/20">
+                        <p className="text-sm font-mono text-destructive break-words max-w-[300px] md:max-w-md">
+                            {uploadResult.error}
+                        </p>
+                    </div>
+                </div>
+                <Button
+                    size="lg"
+                    variant="outline"
+                    className="mt-4"
+                    onClick={resetForm}
+                >
+                    Try Again
+                </Button>
+            </div>
+        </Card>
+     )
   }
 
   if (uploadResult?.success) {

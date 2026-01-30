@@ -26,7 +26,7 @@ parser.add_argument(
     help="Run the app in production mode (makes it not store large files on disk, just text and image log files)",
 )
 
-PROD = False
+PROD = True
 
 app = Flask(__name__)
 CORS(app)
@@ -165,13 +165,11 @@ def caption():
 @app.route("/caption/status", methods=["GET"])
 def caption_status():
     try:
-        data = request.get_json()
-        if not data or "job_id" not in data:
-            return f"job_id is required, not in json: {data}", 400
+        if "job_id" not in request.args:
+            return "job_id is required", 400
 
-        input_status = CaptionStatus(**data)
-        job_id = str(input_status.job_id)
-
+        job_id: UUID = UUID(request.args.get("job_id"))
+        
         logger = AppLogger(log_suffix="status_check", level=logging.INFO, prod=PROD)
         loader = AppDataLoader(logger=logger, prod=PROD)
 

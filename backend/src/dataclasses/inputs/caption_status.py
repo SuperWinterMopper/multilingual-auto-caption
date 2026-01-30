@@ -9,3 +9,5 @@ class CaptionStatus(BaseModel):
     status: Status = Status.UNINITIATED
     output_url: Optional[str] = None
     message: Optional[str] = None
+
+

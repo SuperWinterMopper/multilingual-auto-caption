@@ -1,8 +1,8 @@
 import type { CaptionOptions } from "./validation"
 import type { CaptionInput } from "./types"
 
-export const API_ROOT = "http://localhost:5000"
-// export const API_ROOT = "https://mu-d68e0144d9624aadb19f02da2628c6e5.ecs.us-east-2.on.aws"
+// export const API_ROOT = "http://localhost:5000"
+export const API_ROOT = "https://mu-d68e0144d9624aadb19f02da2628c6e5.ecs.us-east-2.on.aws"
 
 export interface UploadResponse {
   success: boolean
@@ -34,6 +34,7 @@ export async function checkBackendHealth(): Promise<boolean> {
 export async function uploadVideo(file: File, options: CaptionOptions, email?: string): Promise<UploadResponse> {
   console.log(`[Client] Starting uploadVideo for file: ${file.name} (${file.size} bytes)`)
   console.log(`[Client] Options:`, options)
+  console.log(`API backend root: ${API_ROOT}`);
 
   try {
     const filename = encodeURIComponent(file.name)

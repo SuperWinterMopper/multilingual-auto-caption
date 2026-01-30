@@ -20,30 +20,20 @@ from ..dataclasses.inputs.caption_status import CaptionStatus
 from ..dataclasses.inputs.status import Status
 
 
-# -----------------------------
-# Config
-# -----------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument("--prod", action="store_true", help="Run in production mode")
 
-# Under gunicorn, __main__ is not executed; prefer env var for PROD.
-# MAC_PROD=1 means prod, MAC_PROD=0 means dev.
 PROD = os.environ.get("MAC_PROD", "1") == "1"
 
 app = Flask(__name__)
 CORS(app)
 
-# Use a spawn context (safer than fork with torch/cuda/OpenMP stacks).
 MP_CTX = multiprocessing.get_context("spawn")
 
-# Globals for a single persistent worker process + queue.
 _worker_proc = None
 _job_queue = None
 
 
-# -----------------------------
-# Model loaders (used in worker process)
-# -----------------------------
 def load_asr_model() -> WhisperModel:
     device = "cuda" if torch.cuda.is_available() else "cpu"
     compute_type = "float16" if torch.cuda.is_available() else "float32"
@@ -157,9 +147,6 @@ def _ensure_worker_started():
     _worker_proc.start()
 
 
-# -----------------------------
-# App mode print
-# -----------------------------
 if PROD:
     app.config["MODE"] = "prod"
     print("Running in PRODUCTION mode")
@@ -168,9 +155,6 @@ else:
     print("Running in DEVELOPMENT mode")
 
 
-# -----------------------------
-# Routes
-# -----------------------------
 @app.route("/health", methods=["GET"])
 def health_check():
     # NOTE: this only checks the web server, not whether a job is running

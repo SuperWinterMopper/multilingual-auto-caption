@@ -41,8 +41,8 @@ function getSmtpConfig() {
 function buildEmailContent({ email, downloadUrl }: EmailRequest) {
   return {
     to: email,
-    subject: 'Your Captioned Video is Ready!',
-    text: `Hello,\n\nYour video has been successfully processed.\n\nYou can download it using the following link:\n${downloadUrl}\n\nThank you for using Multilingual Auto Caption!`,
+    subject: 'Your caption video is read!',
+    text: `Hey there,\n\nYour video has been successfully processed.\n\nYou can download it using the following link:\n${downloadUrl}\n\nThank you for using Multilingual Auto Caption!`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333;">Video Processing Complete</h2>

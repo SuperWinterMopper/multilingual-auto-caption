@@ -189,8 +189,8 @@ export async function getJobStatus(jobId: string): Promise<JobStatus | null> {
 export function estimateProcessingTime(fileSizeMb: number, videoLengthSeconds: number): number {
   // Returns estimated time in minutes
   // Formula: file_size_mb * 0.2 + video_length_minutes * 2
-  const videoLengthMinutes = videoLengthSeconds / 60
-  const estimate = fileSizeMb * 0.2 + videoLengthMinutes * 2
+  // const videoLengthMinutes = videoLengthSeconds / 60
+  const estimate = fileSizeMb * 8.5;
   console.log(`[Client] Estimating time: Size=${fileSizeMb.toFixed(2)}MB, Length=${videoLengthSeconds}s -> Estimate=${estimate.toFixed(2)} min`)
   return estimate
 }

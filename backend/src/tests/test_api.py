@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 from uuid import uuid4
 import logging
-
+import json
 
 from ..app.app import app
 from ..dataclasses.inputs.caption import CaptionInput
@@ -142,10 +142,14 @@ def test_pipe_full(backend, client, video_path, caption_input: CaptionInput):
         print(f"Polling status for job {job_id}...")
 
         if not TEST_ON_DOCKER:
-            status_response = client.get("/caption/status", json={"job_id": job_id})
+            status_response = client.get(
+                "/caption/status",
+                query_string={"job_id": job_id},
+            )
         else:
             status_response = requests.get(
-                DOCKER_BACKEND + "/caption/status", json={"job_id": job_id}
+                DOCKER_BACKEND + "/caption/status",
+                params={"job_id": job_id},
             )
 
         if status_response.status_code != 200:

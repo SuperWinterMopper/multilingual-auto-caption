@@ -10,7 +10,7 @@ run-prod: setup
 	uv run python -m src.app.app --prod
 
 test-pipe:
-	uv run pytest -s -k test_pipe_full
+	uv run pytest -s src/tests/test_api.py::test_pipe_full
 
 print-last-logs:
 	uv run python -m src.tests.print_last_log

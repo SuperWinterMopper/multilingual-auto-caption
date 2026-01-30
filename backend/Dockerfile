@@ -17,9 +17,9 @@ RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
 COPY . .
 
 RUN useradd -m app
-RUN mkdir -p /app
+RUN mkdir -p /app /logs /build /tmp /assets
 
-RUN chown -R app:app /app
+RUN chown -R app:app /app /logs /build /tmp /assets
 
 USER app
 

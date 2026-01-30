@@ -1,4 +1,6 @@
+from uuid import UUID
 import boto3
+import json
 from pydantic import AnyHttpUrl
 from .logger_component import AppLogger
 import os 
@@ -7,6 +9,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 from moviepy import VideoFileClip, CompositeVideoClip
 from pathlib import Path
+from ..dataclasses.inputs.caption_status import CaptionStatus, Status
 
 class AppDataLoader():
     def __init__(self, logger: AppLogger, prod=False):
@@ -206,3 +209,49 @@ class AppDataLoader():
             else:
                 self.logger.logger.warning(f"Temporary file not found for deletion: {temp_path}")
         self.temp_files = [] # clear temp files after cleanup
+
+    def upload_status_file(self, caption_status: CaptionStatus):
+        try:
+            key = self.gen_status_file_key(str(caption_status.job_id))
+            self.s3_client.put_object(
+                Body=caption_status.model_dump_json(),
+                Bucket=self.BUCKET,
+                Key=key,
+                ContentType='application/json'
+            )
+            self.logger.logger.info(f"Uploaded status file to S3: s3://{self.BUCKET}/{key}")
+        except Exception as e:
+            self.logger.logger.error(f"Error uploading status file to S3: {str(e)}")
+            raise
+
+    def get_caption_status(self, job_id: str) -> CaptionStatus:
+        try:
+            key = self.gen_status_file_key(job_id)
+            obj = self.s3_client.get_object(Bucket=self.BUCKET, Key=key)
+            content = obj['Body'].read().decode('utf-8')
+            try:
+                return CaptionStatus.model_validate_json(content)
+            except Exception as e:
+                self.logger.logger.error(f"Error parsing status file JSON: {str(e)}")
+                return CaptionStatus(
+                    job_id=UUID(job_id),
+                    status=Status.FAILED,
+                    message="Error parsing status file JSON"
+                )
+                
+        except self.s3_client.exceptions.NoSuchKey:
+            return CaptionStatus(
+                job_id=UUID(job_id),
+                status=Status.UNINITIATED,
+                message="No status file found for this job_id"
+            )
+        except Exception as e:
+            self.logger.logger.error(f"Error retrieving status file from S3: {str(e)}")
+            return CaptionStatus(
+                job_id=UUID(job_id),
+                status=Status.FAILED,
+                message="Error retrieving status file from S3: " + str(e)
+            )
+
+    def gen_status_file_key(self, job_id: str) -> str:
+        return  f"{self.aws_upload_dir}/{job_id}_status.txt"

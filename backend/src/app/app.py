@@ -153,7 +153,7 @@ def caption():
     thread = threading.Thread(
         target=run_background_task, args=(input_data, job_id, PROD)
     )
-    thread.daemon = True
+    thread.daemon = False
     thread.start()
 
     return {

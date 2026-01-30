@@ -206,7 +206,7 @@ export function VideoUploader() {
                   </span>
               )}              {estimatedTime > 0 && (
                 <span className="block mt-1">
-                  (estimated time: {Math.ceil(estimatedTime)} minute{Math.ceil(estimatedTime) !== 1 ? 's' : ''})
+                  (estimated total time: {Math.ceil(estimatedTime)} second{Math.ceil(estimatedTime) !== 1 ? 's' : ''})
                 </span>
               )}
             </p>

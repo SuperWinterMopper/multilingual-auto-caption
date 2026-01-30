@@ -25,4 +25,4 @@ USER app
 
 EXPOSE 5000
 
-CMD ["uv", "run", "gunicorn", "--preload", "-w", "2", "-k", "gthread", "--threads", "2", "--timeout", "300", "-b", "0.0.0.0:5000", "src.app.app:app"]
+CMD ["uv", "run", "gunicorn", "--preload", "-w", "2", "-k", "gthread", "--threads", "2", "--timeout", "1200", "-b", "0.0.0.0:5000", "src.app.app:app"]

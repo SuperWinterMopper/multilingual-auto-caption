@@ -4,6 +4,10 @@ Multilingual Auto Caption automatically generates accurate captions for videos c
 
 This repository contains the backend API, worker pipeline, and a Next.js frontend used for file uploads and email notifications.
 
+# Examples
+![korean translated](frontend/multilingual-auto-caption/public/ko_trans.png)
+![korean translated](frontend/multilingual-auto-caption/public/ja2en.png)
+
 **Project structure (high level)**
 
 - `backend/` — Core application: Flask API, long-lived worker process, pipeline orchestration, S3 integration, and tests.

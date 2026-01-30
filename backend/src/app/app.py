@@ -43,7 +43,10 @@ def load_asr_model() -> WhisperModel:
 
 def load_slid_model():
     return EncoderClassifier.from_hparams(
-        source="speechbrain/lang-id-voxlingua107-ecapa", savedir=Path(__file__).parent.parent / "pretrained_models" / "lang-id-voxlingua107-ecapa"
+        source="speechbrain/lang-id-voxlingua107-ecapa",
+        savedir=Path(__file__).parent.parent
+        / "pretrained_models"
+        / "lang-id-voxlingua107-ecapa",
     )
 
 
@@ -119,8 +122,8 @@ def run_background_task(input_data: CaptionInput, job_id: UUID, prod_mode: bool)
         status_obj = CaptionStatus(
             job_id=job_id,
             status=Status.COMPLETED,
-            output_url=s3_download_url
-            message="Processing completed successfully"
+            output_url=s3_download_url,
+            message="Processing completed successfully",
         )
         # Note: pipeline_runner.run returns s3_download_url which might be tuple (bucket, key) or url string?
         # data_loader.save_captioned_s3 returns (bucket, key).

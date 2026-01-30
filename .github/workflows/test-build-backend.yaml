@@ -78,7 +78,7 @@ jobs:
           -e AWS_PROFILE=default \
           -e AWS_REGION=us-east-2 \
           multilingual-auto-caption
-        sleep 30 # wait for the container to be fully up and running
+        sleep 60 # wait for the container to be fully up and running
     
     - name: Test integrated tests application in docker
       run: |

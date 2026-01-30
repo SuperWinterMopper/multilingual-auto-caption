@@ -156,7 +156,9 @@ def test_pipe_full(backend, client, video_path, caption_input: CaptionInput):
             status_response.get_json() if not TEST_ON_DOCKER else status_response.json()
         )
         status = Status(status_data.get("status"))
-        print(f"Current status: {status}")
+        print(
+            f"============Status report for job {job_id}: {status_data}================="
+        )
 
     assert status == Status.COMPLETED, f"Job failed to complete. Final status: {status}"
 

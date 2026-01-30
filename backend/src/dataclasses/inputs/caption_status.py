@@ -3,6 +3,7 @@ from uuid import uuid4, UUID
 from typing import Optional
 from .status import Status
 
+
 class CaptionStatus(BaseModel):
     job_id: UUID = Field(default_factory=uuid4)
     status: Status = Status.UNINITIATED
